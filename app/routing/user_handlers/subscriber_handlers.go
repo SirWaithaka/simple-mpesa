@@ -67,7 +67,7 @@ func RegisterSubscriber(subDomain subscriber.Interactor) fiber.Handler {
 		}
 
 		// we use a presenter to reformat the response of subscriber.
-		_ = ctx.Status(http.StatusOK).JSON(responses.RegistrationResponse(sub.ID, models.UserTypAdmin))
+		_ = ctx.Status(http.StatusOK).JSON(responses.RegistrationResponse(sub.ID, models.UserTypeSubscriber))
 
 		return nil
 	}
