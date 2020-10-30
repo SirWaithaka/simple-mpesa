@@ -40,7 +40,7 @@ func (ui interactor) AuthenticateByEmail(email, password string) (models.User, e
 
 	// validate password
 	if err := helpers.ComparePasswordToHash(user.Password, password); err != nil {
-		return models.User{}, errors.Unauthorized{Message: err.Error()}
+		return models.User{}, errors.Unauthorized{Message: errors.ErrorMessage(err)}
 	}
 
 	return user, nil
@@ -58,7 +58,7 @@ func (ui interactor) AuthenticateByPhoneNumber(phoneNo, password string) (models
 
 	// validate password
 	if err := helpers.ComparePasswordToHash(user.Password, password); err != nil {
-		return models.User{}, errors.Unauthorized{Message: err.Error()}
+		return models.User{}, errors.Unauthorized{Message: errors.ErrorMessage(err)}
 	}
 
 	return user, nil
