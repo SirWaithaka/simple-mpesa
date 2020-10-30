@@ -6,16 +6,16 @@ import (
 	"github.com/gofrs/uuid"
 )
 
-// UserContract describe the characteristics of data that should
+// CustomerContract describe the characteristics of data that should
 // be passed along in channels for when a user is created or something.
-type UserContract struct {
+type CustomerContract struct {
 	UserID uuid.UUID
 }
 
-type ChanNewUsers struct {
-	Channel chan UserContract
-	Reader  <-chan UserContract
-	Writer  chan<- UserContract
+type ChanNewCustomers struct {
+	Channel chan CustomerContract
+	Reader  <-chan CustomerContract
+	Writer  chan<- CustomerContract
 }
 
 // TransactionContract represents the type of data

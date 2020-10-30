@@ -22,10 +22,10 @@ type Interactor interface {
 	Withdraw(userId uuid.UUID, amount uint) (float64, error)
 }
 
-func NewInteractor(repository Repository, usersChan data.ChanNewUsers, transChan data.ChanNewTransactions) Interactor {
+func NewInteractor(repository Repository, custChan data.ChanNewCustomers, transChan data.ChanNewTransactions) Interactor {
 	intr := &interactor{
 		repository:          repository,
-		usersChannel:        usersChan,
+		customersChannel:    custChan,
 		transactionsChannel: transChan,
 	}
 
@@ -36,7 +36,7 @@ func NewInteractor(repository Repository, usersChan data.ChanNewUsers, transChan
 
 type interactor struct {
 	repository          Repository
-	usersChannel        data.ChanNewUsers
+	customersChannel    data.ChanNewCustomers
 	transactionsChannel data.ChanNewTransactions
 }
 
@@ -147,7 +147,7 @@ func (i interactor) postTransactionDetails(userId uuid.UUID, acc models.Account,
 func (i interactor) listenOnNewUsers() {
 	for {
 		select {
-		case user := <-i.usersChannel.Reader:
+		case user := <-i.customersChannel.Reader:
 			acc, err := i.CreateAccount(user.UserID)
 			if err != nil {
 				// we need to log this error

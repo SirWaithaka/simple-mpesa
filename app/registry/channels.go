@@ -3,16 +3,16 @@ package registry
 import "simple-wallet/app/data"
 
 type Channels struct {
-	ChannelNewUsers        data.ChanNewUsers
+	ChannelNewUsers        data.ChanNewCustomers
 	ChannelNewTransactions data.ChanNewTransactions
 }
 
 func NewChannels() *Channels {
-	chanNewUsers := make(chan data.UserContract, 10)
+	chanNewUsers := make(chan data.CustomerContract, 10)
 	chanNewTransactions := make(chan data.TransactionContract, 50)
 
 	return &Channels{
-		ChannelNewUsers: data.ChanNewUsers{
+		ChannelNewUsers: data.ChanNewCustomers{
 			Channel: chanNewUsers,
 			Reader:  chanNewUsers,
 			Writer:  chanNewUsers,
