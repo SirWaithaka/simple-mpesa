@@ -1,11 +1,9 @@
 package errors
 
-/*
-	Auth domain errors
-*/
 
-// ErrTokenParsing
-type ErrTokenParsing ErrorT
+const (
+	InvalidCredentials = ERMessage("provided credentials are invalid")
+)
 
 // Unauthorized
 type Unauthorized struct {

@@ -3,23 +3,15 @@ package errors
 const (
 	// ErrUserExists returned when adding a user with
 	// phone number or email number that are already in the db.
-	ErrUserExists   = ErrorMessage("user already exists")
-	ErrUserNotFound = ErrorMessage("user not found")
+	ErrUserExists   = ERMessage("user already exists")
+	ErrUserNotFound = ERMessage("user not found")
 )
 
-// ErrInvalidCredentials
-type ErrInvalidCredentials ErrorT
-
-func (e ErrInvalidCredentials) Error() string {
-	return string(ErrorInvalidUsernameOrPassword)
-}
-
-func (e ErrInvalidCredentials) Debug() error {
-	return e.Err
-}
 
 // PasswordHashError
-type PasswordHashError ErrorT
+type PasswordHashError struct {
+	Err error
+}
 
 func (e PasswordHashError) Error() string {
 	return "error hashing password"
