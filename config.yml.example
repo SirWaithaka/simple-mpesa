@@ -1,0 +1,8 @@
+database:
+  host: "127.0.0.1"
+  port: "5432"
+  user: "wallet"
+  password: "wallet"
+  dbname: "wallet"
+
+app_secret_key: "eQig7GS4cHO2su"
