@@ -4,7 +4,30 @@ import (
 	"simple-wallet/app/errors"
 
 	validation "github.com/go-ozzo/ozzo-validation/v4"
+	"github.com/go-ozzo/ozzo-validation/v4/is"
 )
+
+
+// LoginParams are properties required during login of an agent
+type LoginParams struct {
+	Email    string `json:"email"`
+	Password string `json:"password"`
+}
+
+func (req LoginParams) Validate() error {
+
+	err := validation.ValidateStruct(&req,
+		validation.Field(&req.Password, validation.Required.Error(string(errors.ErrorPasswordRequired))),
+		validation.Field(&req.Email, validation.Required.Error(string(errors.ErrorEmailRequired)), is.Email),
+	)
+
+	e := errors.ParseValidationErrorMap(err)
+	if len(e) > 0 {
+		// we will return only the first error
+		return e[0]
+	}
+	return nil
+}
 
 // RegistrationParams are properties required during registration of a new agent
 type RegistrationParams struct {

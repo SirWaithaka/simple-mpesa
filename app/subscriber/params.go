@@ -8,25 +8,16 @@ import (
 )
 
 // LoginParams are properties required during login of a subscriber
-// email and phoneNumber can be interchanged, either is required
 type LoginParams struct {
-	Email       string `json:"email"`
-	Password    string `json:"password"`
-	PhoneNumber string `json:"phoneNumber"`
+	Email    string `json:"email"`
+	Password string `json:"password"`
 }
 
 func (req LoginParams) Validate() error {
 
 	err := validation.ValidateStruct(&req,
 		validation.Field(&req.Password, validation.Required.Error(string(errors.ErrorPasswordRequired))),
-		// when validating email, if no phone number is provided, make sure email is valid and not empty
-		validation.Field(&req.Email,
-			validation.When(req.PhoneNumber == "", validation.Required.Error(string(errors.ErrorEmailRequired)), is.Email),
-		),
-		// when validating phone number, if no email is provided, make sure phone number is not empty
-		validation.Field(&req.PhoneNumber,
-			validation.When(req.Email == "", validation.Required.Error(string(errors.ErrorPhoneNumberRequired))),
-		),
+		validation.Field(&req.Email, validation.Required.Error(string(errors.ErrorEmailRequired)), is.Email),
 	)
 
 	e := errors.ParseValidationErrorMap(err)

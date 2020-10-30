@@ -8,7 +8,6 @@ import (
 )
 
 // LoginParams are properties required during login of an admin
-// email and phoneNumber can be interchanged, either is required
 type LoginParams struct {
 	Email       string `json:"email"`
 	Password    string `json:"password"`
