@@ -207,6 +207,10 @@ answer; `what it is?`, `how it works?`, `what is it made of?`.
 Going forward we cannot infer anything about the System Design and Architecture unless we have access to the proprietary
 code, so we build our own implementation that would work closely to how we experience using MPESA.
 
+Whatever follows, is the design and architecture of our simple MPESA application.
+
+### System Architecture
+
 ## Installation
 
 To begin with the application uses postgres as the backend database.
