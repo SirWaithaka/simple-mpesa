@@ -147,16 +147,15 @@ func (i interactor) postTransactionDetails(userId uuid.UUID, acc models.Account,
 func (i interactor) listenOnNewUsers() {
 	for {
 		select {
-		case user := <-i.customersChannel.Reader:
-			acc, err := i.CreateAccount(user.UserID)
+		case customer := <-i.customersChannel.Reader:
+			acc, err := i.CreateAccount(customer.UserID)
 			if err != nil {
 				// we need to log this error
 				log.Printf("error happened while creating account %v", err)
-				return
+				continue
 			}
 			// we log the account details if created
-			log.Printf("account with id %v has been created successfully for userID %v", acc.ID, user.UserID)
-			return
+			log.Printf("account with id %v has been created successfully for customerID %v", acc.ID, customer.UserID)
 		}
 	}
 }
