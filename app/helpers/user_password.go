@@ -1,7 +1,7 @@
 package helpers
 
 import (
-	"simple-wallet/app/errors"
+	"simple-mpesa/app/errors"
 
 	"golang.org/x/crypto/bcrypt"
 )
@@ -11,7 +11,7 @@ func ComparePasswordToHash(hash, password string) error {
 	err := bcrypt.CompareHashAndPassword([]byte(hash), []byte(password))
 	if err != nil {
 		if err == bcrypt.ErrMismatchedHashAndPassword {
-			return errors.ErrInvalidCredentials{}
+			return errors.Error{Code: errors.EINVALID, Message: errors.InvalidCredentials}
 		}
 		return errors.PasswordHashError{Err: err}
 	}

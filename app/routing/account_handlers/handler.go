@@ -3,8 +3,8 @@ package account_handlers
 import (
 	"fmt"
 
-	"simple-wallet/app/account"
-	"simple-wallet/app/transaction"
+	"simple-mpesa/app/account"
+	"simple-mpesa/app/transaction"
 
 	"github.com/gofiber/fiber/v2"
 	"github.com/gofrs/uuid"

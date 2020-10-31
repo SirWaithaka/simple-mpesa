@@ -8,15 +8,15 @@ import (
 )
 
 const (
-	AccountNotCreated          = ErrorMessage("user's account has not been created, report issue")
-	DepositAmountBelowMinimum  = ErrorMessage("cannot deposit amounts less than")
-	WithdrawAmountBelowMinimum = ErrorMessage("cannot withdraw amounts less than")
-	WithdrawAmountAboveBalance = ErrorMessage("cannot withdraw amount, account balance not enough")
+	AccountNotCreated          = ERMessage("user's account has not been created, report issue")
+	DepositAmountBelowMinimum  = ERMessage("cannot deposit amounts less than")
+	WithdrawAmountBelowMinimum = ERMessage("cannot withdraw amounts less than")
+	WithdrawAmountAboveBalance = ERMessage("cannot withdraw amount, account balance not enough")
 )
 
 // ErrUserHasAccount
-func ErrUserHasAccount(userID, accountID uuid.UUID) ErrorMessage {
-	return ErrorMessage(fmt.Sprintf("user %v has account with id %v", userID, accountID))
+func ErrUserHasAccount(userID, accountID uuid.UUID) ERMessage {
+	return ERMessage(fmt.Sprintf("user %v has account with id %v", userID, accountID))
 }
 
 // ErrAccountAccess ...
@@ -33,20 +33,20 @@ func (err ErrAccountAccess) Error() string {
 // errAmountBelowMinimum
 type errAmountBelowMinimum struct {
 	MinAmount uint // minimum amount allowable for deposit or withdraw
-	Message   ErrorMessage
+	Message   ERMessage
 }
 
 func (err errAmountBelowMinimum) Error() string {
 	return string(err.Message) + " " + strconv.Itoa(int(err.MinAmount))
 }
 
-func ErrAmountBelowMinimum(min uint, message ErrorMessage) error {
+func ErrAmountBelowMinimum(min uint, message ERMessage) error {
 	return errAmountBelowMinimum{MinAmount: min, Message: message}
 }
 
 // ErrNotEnoughBalance
 type ErrNotEnoughBalance struct {
-	Message ErrorMessage
+	Message ERMessage
 	Amount  uint
 	Balance float64
 }

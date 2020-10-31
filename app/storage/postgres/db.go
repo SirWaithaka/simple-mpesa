@@ -3,8 +3,8 @@ package postgres
 import (
 	"fmt"
 
-	"simple-wallet/app"
-	"simple-wallet/app/storage"
+	"simple-mpesa/app"
+	"simple-mpesa/app/storage"
 
 	"gorm.io/driver/postgres"
 	"gorm.io/gorm"

@@ -5,11 +5,11 @@ import (
 	"log"
 	"os"
 
-	"simple-wallet/app"
-	"simple-wallet/app/registry"
-	"simple-wallet/app/routing"
-	"simple-wallet/app/storage/postgres"
-	"simple-wallet/configs"
+	"simple-mpesa/app"
+	"simple-mpesa/app/registry"
+	"simple-mpesa/app/routing"
+	"simple-mpesa/app/storage/postgres"
+	"simple-mpesa/configs"
 )
 
 func main() {

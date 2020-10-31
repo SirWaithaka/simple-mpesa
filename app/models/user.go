@@ -1,31 +1,26 @@
 package models
 
 import (
+	"time"
+
 	"github.com/gofrs/uuid"
 	"gorm.io/gorm"
 )
 
 // SignedUser properties of an authenticated user
 type SignedUser struct {
-	UserID string `json:"userId"`
-	Token  string `json:"token"`
+	UserID   string   `json:"userId"`
+	UserType UserType `json:"userType"`
+	Token    string   `json:"token"`
 }
 
-// User entity definition
+// User entity definition. Describes any of
+// admin, agent, merchant or subscriber
 type User struct {
-	gorm.Model // embed created_at, deleted_at, updated_at
+	UserID   uuid.UUID
+	UserType UserType
 
-	ID          uuid.UUID `gorm:"primarykey"`
-	FirstName   string
-	LastName    string
-	Email       string `gorm:"not null;unique"`
-	PhoneNumber string `gorm:"not null;unique"`
-	PassportNo  string
-	Password    string `gorm:"not null"`
-}
-
-// BeforeCreate hook will be used to add uuid to entity before adding to db
-func (u *User) BeforeCreate(tx *gorm.DB) error {
-	u.ID, _ = uuid.NewV4()
-	return nil
+	CreatedAt time.Time
+	UpdatedAt time.Time
+	DeletedAt gorm.DeletedAt `gorm:"index"`
 }

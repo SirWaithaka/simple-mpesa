@@ -3,7 +3,7 @@ package error_handlers
 import (
 	"log"
 
-	"simple-wallet/app/errors"
+	"simple-mpesa/app/errors"
 
 	"github.com/gofiber/fiber/v2"
 )
@@ -32,6 +32,12 @@ func ErrorHandler(ctx *fiber.Ctx, err error) error {
 			res := errors.BadRequestResponse(e.Error())
 			return ctx.Status(res.Status).JSON(res)
 		}
+	}
+
+	// if its a fiber error we send back the status code with empty response
+	if e, ok := err.(*fiber.Error); ok {
+		ctx.Status(e.Code)
+		return nil
 	}
 
 	// will catch any other error we dont process here and return status 500

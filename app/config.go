@@ -3,7 +3,7 @@ package app
 import (
 	"fmt"
 
-	"simple-wallet/configs"
+	"simple-mpesa/configs"
 )
 
 type Database struct {
