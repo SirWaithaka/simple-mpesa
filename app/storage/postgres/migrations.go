@@ -10,6 +10,10 @@ import (
 // Migrate updates the db with new columns, and tables
 func Migrate(database *storage.Database) {
 	err := database.DB.AutoMigrate(
+		models.Admin{},
+		models.Agent{},
+		models.Merchant{},
+		models.Subscriber{},
 		models.User{},
 		models.Account{},
 		models.Transaction{},
