@@ -1,7 +1,7 @@
 package helpers
 
 import (
-	"simple-wallet/app/errors"
+	"simple-mpesa/app/errors"
 
 	"golang.org/x/crypto/bcrypt"
 )

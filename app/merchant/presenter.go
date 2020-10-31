@@ -1,8 +1,8 @@
 package merchant
 
 import (
-	"simple-wallet/app/data"
-	"simple-wallet/app/models"
+	"simple-mpesa/app/data"
+	"simple-mpesa/app/models"
 )
 
 func parseToNewMerchant(merchant models.Merchant) data.CustomerContract {

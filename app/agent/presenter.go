@@ -1,8 +1,8 @@
 package agent
 
 import (
-	"simple-wallet/app/data"
-	"simple-wallet/app/models"
+	"simple-mpesa/app/data"
+	"simple-mpesa/app/models"
 )
 
 func parseToNewAgent(agent models.Agent) data.CustomerContract {

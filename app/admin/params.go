@@ -1,7 +1,7 @@
 package admin
 
 import (
-	"simple-wallet/app/errors"
+	"simple-mpesa/app/errors"
 
 	validation "github.com/go-ozzo/ozzo-validation/v4"
 	"github.com/go-ozzo/ozzo-validation/v4/is"

@@ -1,14 +1,14 @@
 package registry
 
 import (
-	"simple-wallet/app"
-	"simple-wallet/app/account"
-	"simple-wallet/app/admin"
-	"simple-wallet/app/agent"
-	"simple-wallet/app/merchant"
-	"simple-wallet/app/storage"
-	"simple-wallet/app/subscriber"
-	"simple-wallet/app/transaction"
+	"simple-mpesa/app"
+	"simple-mpesa/app/account"
+	"simple-mpesa/app/admin"
+	"simple-mpesa/app/agent"
+	"simple-mpesa/app/merchant"
+	"simple-mpesa/app/storage"
+	"simple-mpesa/app/subscriber"
+	"simple-mpesa/app/transaction"
 )
 
 type Domain struct {

@@ -1,7 +1,7 @@
 package responses
 
 import (
-	"simple-wallet/app/models"
+	"simple-mpesa/app/models"
 
 	"github.com/gofrs/uuid"
 )

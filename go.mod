@@ -1,4 +1,4 @@
-module simple-wallet
+module simple-mpesa
 
 go 1.13
 

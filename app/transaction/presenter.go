@@ -3,8 +3,8 @@ package transaction
 import (
 	"time"
 
-	"simple-wallet/app/data"
-	"simple-wallet/app/models"
+	"simple-mpesa/app/data"
+	"simple-mpesa/app/models"
 
 	"github.com/gofrs/uuid"
 )

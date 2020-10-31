@@ -1,6 +1,6 @@
 package registry
 
-import "simple-wallet/app/data"
+import "simple-mpesa/app/data"
 
 type Channels struct {
 	ChannelNewUsers        data.ChanNewCustomers

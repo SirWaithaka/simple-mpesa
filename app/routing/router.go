@@ -1,12 +1,12 @@
 package routing
 
 import (
-	"simple-wallet/app"
-	"simple-wallet/app/registry"
-	"simple-wallet/app/routing/account_handlers"
-	"simple-wallet/app/routing/error_handlers"
-	"simple-wallet/app/routing/middleware"
-	"simple-wallet/app/routing/user_handlers"
+	"simple-mpesa/app"
+	"simple-mpesa/app/registry"
+	"simple-mpesa/app/routing/account_handlers"
+	"simple-mpesa/app/routing/error_handlers"
+	"simple-mpesa/app/routing/middleware"
+	"simple-mpesa/app/routing/user_handlers"
 
 	"github.com/gofiber/fiber/v2"
 	"github.com/gofiber/fiber/v2/middleware/logger"

@@ -4,9 +4,9 @@ import (
 	"log"
 	"time"
 
-	"simple-wallet/app/data"
-	"simple-wallet/app/errors"
-	"simple-wallet/app/models"
+	"simple-mpesa/app/data"
+	"simple-mpesa/app/errors"
+	"simple-mpesa/app/models"
 
 	"github.com/gofrs/uuid"
 )

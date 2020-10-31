@@ -3,11 +3,11 @@ package user_handlers
 import (
 	"net/http"
 
-	"simple-wallet/app"
-	"simple-wallet/app/auth"
-	"simple-wallet/app/merchant"
-	"simple-wallet/app/models"
-	"simple-wallet/app/routing/responses"
+	"simple-mpesa/app"
+	"simple-mpesa/app/auth"
+	"simple-mpesa/app/merchant"
+	"simple-mpesa/app/models"
+	"simple-mpesa/app/routing/responses"
 
 	"github.com/gofiber/fiber/v2"
 )

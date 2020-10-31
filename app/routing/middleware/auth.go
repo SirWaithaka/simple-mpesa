@@ -3,8 +3,8 @@ package middleware
 import (
 	"strings"
 
-	"simple-wallet/app/auth"
-	"simple-wallet/app/errors"
+	"simple-mpesa/app/auth"
+	"simple-mpesa/app/errors"
 
 	"github.com/dgrijalva/jwt-go"
 	"github.com/gofiber/fiber/v2"

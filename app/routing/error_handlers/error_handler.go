@@ -3,7 +3,7 @@ package error_handlers
 import (
 	"log"
 
-	"simple-wallet/app/errors"
+	"simple-mpesa/app/errors"
 
 	"github.com/gofiber/fiber/v2"
 )

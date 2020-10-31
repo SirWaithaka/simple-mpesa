@@ -1,8 +1,8 @@
 package subscriber
 
 import (
-	"simple-wallet/app/data"
-	"simple-wallet/app/models"
+	"simple-mpesa/app/data"
+	"simple-mpesa/app/models"
 )
 
 func parseToNewSubscriber(subscriber models.Subscriber) data.CustomerContract {

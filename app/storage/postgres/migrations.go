@@ -3,8 +3,8 @@ package postgres
 import (
 	"log"
 
-	"simple-wallet/app/models"
-	"simple-wallet/app/storage"
+	"simple-mpesa/app/models"
+	"simple-mpesa/app/storage"
 )
 
 // Migrate updates the db with new columns, and tables

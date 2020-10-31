@@ -1,11 +1,11 @@
 package subscriber
 
 import (
-	"simple-wallet/app"
-	"simple-wallet/app/data"
-	"simple-wallet/app/errors"
-	"simple-wallet/app/helpers"
-	"simple-wallet/app/models"
+	"simple-mpesa/app"
+	"simple-mpesa/app/data"
+	"simple-mpesa/app/errors"
+	"simple-mpesa/app/helpers"
+	"simple-mpesa/app/models"
 )
 
 type Interactor interface {

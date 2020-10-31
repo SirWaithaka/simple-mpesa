@@ -3,9 +3,9 @@ package transaction
 import (
 	"time"
 
-	"simple-wallet/app/errors"
-	"simple-wallet/app/models"
-	"simple-wallet/app/storage"
+	"simple-mpesa/app/errors"
+	"simple-mpesa/app/models"
+	"simple-mpesa/app/storage"
 
 	"github.com/gofrs/uuid"
 )

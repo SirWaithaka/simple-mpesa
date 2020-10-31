@@ -1,9 +1,9 @@
 package user_handlers
 
 import (
-	"simple-wallet/app"
-	"simple-wallet/app/models"
-	"simple-wallet/app/registry"
+	"simple-mpesa/app"
+	"simple-mpesa/app/models"
+	"simple-mpesa/app/registry"
 
 	"github.com/gofiber/fiber/v2"
 )
