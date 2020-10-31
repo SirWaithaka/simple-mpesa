@@ -34,6 +34,12 @@ func ErrorHandler(ctx *fiber.Ctx, err error) error {
 		}
 	}
 
+	// if its a fiber error we send back the status code with empty response
+	if e, ok := err.(*fiber.Error); ok {
+		ctx.Status(e.Code)
+		return nil
+	}
+
 	// will catch any other error we dont process here and return status 500
 	if err != nil {
 		log.Println(err)
