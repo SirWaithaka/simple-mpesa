@@ -22,3 +22,7 @@ func (u *Admin) BeforeCreate(tx *gorm.DB) error {
 	u.ID, _ = uuid.NewV4()
 	return nil
 }
+
+func (Admin) TableName() string {
+	return "administrators"
+}
