@@ -1,6 +1,8 @@
 package models
 
 import (
+	"time"
+
 	"github.com/gofrs/uuid"
 	"gorm.io/gorm"
 )
@@ -18,5 +20,7 @@ type User struct {
 	UserID   uuid.UUID
 	UserType UserType
 
-	gorm.Model // embed created_at, deleted_at, updated_at
+	CreatedAt time.Time
+	UpdatedAt time.Time
+	DeletedAt gorm.DeletedAt `gorm:"index"`
 }
