@@ -11,7 +11,7 @@ type Admin struct {
 
 	FirstName string
 	LastName  string
-	Email     string
+	Email     string `gorm:"not null;unique"`
 	Password  string
 
 	gorm.Model
