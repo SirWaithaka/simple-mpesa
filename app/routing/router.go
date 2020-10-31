@@ -28,12 +28,11 @@ func Router(domain *registry.Domain, config app.Config) *fiber.App {
 
 func apiRouteGroup(g fiber.Router, domain *registry.Domain, config app.Config) {
 
-	g.Post("/login/:user_type", user_handlers.Authenticate(domain))
+	g.Post("/login/:user_type", user_handlers.Authenticate(domain, config))
 	g.Post("/user/:user_type", user_handlers.Register(domain))
 
 	g.Get("/account/balance", middleware.AuthByBearerToken(config.Secret), account_handlers.BalanceEnquiry(domain.Account))
 	g.Post("/account/deposit", middleware.AuthByBearerToken(config.Secret), account_handlers.Deposit(domain.Account))
-	g.Post("/account/withdrawal", middleware.AuthByBearerToken(config.Secret), account_handlers.Withdraw(domain.Account))
 	g.Post("/account/withdraw", middleware.AuthByBearerToken(config.Secret), account_handlers.Withdraw(domain.Account))
 
 	g.Get("/account/statement", middleware.AuthByBearerToken(config.Secret), account_handlers.MiniStatement(domain.Transaction))
