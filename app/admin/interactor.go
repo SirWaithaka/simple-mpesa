@@ -29,7 +29,7 @@ func (ui interactor) AuthenticateByEmail(email, password string) (models.Admin, 
 	// search for admin by email.
 	admin, err := ui.repository.GetByEmail(email)
 	if errors.ErrorCode(err) == errors.ENOTFOUND {
-		return models.Admin{}, errors.Error{Message: errors.ErrUserNotFound}
+		return models.Admin{}, errors.Error{Err: err, Message: errors.ErrUserNotFound}
 	} else if err != nil {
 		return models.Admin{}, err
 	}

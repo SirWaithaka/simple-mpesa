@@ -32,7 +32,7 @@ func (ui interactor) AuthenticateByEmail(email, password string) (models.Subscri
 	// search for subscriber by email.
 	subscriber, err := ui.repository.GetByEmail(email)
 	if errors.ErrorCode(err) == errors.ENOTFOUND {
-		return models.Subscriber{}, errors.Error{Message: errors.ErrUserNotFound}
+		return models.Subscriber{}, errors.Error{Err: err, Message: errors.ErrUserNotFound}
 	} else if err != nil {
 		return models.Subscriber{}, err
 	}

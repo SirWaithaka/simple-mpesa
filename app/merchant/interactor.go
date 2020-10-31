@@ -32,7 +32,7 @@ func (ui interactor) AuthenticateByEmail(email, password string) (models.Merchan
 	// search for merchant by email.
 	merchant, err := ui.repository.GetByEmail(email)
 	if errors.ErrorCode(err) == errors.ENOTFOUND {
-		return models.Merchant{}, errors.Error{Message: errors.ErrUserNotFound}
+		return models.Merchant{}, errors.Error{Err: err, Message: errors.ErrUserNotFound}
 	} else if err != nil {
 		return models.Merchant{}, err
 	}
