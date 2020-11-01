@@ -137,7 +137,7 @@ func (i interactor) Withdraw(userId uuid.UUID, amount uint) (float64, error) {
 	return acc.Balance(), nil
 }
 
-func (i interactor) postTransactionDetails(userId uuid.UUID, acc models.Account, txType string) {
+func (i interactor) postTransactionDetails(userId uuid.UUID, acc models.Account, txType models.TxType) {
 	timestamp := time.Now()
 	newTransaction := parseTransactionDetails(userId, acc, txType, timestamp)
 

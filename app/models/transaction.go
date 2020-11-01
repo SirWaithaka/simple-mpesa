@@ -16,7 +16,7 @@ const (
 
 type Transaction struct {
 	ID        uuid.UUID
-	Type      string
+	Type      TxType
 	Timestamp time.Time
 	Amount    float64
 	UserID    uuid.UUID

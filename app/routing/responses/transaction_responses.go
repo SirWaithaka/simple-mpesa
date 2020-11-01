@@ -10,12 +10,12 @@ import (
 )
 
 type transactionStatement struct {
-	ID        uuid.UUID `json:"transactionId"`
-	Type      string    `json:"transactionType"`
-	Timestamp time.Time `json:"timestamp"`
-	Amount    float64   `json:"amount"`
-	UserID    uuid.UUID `json:"userId"`
-	AccountID uuid.UUID `json:"accountId"`
+	ID        uuid.UUID     `json:"transactionId"`
+	Type      models.TxType `json:"transactionType"`
+	Timestamp time.Time     `json:"timestamp"`
+	Amount    float64       `json:"amount"`
+	UserID    uuid.UUID     `json:"userId"`
+	AccountID uuid.UUID     `json:"accountId"`
 }
 
 type miniStatementResponse struct {
