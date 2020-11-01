@@ -31,12 +31,14 @@ func apiRouteGroup(api fiber.Router, domain *registry.Domain, config app.Config)
 	api.Post("/login/:user_type", user_handlers.Authenticate(domain, config))
 	api.Post("/user/:user_type", user_handlers.Register(domain))
 
-	transaction := api.Group("/transaction", middleware.AuthByBearerToken(config.Secret))
-	transaction.Get("/balance", account_handlers.BalanceEnquiry(domain.Account))
+	// create group at /api/account
+	account := api.Group("/account", middleware.AuthByBearerToken(config.Secret))
+	account.Get("/balance", account_handlers.BalanceEnquiry(domain.Account))
+	account.Get("/statement", account_handlers.MiniStatement(domain.Transaction))
 
-	// api.Get("/account/balance", middleware.AuthByBearerToken(config.Secret), account_handlers.BalanceEnquiry(domain.Account))
-	// api.Post("/account/deposit", middleware.AuthByBearerToken(config.Secret), account_handlers.Deposit(domain.Account))
-	// api.Post("/account/withdraw", middleware.AuthByBearerToken(config.Secret), account_handlers.Withdraw(domain.Account))
-	//
-	// api.Get("/account/statement", middleware.AuthByBearerToken(config.Secret), account_handlers.MiniStatement(domain.Transaction))
+	// create group at /api/transaction
+	transaction := api.Group("/transaction", middleware.AuthByBearerToken(config.Secret))
+	transaction.Post("/deposit", account_handlers.Deposit(domain.Account))
+	// transaction.Post("/transfer", account_handlers.Withdraw(domain.Account))
+	transaction.Post("/withdraw", account_handlers.Withdraw(domain.Account))
 }
