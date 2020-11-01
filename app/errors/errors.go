@@ -34,16 +34,17 @@ type Error struct {
 func (e Error) Error() string {
 	var buf bytes.Buffer
 
-	// 	If wrapping an error, print its Error() message.
-	// otherwise print the error code & message.
-	if e.Err != nil {
-		buf.WriteString(e.Err.Error())
-	} else {
+	if e.Message != "" {
 		if e.Code != "" {
 			fmt.Fprintf(&buf, "<%s> ", e.Code)
 		}
 		buf.WriteString(string(e.Message))
+	} else if e.Err != nil {
+		// 	If wrapping an error, print its Error() message.
+		// otherwise print the error code & message.
+		buf.WriteString(e.Err.Error())
 	}
+
 	return buf.String()
 }
 

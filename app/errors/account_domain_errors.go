@@ -12,6 +12,8 @@ const (
 	DepositAmountBelowMinimum  = ERMessage("cannot deposit amounts less than")
 	WithdrawAmountBelowMinimum = ERMessage("cannot withdraw amounts less than")
 	WithdrawAmountAboveBalance = ERMessage("cannot withdraw amount, account balance not enough")
+
+	UserCantHaveAccount = ERMessage("user is not allowed to hold an account")
 )
 
 // ErrUserHasAccount
