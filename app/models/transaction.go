@@ -6,17 +6,19 @@ import (
 	"github.com/gofrs/uuid"
 )
 
+type TxType string
+
 const (
-	TxTypeDeposit    = "deposit"
-	TxTypeWithdrawal = "withdrawal"
-	TxTypeBalance    = "balance_enquiry"
+	TxTypeDeposit    = TxType("deposit")
+	TxTypeWithdrawal = TxType("withdrawal")
+	TxTypeBalance    = TxType("balance_enquiry")
 )
 
 type Transaction struct {
-	ID        uuid.UUID `json:"transactionId"`
-	Type      string    `json:"transactionType"`
-	Timestamp time.Time `json:"timestamp"`
-	Amount    float64   `json:"amount"`
-	UserID    uuid.UUID `json:"userId"`
-	AccountID uuid.UUID `json:"accountId"`
+	ID        uuid.UUID
+	Type      string
+	Timestamp time.Time
+	Amount    float64
+	UserID    uuid.UUID
+	AccountID uuid.UUID
 }
