@@ -32,7 +32,7 @@ func AuthenticateAgent(agentDomain agent.Interactor, config app.Config) fiber.Ha
 		}
 
 		// generate an auth token string
-		token, err := auth.GetTokenString(agt.ID, config.Secret)
+		token, err := auth.GetTokenString(agt.ID, models.UserTypAgent, config.Secret)
 		if err != nil {
 			return err
 		}

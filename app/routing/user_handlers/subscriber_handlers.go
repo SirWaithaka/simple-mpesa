@@ -32,7 +32,7 @@ func AuthenticateSubscriber(subDomain subscriber.Interactor, config app.Config) 
 		}
 
 		// generate an auth token string
-		token, err := auth.GetTokenString(sub.ID, config.Secret)
+		token, err := auth.GetTokenString(sub.ID, models.UserTypeSubscriber, config.Secret)
 		if err != nil {
 			return err
 		}
