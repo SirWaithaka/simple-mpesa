@@ -4,6 +4,9 @@ import (
 	"fmt"
 
 	"simple-mpesa/app/account"
+	"simple-mpesa/app/auth"
+	"simple-mpesa/app/errors"
+	"simple-mpesa/app/models"
 	"simple-mpesa/app/transaction"
 
 	"github.com/gofiber/fiber/v2"
@@ -18,10 +21,19 @@ type param struct {
 func BalanceEnquiry(interactor account.Interactor) fiber.Handler {
 
 	return func(ctx *fiber.Ctx) error {
-		var userDetails = ctx.Locals("userDetails").(map[string]string)
-		userId := userDetails["userId"]
+		var userDetails auth.UserAuthDetails
+		if details, ok := ctx.Locals("userDetails").(auth.UserAuthDetails); !ok {
+			return errors.Error{Code: errors.EINTERNAL}
+		} else {
+			userDetails = details
+		}
 
-		balance, err := interactor.GetBalance(uuid.FromStringOrNil(userId))
+		// we check if user is admin, we return error
+		if userDetails.UserType == models.UserTypAdmin {
+			return errors.Error{Code: errors.EINVALID, Message: errors.UserCantHaveAccount}
+		}
+
+		balance, err := interactor.GetBalance(uuid.FromStringOrNil(userDetails.UserId))
 		if err != nil {
 			return err
 		}
@@ -38,13 +50,18 @@ func BalanceEnquiry(interactor account.Interactor) fiber.Handler {
 func Deposit(interactor account.Interactor) fiber.Handler {
 
 	return func(ctx *fiber.Ctx) error {
-		var userDetails = ctx.Locals("userDetails").(map[string]string)
-		userId := userDetails["userId"]
+		var userDetails auth.UserAuthDetails
+		if details, ok := ctx.Locals("userDetails").(auth.UserAuthDetails); !ok {
+			return errors.Error{Code: errors.EINTERNAL}
+		} else {
+			userDetails = details
+		}
+
 
 		var p param
 		_ = ctx.BodyParser(&p)
 
-		balance, err := interactor.Deposit(uuid.FromStringOrNil(userId), p.Amount)
+		balance, err := interactor.Deposit(uuid.FromStringOrNil(userDetails.UserId), p.Amount)
 		if err != nil {
 			return err
 		}
@@ -52,7 +69,7 @@ func Deposit(interactor account.Interactor) fiber.Handler {
 		return ctx.JSON(map[string]interface{}{
 			"message": fmt.Sprintf("Amount successfully deposited. New balance %v", balance),
 			"balance": balance,
-			"userId":  userId,
+			"userId":  userDetails.UserId,
 		})
 	}
 }
@@ -62,13 +79,17 @@ func Deposit(interactor account.Interactor) fiber.Handler {
 func Withdraw(interactor account.Interactor) fiber.Handler {
 
 	return func(ctx *fiber.Ctx) error {
-		var userDetails = ctx.Locals("userDetails").(map[string]string)
-		userId := userDetails["userId"]
+		var userDetails auth.UserAuthDetails
+		if details, ok := ctx.Locals("userDetails").(auth.UserAuthDetails); !ok {
+			return errors.Error{Code: errors.EINTERNAL}
+		} else {
+			userDetails = details
+		}
 
 		var p param
 		_ = ctx.BodyParser(&p)
 
-		balance, err := interactor.Withdraw(uuid.FromStringOrNil(userId), p.Amount)
+		balance, err := interactor.Withdraw(uuid.FromStringOrNil(userDetails.UserId), p.Amount)
 		if err != nil {
 			return err
 		}
@@ -76,7 +97,7 @@ func Withdraw(interactor account.Interactor) fiber.Handler {
 		return ctx.JSON(map[string]interface{}{
 			"message": fmt.Sprintf("Amount successfully withdrawn. New balance %v", balance),
 			"balance": balance,
-			"userId":  userId,
+			"userId":  userDetails.UserId,
 		})
 	}
 }
@@ -86,17 +107,22 @@ func Withdraw(interactor account.Interactor) fiber.Handler {
 func MiniStatement(interactor transaction.Interactor) fiber.Handler {
 
 	return func(ctx *fiber.Ctx) error {
-		var userDetails = ctx.Locals("userDetails").(map[string]string)
-		userId := userDetails["userId"]
+		var userDetails auth.UserAuthDetails
+		if details, ok := ctx.Locals("userDetails").(auth.UserAuthDetails); !ok {
+			return errors.Error{Code: errors.EINTERNAL}
+		} else {
+			userDetails = details
+		}
 
-		transactions, err := interactor.GetStatement(uuid.FromStringOrNil(userId))
+
+		transactions, err := interactor.GetStatement(uuid.FromStringOrNil(userDetails.UserId))
 		if err != nil {
 			return err
 		}
 
 		return ctx.JSON(map[string]interface{}{
-			"message":      "ministatement retrieved for the past 5 transactions",
-			"userId":       userId,
+			"message":      "mini statement retrieved for the past 5 transactions",
+			"userId":       userDetails.UserId,
 			"transactions": transactions,
 		})
 	}
