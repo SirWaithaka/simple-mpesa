@@ -34,7 +34,7 @@ func ErrorHandler(ctx *fiber.Ctx, err error) error {
 		}
 	}
 
-	// if its a fiber error we send back the status code with empty response
+	// if its a fiber error we send back the status code and empty response
 	if e, ok := err.(*fiber.Error); ok {
 		ctx.Status(e.Code)
 		return nil

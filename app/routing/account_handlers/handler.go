@@ -1,12 +1,13 @@
 package account_handlers
 
 import (
-	"fmt"
+	"net/http"
 
 	"simple-mpesa/app/account"
 	"simple-mpesa/app/auth"
 	"simple-mpesa/app/errors"
 	"simple-mpesa/app/models"
+	"simple-mpesa/app/routing/responses"
 	"simple-mpesa/app/transaction"
 
 	"github.com/gofiber/fiber/v2"
@@ -38,10 +39,7 @@ func BalanceEnquiry(interactor account.Interactor) fiber.Handler {
 			return err
 		}
 
-		return ctx.JSON(map[string]interface{}{
-			"message": fmt.Sprintf("Your current balance is %v", balance),
-			"balance": balance,
-		})
+		return ctx.Status(http.StatusOK).JSON(responses.BalanceResponse(userDetails.UserId, balance))
 	}
 }
 
@@ -57,7 +55,6 @@ func Deposit(interactor account.Interactor) fiber.Handler {
 			userDetails = details
 		}
 
-
 		var p param
 		_ = ctx.BodyParser(&p)
 
@@ -66,11 +63,7 @@ func Deposit(interactor account.Interactor) fiber.Handler {
 			return err
 		}
 
-		return ctx.JSON(map[string]interface{}{
-			"message": fmt.Sprintf("Amount successfully deposited. New balance %v", balance),
-			"balance": balance,
-			"userId":  userDetails.UserId,
-		})
+		return ctx.Status(http.StatusOK).JSON(responses.TransactionResponse(models.TxTypeDeposit, userDetails.UserId, balance))
 	}
 }
 
@@ -94,11 +87,7 @@ func Withdraw(interactor account.Interactor) fiber.Handler {
 			return err
 		}
 
-		return ctx.JSON(map[string]interface{}{
-			"message": fmt.Sprintf("Amount successfully withdrawn. New balance %v", balance),
-			"balance": balance,
-			"userId":  userDetails.UserId,
-		})
+		return ctx.Status(http.StatusOK).JSON(responses.TransactionResponse(models.TxTypeWithdrawal, userDetails.UserId, balance))
 	}
 }
 
@@ -114,16 +103,11 @@ func MiniStatement(interactor transaction.Interactor) fiber.Handler {
 			userDetails = details
 		}
 
-
 		transactions, err := interactor.GetStatement(uuid.FromStringOrNil(userDetails.UserId))
 		if err != nil {
 			return err
 		}
 
-		return ctx.JSON(map[string]interface{}{
-			"message":      "mini statement retrieved for the past 5 transactions",
-			"userId":       userDetails.UserId,
-			"transactions": transactions,
-		})
+		return ctx.Status(http.StatusOK).JSON(responses.MiniStatementResponse(userDetails.UserId, *transactions))
 	}
 }
