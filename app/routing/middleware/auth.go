@@ -39,11 +39,7 @@ func AuthByBearerToken(secret string) fiber.Handler {
 			return errors.Unauthorized{Message: "invalid token"}
 		}
 
-		userDetails := map[string]string{
-			"userId": claims.User.UserId,
-			"email":  claims.User.Email,
-		}
-		ctx.Locals("userDetails", userDetails)
+		ctx.Locals("userDetails", claims.User)
 
 		return ctx.Next()
 	}
