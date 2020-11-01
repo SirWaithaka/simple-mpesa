@@ -19,13 +19,13 @@ type transactionStatement struct {
 }
 
 type miniStatementResponse struct {
-	Message string `json:"message"`
-	UserID  string `json:"userID"`
+	Message string    `json:"message"`
+	UserID  uuid.UUID `json:"userID"`
 
 	Transactions []transactionStatement `json:"transactions"`
 }
 
-func MiniStatementResponse(userID string, transactions []models.Transaction) SuccessResponse {
+func MiniStatementResponse(userID uuid.UUID, transactions []models.Transaction) SuccessResponse {
 	var txns []transactionStatement
 	for _, txn := range transactions {
 		txns = append(txns, transactionStatement{
@@ -49,12 +49,12 @@ func MiniStatementResponse(userID string, transactions []models.Transaction) Suc
 }
 
 type transactionResponse struct {
-	Message string  `json:"message"`
-	UserID  string  `json:"userID"`
-	Balance float64 `json:"balance"`
+	Message string    `json:"message"`
+	UserID  uuid.UUID `json:"userID"`
+	Balance float64   `json:"balance"`
 }
 
-func TransactionResponse(txType models.TxType, userID string, balance float64) SuccessResponse {
+func TransactionResponse(txType models.TxType, userID uuid.UUID, balance float64) SuccessResponse {
 	var msg string
 	switch txType {
 	case models.TxTypeDeposit:
@@ -72,11 +72,11 @@ func TransactionResponse(txType models.TxType, userID string, balance float64) S
 }
 
 type balanceResponse struct {
-	UserID  string  `json:"userID"`
-	Balance float64 `json:"balance"`
+	UserID  uuid.UUID `json:"userID"`
+	Balance float64   `json:"balance"`
 }
 
-func BalanceResponse(userID string, balance float64) SuccessResponse {
+func BalanceResponse(userID uuid.UUID, balance float64) SuccessResponse {
 	msg := fmt.Sprintf("Your current balance is %v", balance)
 
 	data := balanceResponse{

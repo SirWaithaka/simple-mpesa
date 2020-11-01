@@ -20,7 +20,7 @@ func (err TokenParsingError) Error() string {
 }
 
 type UserAuthDetails struct {
-	UserId   string          `json:"userId"`
+	UserID   uuid.UUID       `json:"userId"`
 	UserType models.UserType `json:"userType"`
 }
 
@@ -37,7 +37,7 @@ func generateToken(userID uuid.UUID, userType models.UserType) *jwt.Token {
 
 	claims := TokenClaims{
 		User: UserAuthDetails{
-			UserId:   userID.String(),
+			UserID:   userID,
 			UserType: userType,
 		},
 
