@@ -98,7 +98,7 @@ func (i interactor) Transfer(source models.TxnCustomer, destAccNumber string, de
 		}
 		customerID = merch.ID
 	case models.UserTypeSubscriber:
-		sub, err := i.subRepo.GetByEmail(destAccNumber)
+		sub, err := i.subRepo.FindByEmail(destAccNumber)
 		if err != nil {
 			return err
 		}

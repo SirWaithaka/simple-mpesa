@@ -30,7 +30,7 @@ type interactor struct {
 // AuthenticateByEmail verifies a merchant by the provided unique email address
 func (ui interactor) AuthenticateByEmail(email, password string) (models.Merchant, error) {
 	// search for merchant by email.
-	merchant, err := ui.repository.GetByEmail(email)
+	merchant, err := ui.repository.FindByEmail(email)
 	if errors.ErrorCode(err) == errors.ENOTFOUND {
 		return models.Merchant{}, errors.Error{Err: err, Message: errors.ErrUserNotFound}
 	} else if err != nil {
