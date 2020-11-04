@@ -13,8 +13,8 @@ import (
 type Repository interface {
 	Add(models.Subscriber) (models.Subscriber, error)
 	Delete(models.Subscriber) error
-	GetByID(uuid.UUID) (models.Subscriber, error)
-	GetByEmail(string) (models.Subscriber, error)
+	FindByID(uuid.UUID) (models.Subscriber, error)
+	FindByEmail(string) (models.Subscriber, error)
 	Update(models.Subscriber) error
 }
 
@@ -65,14 +65,14 @@ func (r repository) Delete(subscriber models.Subscriber) error {
 	return nil
 }
 
-// GetByID searches subscriber by primary id
-func (r repository) GetByID(id uuid.UUID) (models.Subscriber, error) {
+// FindByID searches subscriber by primary id
+func (r repository) FindByID(id uuid.UUID) (models.Subscriber, error) {
 	subscriber, err := r.searchBy(models.Subscriber{ID: id})
 	return subscriber, err
 }
 
-// GetByEmail searches subscriber by email
-func (r repository) GetByEmail(email string) (models.Subscriber, error) {
+// FindByEmail searches subscriber by email
+func (r repository) FindByEmail(email string) (models.Subscriber, error) {
 	subscriber, err := r.searchBy(models.Subscriber{Email: email})
 	return subscriber, err
 }
