@@ -6,6 +6,7 @@ import (
 	"simple-mpesa/app/admin"
 	"simple-mpesa/app/agent"
 	"simple-mpesa/app/merchant"
+	"simple-mpesa/app/proxy"
 	"simple-mpesa/app/storage"
 	"simple-mpesa/app/subscriber"
 	"simple-mpesa/app/transaction"
@@ -19,6 +20,8 @@ type Domain struct {
 
 	Account     account.Interactor
 	Transaction transaction.Interactor
+
+	Proxy proxy.Interactor
 }
 
 func NewDomain(config app.Config, database *storage.Database, channels *Channels) *Domain {
@@ -37,5 +40,6 @@ func NewDomain(config app.Config, database *storage.Database, channels *Channels
 		Subscriber:  subscriber.NewInteractor(config, subscriberRepo, channels.ChannelNewUsers),
 		Account:     account.NewInteractor(accRepo, channels.ChannelNewUsers, channels.ChannelNewTransactions),
 		Transaction: transaction.NewInteractor(txnRepo, channels.ChannelNewTransactions),
+		Proxy:       proxy.NewInteractor(agentRepo, merchantRepo, subscriberRepo),
 	}
 }
