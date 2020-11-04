@@ -7,16 +7,12 @@ import (
 	"simple-mpesa/app/auth"
 	"simple-mpesa/app/errors"
 	"simple-mpesa/app/models"
+	"simple-mpesa/app/proxy"
 	"simple-mpesa/app/routing/responses"
 	"simple-mpesa/app/transaction"
 
 	"github.com/gofiber/fiber/v2"
-	"github.com/gofrs/uuid"
 )
-
-type param struct {
-	Amount uint `json:"amount"`
-}
 
 // BalanceEnquiry ...
 func BalanceEnquiry(interactor account.Interactor) fiber.Handler {
@@ -34,18 +30,18 @@ func BalanceEnquiry(interactor account.Interactor) fiber.Handler {
 			return errors.Error{Code: errors.EINVALID, Message: errors.UserCantHaveAccount}
 		}
 
-		balance, err := interactor.GetBalance(uuid.FromStringOrNil(userDetails.UserId))
+		balance, err := interactor.GetBalance(userDetails.UserID)
 		if err != nil {
 			return err
 		}
 
-		return ctx.Status(http.StatusOK).JSON(responses.BalanceResponse(userDetails.UserId, balance))
+		return ctx.Status(http.StatusOK).JSON(responses.BalanceResponse(userDetails.UserID, balance))
 	}
 }
 
 // Deposit allows user to deposit or credit their
 // account.
-func Deposit(interactor account.Interactor) fiber.Handler {
+func Deposit(interactor proxy.Interactor) fiber.Handler {
 
 	return func(ctx *fiber.Ctx) error {
 		var userDetails auth.UserAuthDetails
@@ -55,21 +51,25 @@ func Deposit(interactor account.Interactor) fiber.Handler {
 			userDetails = details
 		}
 
-		var p param
+		var p account.DepositParams
 		_ = ctx.BodyParser(&p)
 
-		balance, err := interactor.Deposit(uuid.FromStringOrNil(userDetails.UserId), p.Amount)
+		depositor := models.TxnCustomer{
+			UserType: userDetails.UserType,
+			UserID: userDetails.UserID,
+		}
+		err := interactor.Deposit(depositor, p.AgentNumber, p.Amount)
 		if err != nil {
 			return err
 		}
 
-		return ctx.Status(http.StatusOK).JSON(responses.TransactionResponse(models.TxTypeDeposit, userDetails.UserId, balance))
+		return ctx.Status(http.StatusOK).JSON(responses.TransactionResponse())
 	}
 }
 
 // Withdraw allows user to withdraw or debit their
 // account.
-func Withdraw(interactor account.Interactor) fiber.Handler {
+func Withdraw(interactor proxy.Interactor) fiber.Handler {
 
 	return func(ctx *fiber.Ctx) error {
 		var userDetails auth.UserAuthDetails
@@ -79,15 +79,19 @@ func Withdraw(interactor account.Interactor) fiber.Handler {
 			userDetails = details
 		}
 
-		var p param
+		var p account.WithdrawParams
 		_ = ctx.BodyParser(&p)
 
-		balance, err := interactor.Withdraw(uuid.FromStringOrNil(userDetails.UserId), p.Amount)
+		withdrawer := models.TxnCustomer{
+			UserID:   userDetails.UserID,
+			UserType: userDetails.UserType,
+		}
+		err := interactor.Withdraw(withdrawer, p.AgentNumber, p.Amount)
 		if err != nil {
 			return err
 		}
 
-		return ctx.Status(http.StatusOK).JSON(responses.TransactionResponse(models.TxTypeWithdrawal, userDetails.UserId, balance))
+		return ctx.Status(http.StatusOK).JSON(responses.TransactionResponse())
 	}
 }
 
@@ -103,11 +107,11 @@ func MiniStatement(interactor transaction.Interactor) fiber.Handler {
 			userDetails = details
 		}
 
-		transactions, err := interactor.GetStatement(uuid.FromStringOrNil(userDetails.UserId))
+		transactions, err := interactor.GetStatement(userDetails.UserID)
 		if err != nil {
 			return err
 		}
 
-		return ctx.Status(http.StatusOK).JSON(responses.MiniStatementResponse(userDetails.UserId, *transactions))
+		return ctx.Status(http.StatusOK).JSON(responses.MiniStatementResponse(userDetails.UserID, *transactions))
 	}
 }
