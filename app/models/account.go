@@ -31,7 +31,7 @@ type Account struct {
 	ID uuid.UUID
 
 	// balance will be stored in cents
-	AvailableBalance uint `gorm:"column:available_balance"`
+	AvailableBalance Cents `gorm:"column:available_balance"`
 
 	Status      AccountStatus `gorm:"column:status"`
 	AccountType AccountType   `gorm:"column:account_type"`
@@ -46,18 +46,18 @@ func (acc Account) Balance() float64 {
 }
 
 // Credit add an amount to account balance and return it
-func (acc Account) Credit(amount uint) uint {
+func (acc Account) Credit(amount Shillings) Cents {
 	// convert incoming amount into cents and add to account balance
-	return (amount * 100) + acc.AvailableBalance
+	return amount.ToCents() + acc.AvailableBalance
 }
 
 // Debit subtract an amount from account balance and return it
-func (acc Account) Debit(amount uint) uint {
+func (acc Account) Debit(amount Shillings) Cents {
 	// convert incoming amount into cents and subtract to account balance
-	return acc.AvailableBalance - (amount * 100)
+	return acc.AvailableBalance - amount.ToCents()
 }
 
 // IsBalanceLessThanAmount converts amount into cents and returns true if balance is less than amount
-func (acc Account) IsBalanceLessThanAmount(amount uint) bool {
-	return acc.AvailableBalance < (amount * 100)
+func (acc Account) IsBalanceLessThanAmount(amount Shillings) bool {
+	return acc.AvailableBalance < amount.ToCents()
 }
