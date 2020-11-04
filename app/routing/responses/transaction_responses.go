@@ -50,25 +50,13 @@ func MiniStatementResponse(userID uuid.UUID, transactions []models.Transaction) 
 
 type transactionResponse struct {
 	Message string    `json:"message"`
-	UserID  uuid.UUID `json:"userID"`
-	Balance float64   `json:"balance"`
 }
 
-func TransactionResponse(txType models.TxType, userID uuid.UUID, balance float64) SuccessResponse {
-	var msg string
-	switch txType {
-	case models.TxTypeDeposit:
-		msg = fmt.Sprintf("Amount successfully deposited. New balance %v", balance)
-	case models.TxTypeWithdrawal:
-		msg = fmt.Sprintf("Amount successfully withdrawn. New balance %v", balance)
-	}
-
+func TransactionResponse() SuccessResponse {
 	data := transactionResponse{
-		Message: msg,
-		UserID:  userID,
-		Balance: balance,
+		Message: "Transaction under processing. You will receive a message shortly.",
 	}
-	return successResponse(msg, data)
+	return successResponse("", data)
 }
 
 type balanceResponse struct {

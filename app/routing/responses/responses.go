@@ -13,6 +13,9 @@ type SuccessResponse struct {
 }
 
 func successResponse(message string, data interface{}) SuccessResponse {
+	if message == "" {
+		message = "Success"
+	}
 	return SuccessResponse{
 		Status:  "success",
 		Message: message,
