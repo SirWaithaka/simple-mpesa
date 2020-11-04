@@ -9,9 +9,10 @@ import (
 type TxType string
 
 const (
-	TxTypeDeposit    = TxType("deposit")
-	TxTypeWithdrawal = TxType("withdrawal")
-	TxTypeBalance    = TxType("balance_enquiry")
+	TxTypeDeposit    = TxType("DEPOSIT")
+	TxTypeWithdrawal = TxType("WITHDRAWAL")
+	TxTypeTransfer   = TxType("TRANSFER")
+	// TxTypeBalance    = TxType("BALANCE_ENQUIRY")
 )
 
 type Transaction struct {
