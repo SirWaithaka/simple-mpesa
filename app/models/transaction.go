@@ -6,25 +6,32 @@ import (
 	"github.com/gofrs/uuid"
 )
 
-type TxType string
+type TxnOperation string
 
 const (
-	TxTypeDeposit    = TxType("DEPOSIT")
-	TxTypeWithdrawal = TxType("WITHDRAWAL")
-	TxTypeTransfer   = TxType("TRANSFER")
-	// TxTypeBalance    = TxType("BALANCE_ENQUIRY")
+	TxnOpDeposit    = TxnOperation("DEPOSIT")
+	TxnOpWithdrawal = TxnOperation("WITHDRAWAL")
+	TxnOpTransfer   = TxnOperation("TRANSFER")
+	// TxnOpBalance    = TxnOperation("BALANCE_ENQUIRY")
+)
+
+type TxnState string
+
+const (
+	TxStateCreated = TxnState("CREATED")
+	TxStateFailed  = TxnState("FAILED")
 )
 
 type Transaction struct {
 	ID        uuid.UUID
-	Type      TxType
+	Operation TxnOperation
 	Timestamp time.Time
 	Amount    float64
 	UserID    uuid.UUID
 	AccountID uuid.UUID
 }
 
-// TxnOperation is a description of a transaction operation. We have defined operations
+// TxnEvent is a description of a transaction operation event. We have defined operations
 // as deposit, withdrawal and transfer. In the end all 3 operations can be modelled as one;
 // "transfer" operations.
 //
@@ -34,11 +41,13 @@ type Transaction struct {
 //
 // A transfer operation/transaction, needs to have a source and destination and the amount being
 // transferred.
-type TxnOperation struct {
+type TxnEvent struct {
 	Source      TxnCustomer // where money is coming from
 	Destination TxnCustomer // where money is going
 	// we can further use this field to describe the specific type of transaction/transfer
-	TxnType TxType
+	TxnType TxnOperation
+	// transaction state to track the transaction
+	TxnState TxnState
 	// amount of money if shillings being transacted
 	Amount Shillings
 }
