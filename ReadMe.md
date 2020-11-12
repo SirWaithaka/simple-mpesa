@@ -173,10 +173,10 @@ The account domain will be responsible for the following functions:
 
 > _On a side note_
 >
-> In MPESA, your cell phone number is your account number, in contrast to a bank account number where, you are given an
+> In MPESA, your cell phone number is your account number, in contrast to a bank account where, you are given an
 > account number when you successfully open an account. In the Kenyan variant of MPESA, that is owned by a Mobile Network
 > Operator called Safaricom, the process of registration into MPESA is nearly similar to the process of registering your
-> new SIM Card or done at the same time. When getting a new Safaricom SIM Card a customer's KYC details are taken and in
+> new SIM Card or is done at the same time. When getting a new Safaricom SIM Card a customer's KYC details are taken and in
 > the registration form, a customer can opt in to use MPESA services. Your details for SIM registration are then going to
 > be used to register and open an account for you with MPESA.
 
