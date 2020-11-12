@@ -2,6 +2,7 @@ package proxy
 
 import (
 	"simple-mpesa/app/agent"
+	"simple-mpesa/app/data"
 	"simple-mpesa/app/merchant"
 	"simple-mpesa/app/models"
 	"simple-mpesa/app/subscriber"
@@ -15,11 +16,12 @@ type Interactor interface {
 	Withdraw(withdrawer models.TxnCustomer, agentNumber string, amount models.Shillings) error
 }
 
-func NewInteractor(agentRepo agent.Repository, merchRepo merchant.Repository, subRepo subscriber.Repository) Interactor {
+func NewInteractor(agentRepo agent.Repository, merchRepo merchant.Repository, subRepo subscriber.Repository, txEventsChan data.ChanNewTxnEvents) Interactor {
 	return &interactor{
 		agentRepo: agentRepo,
 		merchRepo: merchRepo,
 		subRepo:   subRepo,
+		txnEventsChannel: txEventsChan,
 	}
 }
 
@@ -27,10 +29,13 @@ type interactor struct {
 	agentRepo agent.Repository
 	merchRepo merchant.Repository
 	subRepo   subscriber.Repository
+
+	txnEventsChannel data.ChanNewTxnEvents
 }
 
-func (i interactor) postTransaction(transaction models.TxnOperation) {
-
+// posts a new transaction event to channel
+func (i interactor) postTransaction(txEvent models.TxnEvent) {
+	go func() { i.txnEventsChannel.Writer <- txEvent }()
 }
 
 // Deposit is a transaction between a customer and an agent. The customer's account is credited from the
@@ -41,18 +46,18 @@ func (i interactor) Deposit(depositor models.TxnCustomer, agentNumber string, am
 		return err
 	}
 
-	operation := models.TxnOperation{
+	event := models.TxnEvent{
 		Source: models.TxnCustomer{
 			UserID:   agt.ID,
 			UserType: models.UserTypAgent,
 		},
 		Destination: depositor,
 
-		TxnType: models.TxTypeDeposit,
+		TxnType: models.TxnOpDeposit,
 		Amount:  amount,
 	}
 
-	i.postTransaction(operation)
+	i.postTransaction(event)
 	return nil
 }
 
@@ -64,18 +69,18 @@ func (i interactor) Withdraw(withdrawer models.TxnCustomer, agentNumber string, 
 		return err
 	}
 
-	operation := models.TxnOperation{
+	event := models.TxnEvent{
 		Source: withdrawer,
 		Destination: models.TxnCustomer{
 			UserID:   agt.ID,
 			UserType: models.UserTypAgent,
 		},
 
-		TxnType: models.TxTypeWithdrawal,
+		TxnType: models.TxnOpWithdrawal,
 		Amount:  amount,
 	}
 
-	i.postTransaction(operation)
+	i.postTransaction(event)
 	return nil
 }
 
@@ -105,17 +110,17 @@ func (i interactor) Transfer(source models.TxnCustomer, destAccNumber string, de
 		customerID = sub.ID
 	}
 
-	operation := models.TxnOperation{
+	event := models.TxnEvent{
 		Source: source,
 		Destination: models.TxnCustomer{
 			UserID:   customerID,
 			UserType: destCustomerType,
 		},
 
-		TxnType: models.TxTypeTransfer,
+		TxnType: models.TxnOpTransfer,
 		Amount:  amount,
 	}
 
-	i.postTransaction(operation)
+	i.postTransaction(event)
 	return nil
 }
