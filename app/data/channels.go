@@ -36,8 +36,8 @@ type ChanNewTransactions struct {
 	Writer  chan<- TransactionContract
 }
 
-type ChanNewTxnEvents struct {
-	Channel chan models.TxnEvent
-	Reader  <-chan models.TxnEvent
-	Writer  chan<- models.TxnEvent
-}
+// type ChanNewTxnEvents struct {
+// 	Channel chan models.TxnEvent
+// 	Reader  <-chan models.TxnEvent
+// 	Writer  chan<- models.TxnEvent
+// }
