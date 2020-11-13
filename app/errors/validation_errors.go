@@ -45,7 +45,9 @@ const (
 	ErrorInvalidUsernameOrPassword = ValidationError("provided wrong username or password")
 	ErrorAmountRequired            = ValidationError("amount is a required field")
 	ErrorAgentNumberRequired       = ValidationError("agentNumber is a required field")
-	ErrorDestAccNumberRequired     = ValidationError("destinationAccNo is a required field")
+	ErrorCustomerTypeRequired      = ValidationError("customerType is a required field")
+	ErrorAgentIDRequired           = ValidationError("agentID is a required field")
+	ErrorAccountNumberRequired     = ValidationError("accountNo is a required field")
 )
 
 // ParseValidationErrorMap takes in the error map that go-ozzo validation

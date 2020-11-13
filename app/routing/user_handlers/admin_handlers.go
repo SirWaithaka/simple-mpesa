@@ -10,6 +10,7 @@ import (
 	"simple-mpesa/app/routing/responses"
 
 	"github.com/gofiber/fiber/v2"
+	"github.com/gofrs/uuid"
 )
 
 func AuthenticateAdmin(adminDomain admin.Interactor, config app.Config) fiber.Handler {
@@ -20,7 +21,7 @@ func AuthenticateAdmin(adminDomain admin.Interactor, config app.Config) fiber.Ha
 
 		err := params.Validate()
 		if err != nil {
-			return ctx.Status(http.StatusBadRequest).JSON(err)
+			return err
 		}
 
 		// authenticate by email.
@@ -57,7 +58,7 @@ func RegisterAdmin(adminDomain admin.Interactor) fiber.Handler {
 
 		err := params.Validate()
 		if err != nil {
-			return ctx.Status(http.StatusBadRequest).JSON(err)
+			return err
 		}
 
 		// register admin
@@ -68,6 +69,30 @@ func RegisterAdmin(adminDomain admin.Interactor) fiber.Handler {
 
 		// we use a presenter to reformat the response of admin.
 		_ = ctx.Status(http.StatusOK).JSON(responses.RegistrationResponse(adm.ID, models.UserTypAdmin))
+
+		return nil
+	}
+}
+
+func AssignFloat(adminDomain admin.Interactor) fiber.Handler {
+
+	return func(ctx *fiber.Ctx) error {
+
+		var params admin.AssignFloatParams
+		_ = ctx.BodyParser(&params)
+
+		err := params.Validate()
+		if err != nil {
+			return err
+		}
+
+		balance, err := adminDomain.AssignFloat(params)
+		if err != nil {
+			return err
+		}
+
+		// we use a presenter to reformat the response of admin.
+		_ = ctx.Status(http.StatusOK).JSON(responses.BalanceResponse(uuid.Nil, balance))
 
 		return nil
 	}

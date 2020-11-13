@@ -5,6 +5,7 @@ import (
 	"simple-mpesa/app/account"
 	"simple-mpesa/app/admin"
 	"simple-mpesa/app/agent"
+	"simple-mpesa/app/customer"
 	"simple-mpesa/app/merchant"
 	"simple-mpesa/app/ports"
 	"simple-mpesa/app/storage"
@@ -35,11 +36,11 @@ func NewDomain(config app.Config, database *storage.Database, channels *Channels
 
 	// initialize ports and adapters
 	accountant := account.NewAccountant(accRepo)
-	customerFinder := ports.NewCustomerFinder(agentRepo, merchantRepo, subscriberRepo)
+	customerFinder := customer.NewFinder(agentRepo, merchantRepo, subscriberRepo)
 	transactor := transaction.NewTransactor(accountant)
 
 	return &Domain{
-		Admin:       admin.NewInteractor(config, adminRepo),
+		Admin:       admin.NewInteractor(config, adminRepo, accountant, customerFinder),
 		Agent:       agent.NewInteractor(config, agentRepo, channels.ChannelNewUsers),
 		Merchant:    merchant.NewInteractor(config, merchantRepo, channels.ChannelNewUsers),
 		Subscriber:  subscriber.NewInteractor(config, subscriberRepo, channels.ChannelNewUsers),

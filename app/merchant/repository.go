@@ -13,6 +13,7 @@ import (
 type Repository interface {
 	Add(models.Merchant) (models.Merchant, error)
 	Delete(models.Merchant) error
+	FetchAll() ([]models.Merchant, error)
 	FindByID(uuid.UUID) (models.Merchant, error)
 	FindByEmail(string) (models.Merchant, error)
 	Update(models.Merchant) error
@@ -63,6 +64,22 @@ func (r repository) Delete(merchant models.Merchant) error {
 		return errors.Error{Err: result.Error, Code: errors.EINTERNAL}
 	}
 	return nil
+}
+
+// FetchAll gets all merchants in db
+func (r repository) FetchAll() ([]models.Merchant, error) {
+	var merchants []models.Merchant
+	result := r.db.Find(&merchants)
+	if err := result.Error; err != nil {
+		return nil, errors.Error{Err: result.Error, Code: errors.EINTERNAL}
+	}
+
+	// we might not need to return this error
+	if result.RowsAffected == 0 {
+		return nil, errors.Error{Code: errors.ENOTFOUND}
+	}
+
+	return merchants, nil
 }
 
 // FindByID searches merchant by primary id
