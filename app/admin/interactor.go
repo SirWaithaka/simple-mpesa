@@ -79,9 +79,7 @@ func (i interactor) Register(params RegistrationParams) (models.Admin, error) {
 // the system.
 func (i interactor) AssignFloat(params AssignFloatParams) (float64, error) {
 	agent, err := i.customerFinder.FindAgentByEmail(params.AgentAccountNumber)
-	if errors.ErrorCode(err) == errors.ENOTFOUND {
-		return 0, errors.Error{Err: err, Message: errors.ErrUserNotFound}
-	} else if err != nil {
+	if err != nil {
 		return 0, err
 	}
 
