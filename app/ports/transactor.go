@@ -1,6 +1,7 @@
 package ports
 
 import (
+	"simple-mpesa/app/errors"
 	"simple-mpesa/app/models"
 	"simple-mpesa/app/transaction"
 
@@ -29,9 +30,12 @@ type transactorAdapter struct {
 // agent's account. Money moves from the agent's account to the customer's account.
 func (tr transactorAdapter) Deposit(depositor models.TxnCustomer, agentNumber string, amount models.Shillings) error {
 	agt, err := tr.customerFinder.FindAgentByEmail(agentNumber)
-	if err != nil {
+	if errors.ErrorCode(err) == errors.ENOTFOUND {
+		return errors.Error{Err: err, Message: errors.ErrUserNotFound}
+	} else if err != nil {
 		return err
 	}
+
 
 	tx := transaction.Transaction{
 		Source: models.TxnCustomer{
@@ -55,7 +59,9 @@ func (tr transactorAdapter) Deposit(depositor models.TxnCustomer, agentNumber st
 // agent's account credited. Money moves from the customer's account to the agent's account.
 func (tr transactorAdapter) Withdraw(withdrawer models.TxnCustomer, agentNumber string, amount models.Shillings) error {
 	agt, err := tr.customerFinder.FindAgentByEmail(agentNumber)
-	if err != nil {
+	if errors.ErrorCode(err) == errors.ENOTFOUND {
+		return errors.Error{Err: err, Message: errors.ErrUserNotFound}
+	} else if err != nil {
 		return err
 	}
 
@@ -82,21 +88,30 @@ func (tr transactorAdapter) Transfer(source models.TxnCustomer, destAccNumber st
 	switch destCustomerType {
 	case models.UserTypAgent:
 		agt, err := tr.customerFinder.FindAgentByEmail(destAccNumber)
-		if err != nil {
+		if errors.ErrorCode(err) == errors.ENOTFOUND {
+			return errors.Error{Err: err, Message: errors.ErrUserNotFound}
+		} else if err != nil {
 			return err
 		}
+
 		customerID = agt.ID
 	case models.UserTypMerchant:
 		merch, err := tr.customerFinder.FindMerchantByEmail(destAccNumber)
-		if err != nil {
+		if errors.ErrorCode(err) == errors.ENOTFOUND {
+			return errors.Error{Err: err, Message: errors.ErrUserNotFound}
+		} else if err != nil {
 			return err
 		}
+
 		customerID = merch.ID
 	case models.UserTypeSubscriber:
 		sub, err := tr.customerFinder.FindSubscriberByEmail(destAccNumber)
-		if err != nil {
+		if errors.ErrorCode(err) == errors.ENOTFOUND {
+			return errors.Error{Err: err, Message: errors.ErrUserNotFound}
+		} else if err != nil {
 			return err
 		}
+
 		customerID = sub.ID
 	}
 
