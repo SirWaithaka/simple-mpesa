@@ -1,4 +1,4 @@
-package proxy
+package ports
 
 import (
 	"simple-mpesa/app/agent"
@@ -10,14 +10,14 @@ import (
 	"github.com/gofrs/uuid"
 )
 
-type Interactor interface {
+type Transactor interface {
 	Deposit(depositor models.TxnCustomer, agentNumber string, amount models.Shillings) error
 	Transfer(source models.TxnCustomer, destAccNumber string, destCustomerType models.UserType, amount models.Shillings) error
 	Withdraw(withdrawer models.TxnCustomer, agentNumber string, amount models.Shillings) error
 }
 
-func NewInteractor(agentRepo agent.Repository, merchRepo merchant.Repository, subRepo subscriber.Repository, txEventsChan data.ChanNewTxnEvents) Interactor {
-	return &interactor{
+func NewInteractor(agentRepo agent.Repository, merchRepo merchant.Repository, subRepo subscriber.Repository, txEventsChan data.ChanNewTxnEvents) Transactor {
+	return &transactor{
 		agentRepo: agentRepo,
 		merchRepo: merchRepo,
 		subRepo:   subRepo,
@@ -25,7 +25,7 @@ func NewInteractor(agentRepo agent.Repository, merchRepo merchant.Repository, su
 	}
 }
 
-type interactor struct {
+type transactor struct {
 	agentRepo agent.Repository
 	merchRepo merchant.Repository
 	subRepo   subscriber.Repository
@@ -34,14 +34,14 @@ type interactor struct {
 }
 
 // posts a new transaction event to channel
-func (i interactor) postTransaction(txEvent models.TxnEvent) {
-	go func() { i.txnEventsChannel.Writer <- txEvent }()
+func (tr transactor) postTransaction(txEvent models.TxnEvent) {
+	go func() { tr.txnEventsChannel.Writer <- txEvent }()
 }
 
 // Deposit is a transaction between a customer and an agent. The customer's account is credited from the
 // agent's account. Money moves from the agent's account to the customer's account.
-func (i interactor) Deposit(depositor models.TxnCustomer, agentNumber string, amount models.Shillings) error {
-	agt, err := i.agentRepo.FindByEmail(agentNumber)
+func (tr transactor) Deposit(depositor models.TxnCustomer, agentNumber string, amount models.Shillings) error {
+	agt, err := tr.agentRepo.FindByEmail(agentNumber)
 	if err != nil {
 		return err
 	}
@@ -53,18 +53,18 @@ func (i interactor) Deposit(depositor models.TxnCustomer, agentNumber string, am
 		},
 		Destination: depositor,
 
-		TxnType: models.TxnOpDeposit,
-		Amount:  amount,
+		TxnOperation: models.TxnOpDeposit,
+		Amount:       amount,
 	}
 
-	i.postTransaction(event)
+	tr.postTransaction(event)
 	return nil
 }
 
 // Withdraw is a transaction between a customer and an agent. The customer's account is debited and the
 // agent's account credited. Money moves from the customer's account to the agent's account.
-func (i interactor) Withdraw(withdrawer models.TxnCustomer, agentNumber string, amount models.Shillings) error {
-	agt, err := i.agentRepo.FindByEmail(agentNumber)
+func (tr transactor) Withdraw(withdrawer models.TxnCustomer, agentNumber string, amount models.Shillings) error {
+	agt, err := tr.agentRepo.FindByEmail(agentNumber)
 	if err != nil {
 		return err
 	}
@@ -76,34 +76,34 @@ func (i interactor) Withdraw(withdrawer models.TxnCustomer, agentNumber string, 
 			UserType: models.UserTypAgent,
 		},
 
-		TxnType: models.TxnOpWithdrawal,
-		Amount:  amount,
+		TxnOperation: models.TxnOpWithdrawal,
+		Amount:       amount,
 	}
 
-	i.postTransaction(event)
+	tr.postTransaction(event)
 	return nil
 }
 
 // Transfer is a transaction describing a general movement of funds from a customer to another customer. One customer's
 // account is debited (the source) and the other customer's account credited (the destination). Money moves from the
 // source to the destination account.
-func (i interactor) Transfer(source models.TxnCustomer, destAccNumber string, destCustomerType models.UserType, amount models.Shillings) error {
+func (tr transactor) Transfer(source models.TxnCustomer, destAccNumber string, destCustomerType models.UserType, amount models.Shillings) error {
 	var customerID uuid.UUID
 	switch destCustomerType {
 	case models.UserTypAgent:
-		agt, err := i.agentRepo.FindByEmail(destAccNumber)
+		agt, err := tr.agentRepo.FindByEmail(destAccNumber)
 		if err != nil {
 			return err
 		}
 		customerID = agt.ID
 	case models.UserTypMerchant:
-		merch, err := i.merchRepo.FindByEmail(destAccNumber)
+		merch, err := tr.merchRepo.FindByEmail(destAccNumber)
 		if err != nil {
 			return err
 		}
 		customerID = merch.ID
 	case models.UserTypeSubscriber:
-		sub, err := i.subRepo.FindByEmail(destAccNumber)
+		sub, err := tr.subRepo.FindByEmail(destAccNumber)
 		if err != nil {
 			return err
 		}
@@ -117,10 +117,10 @@ func (i interactor) Transfer(source models.TxnCustomer, destAccNumber string, de
 			UserType: destCustomerType,
 		},
 
-		TxnType: models.TxnOpTransfer,
-		Amount:  amount,
+		TxnOperation: models.TxnOpTransfer,
+		Amount:       amount,
 	}
 
-	i.postTransaction(event)
+	tr.postTransaction(event)
 	return nil
 }
