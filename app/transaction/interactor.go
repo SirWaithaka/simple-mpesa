@@ -11,23 +11,30 @@ import (
 	"github.com/gofrs/uuid"
 )
 
+const (
+	minimumDepositAmount    = models.Shillings(10) // least possible amount that can be deposited into an account
+	minimumWithdrawalAmount = models.Shillings(1)  // least possible amount that can be withdrawn from an account
+	minimumTransferAmount   = models.Shillings(10) // least possible amount that can be transferred to another account
+)
+
 type Interactor interface {
 	AddTransaction(models.Transaction) error
 	GetStatement(userId uuid.UUID) (*[]models.Transaction, error)
 }
 
 type interactor struct {
-	repository   Repository
-	transChannel data.ChanNewTransactions
+	repository       Repository
+	transChannel     data.ChanNewTransactions
+	// txnEventsChannel data.ChanNewTxnEvents
 }
 
 func NewInteractor(repository Repository, transChan data.ChanNewTransactions) Interactor {
 	intr := &interactor{
-		repository:   repository,
-		transChannel: transChan,
+		repository:       repository,
+		transChannel:     transChan,
 	}
 
-	go intr.listenOnTransactions()
+	go intr.listenOnCreatedTransactions()
 
 	return intr
 }
@@ -54,7 +61,20 @@ func (i interactor) GetStatement(userId uuid.UUID) (*[]models.Transaction, error
 	return transactions, nil
 }
 
-func (i interactor) listenOnTransactions() {
+// func (i interactor) listenOnTxnEvents() {
+// 	for {
+// 		select {
+// 		case event := <-i.txnEventsChannel.Reader:
+// 			err := i.transact(event)
+// 			if err != nil { // if we get an error processing the transaction event, we can log, or send to customer
+// 				log.Println(err)
+// 				continue
+// 			}
+// 		}
+// 	}
+// }
+
+func (i interactor) listenOnCreatedTransactions() {
 	for {
 		select {
 		case tx := <-i.transChannel.Reader:

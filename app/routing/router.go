@@ -6,6 +6,7 @@ import (
 	"simple-mpesa/app/routing/account_handlers"
 	"simple-mpesa/app/routing/error_handlers"
 	"simple-mpesa/app/routing/middleware"
+	"simple-mpesa/app/routing/transaction_handlers"
 	"simple-mpesa/app/routing/user_handlers"
 
 	"github.com/gofiber/fiber/v2"
@@ -26,14 +27,19 @@ func Router(domain *registry.Domain, config app.Config) *fiber.App {
 	return srv
 }
 
-func apiRouteGroup(g fiber.Router, domain *registry.Domain, config app.Config) {
+func apiRouteGroup(api fiber.Router, domain *registry.Domain, config app.Config) {
 
-	g.Post("/login/:user_type", user_handlers.Authenticate(domain, config))
-	g.Post("/user/:user_type", user_handlers.Register(domain))
+	api.Post("/login/:user_type", user_handlers.Authenticate(domain, config))
+	api.Post("/user/:user_type", user_handlers.Register(domain))
 
-	g.Get("/account/balance", middleware.AuthByBearerToken(config.Secret), account_handlers.BalanceEnquiry(domain.Account))
-	g.Post("/account/deposit", middleware.AuthByBearerToken(config.Secret), account_handlers.Deposit(domain.Account))
-	g.Post("/account/withdraw", middleware.AuthByBearerToken(config.Secret), account_handlers.Withdraw(domain.Account))
+	// create group at /api/account
+	account := api.Group("/account", middleware.AuthByBearerToken(config.Secret))
+	account.Get("/balance", account_handlers.BalanceEnquiry(domain.Account))
+	account.Get("/statement", account_handlers.MiniStatement(domain.Transaction))
 
-	g.Get("/account/statement", middleware.AuthByBearerToken(config.Secret), account_handlers.MiniStatement(domain.Transaction))
+	// create group at /api/transaction
+	transaction := api.Group("/transaction", middleware.AuthByBearerToken(config.Secret))
+	transaction.Post("/deposit", transaction_handlers.Deposit(domain.Transactor))
+	transaction.Post("/transfer", transaction_handlers.Transfer(domain.Transactor))
+	transaction.Post("/withdraw", transaction_handlers.Withdraw(domain.Transactor))
 }

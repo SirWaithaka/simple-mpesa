@@ -30,7 +30,7 @@ type interactor struct {
 // AuthenticateByEmail verifies a subscriber by the provided unique email address
 func (ui interactor) AuthenticateByEmail(email, password string) (models.Subscriber, error) {
 	// search for subscriber by email.
-	subscriber, err := ui.repository.GetByEmail(email)
+	subscriber, err := ui.repository.FindByEmail(email)
 	if errors.ErrorCode(err) == errors.ENOTFOUND {
 		return models.Subscriber{}, errors.Error{Err: err, Message: errors.ErrUserNotFound}
 	} else if err != nil {

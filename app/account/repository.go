@@ -12,7 +12,7 @@ import (
 
 type Repository interface {
 	GetAccountByUserID(uuid.UUID) (models.Account, error)
-	UpdateBalance(amount uint, userID uuid.UUID) (models.Account, error)
+	UpdateBalance(amount models.Cents, userID uuid.UUID) (models.Account, error)
 
 	Create(userId uuid.UUID) (models.Account, error)
 }
@@ -39,7 +39,7 @@ func (r repository) GetAccountByUserID(userID uuid.UUID) (models.Account, error)
 }
 
 // UpdateBalance
-func (r repository) UpdateBalance(amount uint, userID uuid.UUID) (models.Account, error) {
+func (r repository) UpdateBalance(amount models.Cents, userID uuid.UUID) (models.Account, error) {
 	var acc models.Account
 	result := r.db.Model(models.Account{}).Where(models.Account{UserID: userID}).Updates(models.Account{AvailableBalance: amount}).Scan(&acc)
 	if err := result.Error; err != nil {

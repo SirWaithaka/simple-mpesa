@@ -32,7 +32,7 @@ func AuthenticateMerchant(merchDomain merchant.Interactor, config app.Config) fi
 		}
 
 		// generate an auth token string
-		token, err := auth.GetTokenString(merch.ID, config.Secret)
+		token, err := auth.GetTokenString(merch.ID, models.UserTypMerchant, config.Secret)
 		if err != nil {
 			return err
 		}

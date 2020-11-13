@@ -32,7 +32,7 @@ func AuthenticateAdmin(adminDomain admin.Interactor, config app.Config) fiber.Ha
 		}
 
 		// generate an auth token string
-		token, err := auth.GetTokenString(adm.ID, config.Secret)
+		token, err := auth.GetTokenString(adm.ID, models.UserTypAdmin, config.Secret)
 		if err != nil {
 			return err
 		}

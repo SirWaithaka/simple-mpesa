@@ -13,8 +13,8 @@ import (
 type Repository interface {
 	Add(models.Agent) (models.Agent, error)
 	Delete(models.Agent) error
-	GetByID(uuid.UUID) (models.Agent, error)
-	GetByEmail(string) (models.Agent, error)
+	FindByID(uuid.UUID) (models.Agent, error)
+	FindByEmail(string) (models.Agent, error)
 	Update(models.Agent) error
 }
 
@@ -65,14 +65,14 @@ func (r repository) Delete(agent models.Agent) error {
 	return nil
 }
 
-// GetByID searches agent by primary id
-func (r repository) GetByID(id uuid.UUID) (models.Agent, error) {
+// FindByID searches agent by primary id
+func (r repository) FindByID(id uuid.UUID) (models.Agent, error) {
 	agent, err := r.searchBy(models.Agent{ID: id})
 	return agent, err
 }
 
-// GetByEmail searches agent by email
-func (r repository) GetByEmail(email string) (models.Agent, error) {
+// FindByEmail searches agent by email
+func (r repository) FindByEmail(email string) (models.Agent, error) {
 	agent, err := r.searchBy(models.Agent{Email: email})
 	return agent, err
 }

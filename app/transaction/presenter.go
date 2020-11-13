@@ -14,7 +14,7 @@ func parseToTransaction(newTx data.TransactionContract) *models.Transaction {
 
 	return &models.Transaction{
 		ID:        id,
-		Type:      newTx.TxType,
+		Operation: newTx.TxnOperation,
 		Timestamp: time.Now(),
 		Amount:    newTx.Amount,
 		UserID:    newTx.UserID,

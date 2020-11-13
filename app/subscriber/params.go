@@ -20,12 +20,8 @@ func (req LoginParams) Validate() error {
 		validation.Field(&req.Email, validation.Required.Error(string(errors.ErrorEmailRequired)), is.Email),
 	)
 
-	e := errors.ParseValidationErrorMap(err)
-	if len(e) > 0 {
-		// we will return only the first error
-		return e[0]
-	}
-	return nil
+	return errors.ParseValidationErrorMap(err)
+
 }
 
 // RegistrationParams are properties required during registration of a new subscriber
@@ -46,10 +42,5 @@ func (req RegistrationParams) Validate() error {
 		validation.Field(&req.LastName, validation.Required.Error(string(errors.ErrorLastNameRequired))),
 	)
 
-	e := errors.ParseValidationErrorMap(err)
-	if len(e) > 0 {
-		// we will return only the first error
-		return e[0]
-	}
-	return nil
+	return errors.ParseValidationErrorMap(err)
 }

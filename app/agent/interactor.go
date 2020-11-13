@@ -15,22 +15,22 @@ type Interactor interface {
 
 func NewInteractor(config app.Config, agentRepo Repository, custChan data.ChanNewCustomers) Interactor {
 	return &interactor{
-		config:          config,
-		repository:      agentRepo,
-		customerChannel: custChan,
+		config:           config,
+		repository:       agentRepo,
+		customersChannel: custChan,
 	}
 }
 
 type interactor struct {
-	customerChannel data.ChanNewCustomers
-	config          app.Config
-	repository      Repository
+	customersChannel data.ChanNewCustomers
+	config           app.Config
+	repository       Repository
 }
 
 // AuthenticateByEmail verifies an agent by the provided unique email address
 func (ui interactor) AuthenticateByEmail(email, password string) (models.Agent, error) {
 	// search for agent by email.
-	agent, err := ui.repository.GetByEmail(email)
+	agent, err := ui.repository.FindByEmail(email)
 	if errors.ErrorCode(err) == errors.ENOTFOUND {
 		return models.Agent{}, errors.Error{Err: err, Message: errors.ErrUserNotFound}
 	} else if err != nil {
@@ -79,5 +79,5 @@ func (ui interactor) Register(params RegistrationParams) (models.Agent, error) {
 // like creating an account for them automatically.
 func (ui interactor) postNewAgentToChannel(agent *models.Agent) {
 	newAgent := parseToNewAgent(*agent)
-	go func() { ui.customerChannel.Writer <- newAgent }()
+	go func() { ui.customersChannel.Writer <- newAgent }()
 }

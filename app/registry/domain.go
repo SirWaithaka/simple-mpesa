@@ -6,6 +6,7 @@ import (
 	"simple-mpesa/app/admin"
 	"simple-mpesa/app/agent"
 	"simple-mpesa/app/merchant"
+	"simple-mpesa/app/ports"
 	"simple-mpesa/app/storage"
 	"simple-mpesa/app/subscriber"
 	"simple-mpesa/app/transaction"
@@ -19,6 +20,8 @@ type Domain struct {
 
 	Account     account.Interactor
 	Transaction transaction.Interactor
+
+	Transactor ports.TransactorPort
 }
 
 func NewDomain(config app.Config, database *storage.Database, channels *Channels) *Domain {
@@ -30,6 +33,11 @@ func NewDomain(config app.Config, database *storage.Database, channels *Channels
 	accRepo := account.NewRepository(database)
 	txnRepo := transaction.NewRepository(database)
 
+	// initialize ports and adapters
+	accountant := account.NewAccountant(accRepo)
+	customerFinder := ports.NewCustomerFinder(agentRepo, merchantRepo, subscriberRepo)
+	transactor := transaction.NewTransactor(accountant)
+
 	return &Domain{
 		Admin:       admin.NewInteractor(config, adminRepo),
 		Agent:       agent.NewInteractor(config, agentRepo, channels.ChannelNewUsers),
@@ -37,5 +45,6 @@ func NewDomain(config app.Config, database *storage.Database, channels *Channels
 		Subscriber:  subscriber.NewInteractor(config, subscriberRepo, channels.ChannelNewUsers),
 		Account:     account.NewInteractor(accRepo, channels.ChannelNewUsers, channels.ChannelNewTransactions),
 		Transaction: transaction.NewInteractor(txnRepo, channels.ChannelNewTransactions),
+		Transactor:  ports.NewTransactor(customerFinder, transactor),
 	}
 }

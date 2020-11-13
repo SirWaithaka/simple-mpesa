@@ -4,6 +4,8 @@ import (
 	"log"
 	"time"
 
+	"simple-mpesa/app/models"
+
 	"github.com/dgrijalva/jwt-go"
 	"github.com/gofrs/uuid"
 )
@@ -17,25 +19,26 @@ func (err TokenParsingError) Error() string {
 	return err.message
 }
 
-type TokenDetails struct {
-	UserId string `json:"userId"`
-	Email  string `json:"email"`
+type UserAuthDetails struct {
+	UserID   uuid.UUID       `json:"userId"`
+	UserType models.UserType `json:"userType"`
 }
 
 type TokenClaims struct {
-	User TokenDetails `json:"user"`
+	User UserAuthDetails `json:"user"`
 
 	jwt.StandardClaims
 }
 
-func generateToken(userID uuid.UUID) *jwt.Token {
+func generateToken(userID uuid.UUID, userType models.UserType) *jwt.Token {
 
 	issuedAt := time.Now().Unix()
 	expirationTime := time.Now().Add(6 * time.Hour).Unix()
 
 	claims := TokenClaims{
-		User: TokenDetails{
-			UserId: userID.String(),
+		User: UserAuthDetails{
+			UserID:   userID,
+			UserType: userType,
 		},
 
 		StandardClaims: jwt.StandardClaims{
@@ -51,8 +54,8 @@ func generateToken(userID uuid.UUID) *jwt.Token {
 }
 
 // GetTokenString generates a jwt access token for a user
-func GetTokenString(userID uuid.UUID, secret string) (string, error) {
-	token := generateToken(userID)
+func GetTokenString(userID uuid.UUID, userType models.UserType, secret string) (string, error) {
+	token := generateToken(userID, userType)
 
 	str, err := token.SignedString([]byte(secret))
 	if err != nil { // we have an error generating the token i.e. "500"

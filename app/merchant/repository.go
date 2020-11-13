@@ -13,8 +13,8 @@ import (
 type Repository interface {
 	Add(models.Merchant) (models.Merchant, error)
 	Delete(models.Merchant) error
-	GetByID(uuid.UUID) (models.Merchant, error)
-	GetByEmail(string) (models.Merchant, error)
+	FindByID(uuid.UUID) (models.Merchant, error)
+	FindByEmail(string) (models.Merchant, error)
 	Update(models.Merchant) error
 }
 
@@ -65,14 +65,14 @@ func (r repository) Delete(merchant models.Merchant) error {
 	return nil
 }
 
-// GetByID searches merchant by primary id
-func (r repository) GetByID(id uuid.UUID) (models.Merchant, error) {
+// FindByID searches merchant by primary id
+func (r repository) FindByID(id uuid.UUID) (models.Merchant, error) {
 	merchant, err := r.searchBy(models.Merchant{ID: id})
 	return merchant, err
 }
 
-// GetByEmail searches merchant by email
-func (r repository) GetByEmail(email string) (models.Merchant, error) {
+// FindByEmail searches merchant by email
+func (r repository) FindByEmail(email string) (models.Merchant, error) {
 	merchant, err := r.searchBy(models.Merchant{Email: email})
 	return merchant, err
 }

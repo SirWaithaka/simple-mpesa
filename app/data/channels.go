@@ -3,6 +3,8 @@ package data
 import (
 	"time"
 
+	"simple-mpesa/app/models"
+
 	"github.com/gofrs/uuid"
 )
 
@@ -21,11 +23,11 @@ type ChanNewCustomers struct {
 // TransactionContract represents the type of data
 // required to record a new transaction in the database.
 type TransactionContract struct {
-	UserID    uuid.UUID
-	AccountID uuid.UUID
-	Amount    float64
-	TxType    string // transaction type
-	Timestamp time.Time
+	UserID       uuid.UUID
+	AccountID    uuid.UUID
+	Amount       float64
+	TxnOperation models.TxnOperation // transaction operation type
+	Timestamp    time.Time
 }
 
 type ChanNewTransactions struct {
@@ -33,3 +35,9 @@ type ChanNewTransactions struct {
 	Reader  <-chan TransactionContract
 	Writer  chan<- TransactionContract
 }
+
+// type ChanNewTxnEvents struct {
+// 	Channel chan models.TxnEvent
+// 	Reader  <-chan models.TxnEvent
+// 	Writer  chan<- models.TxnEvent
+// }
