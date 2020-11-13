@@ -17,10 +17,10 @@ func main() {
 
 	// read yaml config file. Dont pass path to read
 	// from default path
-	cfg := configs.ReadYaml("")
-	confg := app.GetConfig(*cfg)
+	yamlConfig := configs.ReadYaml("")
+	config := app.GetConfig(*yamlConfig)
 
-	database, err := postgres.NewDatabase(confg)
+	database, err := postgres.NewDatabase(config)
 	if err != nil {
 		log.Printf("database err %s", err)
 		os.Exit(1)
@@ -30,10 +30,10 @@ func main() {
 	postgres.Migrate(database)
 
 	channels := registry.NewChannels()
-	domain := registry.NewDomain(confg, database, channels)
+	domain := registry.NewDomain(config, database, channels)
 
 	// create the fiber server.
-	server := routing.Router(domain, confg) // add endpoints
+	server := routing.Router(domain, config) // add endpoints
 
 	// listen and serve
 	port := fmt.Sprintf(":%v", 6700)
