@@ -1,6 +1,8 @@
 package transaction
 
 import (
+	"log"
+
 	"simple-mpesa/app/errors"
 	"simple-mpesa/app/models"
 
@@ -23,11 +25,9 @@ func (req DepositParams) Validate() error {
 	)
 
 	e := errors.ParseValidationErrorMap(err)
-	if len(e) > 0 {
-		// we will return only the first error
-		return e[0]
-	}
-	return nil
+	log.Println(e)
+
+	return e
 }
 
 type TransferParams struct {
@@ -46,12 +46,7 @@ func (req TransferParams) Validate() error {
 		validation.Field(&req.DestAccountNo, validation.Required.Error(string(errors.ErrorDestAccNumberRequired))),
 	)
 
-	e := errors.ParseValidationErrorMap(err)
-	if len(e) > 0 {
-		// we will return only the first error
-		return e[0]
-	}
-	return nil
+	return errors.ParseValidationErrorMap(err)
 }
 
 type WithdrawParams struct {
@@ -69,10 +64,5 @@ func (req WithdrawParams) Validate() error {
 		validation.Field(&req.AgentNumber, validation.Required.Error(string(errors.ErrorAgentNumberRequired))),
 	)
 
-	e := errors.ParseValidationErrorMap(err)
-	if len(e) > 0 {
-		// we will return only the first error
-		return e[0]
-	}
-	return nil
+	return errors.ParseValidationErrorMap(err)
 }

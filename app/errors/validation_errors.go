@@ -2,6 +2,7 @@ package errors
 
 import (
 	"net/http"
+	"strings"
 
 	validation "github.com/go-ozzo/ozzo-validation/v4"
 	jsoniter "github.com/json-iterator/go"
@@ -24,6 +25,17 @@ func (e ValidationError) MarshalJSON() ([]byte, error) {
 	return jsoniter.Marshal(errM)
 }
 
+// ValidationErrors is a slice of validation errors
+type ValidationErrors []error
+
+func (e ValidationErrors) Error() string {
+	var str []string
+	for _, err := range e {
+		str = append(str, err.Error())
+	}
+	return strings.Join(str, ",")
+}
+
 const (
 	ErrorFirstNameRequired         = ValidationError("first_name is a required field")
 	ErrorLastNameRequired          = ValidationError("last_name is a required field")
@@ -39,10 +51,10 @@ const (
 // ParseValidationErrorMap takes in the error map that go-ozzo validation
 // framework returns and extracts the application error code type as a string
 // and returns ErrorCode type of the specific error
-func ParseValidationErrorMap(err error) []error {
+func ParseValidationErrorMap(err error) error {
 
 	if err != nil {
-		var errs []error
+		var errs ValidationErrors
 
 		// the validation framework returns a map of errors
 		// we check if the error returned matches this map
