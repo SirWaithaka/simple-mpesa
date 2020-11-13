@@ -3,12 +3,12 @@ package transaction_handlers
 import (
 	"net/http"
 
-	"simple-mpesa/app/account"
 	"simple-mpesa/app/auth"
 	"simple-mpesa/app/errors"
 	"simple-mpesa/app/models"
 	"simple-mpesa/app/ports"
 	"simple-mpesa/app/routing/responses"
+	"simple-mpesa/app/transaction"
 
 	"github.com/gofiber/fiber/v2"
 )
@@ -24,7 +24,7 @@ func Deposit(txnAdapter ports.TransactorPort) fiber.Handler {
 			userDetails = details
 		}
 
-		var p account.DepositParams
+		var p transaction.DepositParams
 		_ = ctx.BodyParser(&p)
 
 		depositor := models.TxnCustomer{
@@ -51,7 +51,7 @@ func Withdraw(txnAdapter ports.TransactorPort) fiber.Handler {
 			userDetails = details
 		}
 
-		var p account.WithdrawParams
+		var p transaction.WithdrawParams
 		_ = ctx.BodyParser(&p)
 
 		withdrawer := models.TxnCustomer{
