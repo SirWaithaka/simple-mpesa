@@ -76,6 +76,9 @@ func (tr transactorAdapter) Withdraw(withdrawer models.TxnCustomer, agentNumber 
 		Amount:       amount,
 	}
 	err = tr.transactor.Transact(tx)
+	if err != nil {
+		return err
+	}
 
 	return nil
 }

@@ -84,7 +84,32 @@ func Withdraw(txnAdapter ports.TransactorPort) fiber.Handler {
 func Transfer(txnAdapter ports.TransactorPort) fiber.Handler {
 
 	return func(ctx *fiber.Ctx) error {
+		var userDetails auth.UserAuthDetails
+		if details, ok := ctx.Locals("userDetails").(auth.UserAuthDetails); !ok {
+			return errors.Error{Code: errors.EINTERNAL}
+		} else {
+			userDetails = details
+		}
 
-		return nil
+		// inflate struct with body params
+		var p transaction.TransferParams
+		_ = ctx.BodyParser(&p)
+
+		// validate params
+		err := p.Validate()
+		if err != nil {
+			return err
+		}
+
+		source := models.TxnCustomer{
+			UserID:   userDetails.UserID,
+			UserType: userDetails.UserType,
+		}
+		err = txnAdapter.Transfer(source, p.DestAccountNo, p.DestUserType, p.Amount)
+		if err != nil {
+			return err
+		}
+
+		return ctx.Status(http.StatusOK).JSON(responses.TransactionResponse())
 	}
 }
