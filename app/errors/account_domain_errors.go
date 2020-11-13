@@ -4,6 +4,8 @@ import (
 	"fmt"
 	"strconv"
 
+	"simple-mpesa/app/models"
+
 	"github.com/gofrs/uuid"
 )
 
@@ -11,7 +13,8 @@ const (
 	AccountNotCreated          = ERMessage("user's account has not been created, report issue")
 	DepositAmountBelowMinimum  = ERMessage("cannot deposit amounts less than")
 	WithdrawAmountBelowMinimum = ERMessage("cannot withdraw amounts less than")
-	WithdrawAmountAboveBalance = ERMessage("cannot withdraw amount, account balance not enough")
+	TransferAmountBelowMinimum = ERMessage("cannot transfer amounts less than")
+	DebitAmountAboveBalance    = ERMessage("cannot debit amount, account balance not enough")
 
 	UserCantHaveAccount = ERMessage("user is not allowed to hold an account")
 )
@@ -34,7 +37,7 @@ func (err ErrAccountAccess) Error() string {
 
 // errAmountBelowMinimum
 type errAmountBelowMinimum struct {
-	MinAmount uint // minimum amount allowable for deposit or withdraw
+	MinAmount models.Shillings // minimum amount allowable for deposit or withdraw
 	Message   ERMessage
 }
 
@@ -42,14 +45,14 @@ func (err errAmountBelowMinimum) Error() string {
 	return string(err.Message) + " " + strconv.Itoa(int(err.MinAmount))
 }
 
-func ErrAmountBelowMinimum(min uint, message ERMessage) error {
+func ErrAmountBelowMinimum(min models.Shillings, message ERMessage) error {
 	return errAmountBelowMinimum{MinAmount: min, Message: message}
 }
 
 // ErrNotEnoughBalance
 type ErrNotEnoughBalance struct {
 	Message ERMessage
-	Amount  uint
+	Amount  models.Shillings
 	Balance float64
 }
 
