@@ -38,7 +38,7 @@ func apiRouteGroup(api fiber.Router, domain *registry.Domain, config app.Config)
 
 	// create group at /api/transaction
 	transaction := api.Group("/transaction", middleware.AuthByBearerToken(config.Secret))
-	transaction.Post("/deposit", account_handlers.Deposit(domain.Proxy))
+	transaction.Post("/deposit", account_handlers.Deposit(domain.Transactor))
 	// transaction.Post("/transfer", account_handlers.(domain.Account))
-	transaction.Post("/withdraw", account_handlers.Withdraw(domain.Proxy))
+	transaction.Post("/withdraw", account_handlers.Withdraw(domain.Transactor))
 }

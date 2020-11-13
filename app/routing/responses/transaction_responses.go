@@ -10,12 +10,12 @@ import (
 )
 
 type transactionStatement struct {
-	ID        uuid.UUID     `json:"transactionId"`
-	Type      models.TxType `json:"transactionType"`
-	Timestamp time.Time     `json:"timestamp"`
-	Amount    float64       `json:"amount"`
-	UserID    uuid.UUID     `json:"userId"`
-	AccountID uuid.UUID     `json:"accountId"`
+	ID        uuid.UUID           `json:"transactionId"`
+	Type      models.TxnOperation `json:"transactionType"`
+	Timestamp time.Time           `json:"timestamp"`
+	Amount    float64             `json:"amount"`
+	UserID    uuid.UUID           `json:"userId"`
+	AccountID uuid.UUID           `json:"accountId"`
 }
 
 type miniStatementResponse struct {
@@ -30,7 +30,7 @@ func MiniStatementResponse(userID uuid.UUID, transactions []models.Transaction) 
 	for _, txn := range transactions {
 		txns = append(txns, transactionStatement{
 			ID:        txn.ID,
-			Type:      txn.Type,
+			Type:      txn.Operation,
 			Timestamp: txn.Timestamp,
 			Amount:    txn.Amount,
 			UserID:    txn.UserID,

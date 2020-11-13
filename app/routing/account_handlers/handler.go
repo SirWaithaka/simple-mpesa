@@ -7,7 +7,7 @@ import (
 	"simple-mpesa/app/auth"
 	"simple-mpesa/app/errors"
 	"simple-mpesa/app/models"
-	"simple-mpesa/app/proxy"
+	"simple-mpesa/app/ports"
 	"simple-mpesa/app/routing/responses"
 	"simple-mpesa/app/transaction"
 
@@ -41,7 +41,7 @@ func BalanceEnquiry(interactor account.Interactor) fiber.Handler {
 
 // Deposit allows user to deposit or credit their
 // account.
-func Deposit(interactor proxy.Interactor) fiber.Handler {
+func Deposit(txnAdapter ports.TransactorPort) fiber.Handler {
 
 	return func(ctx *fiber.Ctx) error {
 		var userDetails auth.UserAuthDetails
@@ -58,7 +58,7 @@ func Deposit(interactor proxy.Interactor) fiber.Handler {
 			UserType: userDetails.UserType,
 			UserID: userDetails.UserID,
 		}
-		err := interactor.Deposit(depositor, p.AgentNumber, p.Amount)
+		err := txnAdapter.Deposit(depositor, p.AgentNumber, p.Amount)
 		if err != nil {
 			return err
 		}
@@ -69,7 +69,7 @@ func Deposit(interactor proxy.Interactor) fiber.Handler {
 
 // Withdraw allows user to withdraw or debit their
 // account.
-func Withdraw(interactor proxy.Interactor) fiber.Handler {
+func Withdraw(txnAdapter ports.TransactorPort) fiber.Handler {
 
 	return func(ctx *fiber.Ctx) error {
 		var userDetails auth.UserAuthDetails
@@ -86,7 +86,7 @@ func Withdraw(interactor proxy.Interactor) fiber.Handler {
 			UserID:   userDetails.UserID,
 			UserType: userDetails.UserType,
 		}
-		err := interactor.Withdraw(withdrawer, p.AgentNumber, p.Amount)
+		err := txnAdapter.Withdraw(withdrawer, p.AgentNumber, p.Amount)
 		if err != nil {
 			return err
 		}
