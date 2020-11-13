@@ -1,6 +1,7 @@
 package ports
 
 import (
+	"simple-mpesa/app/customer"
 	"simple-mpesa/app/errors"
 	"simple-mpesa/app/models"
 	"simple-mpesa/app/transaction"
@@ -14,7 +15,7 @@ type TransactorPort interface {
 	Withdraw(withdrawer models.TxnCustomer, agentNumber string, amount models.Shillings) error
 }
 
-func NewTransactor(finder CustomerFinder, transactor transaction.Transactor) TransactorPort {
+func NewTransactor(finder customer.Finder, transactor transaction.Transactor) TransactorPort {
 	return &transactorAdapter{
 		customerFinder: finder,
 		transactor:     transactor,
@@ -22,7 +23,7 @@ func NewTransactor(finder CustomerFinder, transactor transaction.Transactor) Tra
 }
 
 type transactorAdapter struct {
-	customerFinder CustomerFinder
+	customerFinder customer.Finder
 	transactor     transaction.Transactor
 }
 
