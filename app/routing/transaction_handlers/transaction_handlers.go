@@ -36,9 +36,9 @@ func Deposit(txnAdapter ports.TransactorPort) fiber.Handler {
 
 		depositor := models.TxnCustomer{
 			UserType: userDetails.UserType,
-			UserID: userDetails.UserID,
+			UserID:   userDetails.UserID,
 		}
-		err = txnAdapter.Deposit(depositor, p.AgentNumber, p.Amount)
+		err = txnAdapter.Deposit(depositor, p.CustomerNumber, p.CustomerType, p.Amount)
 		if err != nil {
 			return err
 		}
