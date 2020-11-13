@@ -24,14 +24,21 @@ func Deposit(txnAdapter ports.TransactorPort) fiber.Handler {
 			userDetails = details
 		}
 
+		// inflate struct with body params
 		var p transaction.DepositParams
 		_ = ctx.BodyParser(&p)
+
+		// validate params
+		err := p.Validate()
+		if err != nil {
+			return err
+		}
 
 		depositor := models.TxnCustomer{
 			UserType: userDetails.UserType,
 			UserID: userDetails.UserID,
 		}
-		err := txnAdapter.Deposit(depositor, p.AgentNumber, p.Amount)
+		err = txnAdapter.Deposit(depositor, p.AgentNumber, p.Amount)
 		if err != nil {
 			return err
 		}
@@ -51,14 +58,21 @@ func Withdraw(txnAdapter ports.TransactorPort) fiber.Handler {
 			userDetails = details
 		}
 
+		// inflate struct with body params
 		var p transaction.WithdrawParams
 		_ = ctx.BodyParser(&p)
+
+		// validate params
+		err := p.Validate()
+		if err != nil {
+			return err
+		}
 
 		withdrawer := models.TxnCustomer{
 			UserID:   userDetails.UserID,
 			UserType: userDetails.UserType,
 		}
-		err := txnAdapter.Withdraw(withdrawer, p.AgentNumber, p.Amount)
+		err = txnAdapter.Withdraw(withdrawer, p.AgentNumber, p.Amount)
 		if err != nil {
 			return err
 		}

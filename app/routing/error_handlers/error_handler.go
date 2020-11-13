@@ -18,6 +18,13 @@ func ErrorHandler(ctx *fiber.Ctx, err error) error {
 		return ctx.Status(res.Status).JSON(res)
 	}
 
+	// if error is our custom validation errors slice type
+	if e, ok := err.(errors.ValidationErrors); ok {
+		log.Println(err)
+		res := errors.BadRequestResponse(e.Error())
+		return ctx.Status(res.Status).JSON(res)
+	}
+
 	if e, ok := err.(errors.Error); ok {
 		// we first log the error
 		log.Println(e)
