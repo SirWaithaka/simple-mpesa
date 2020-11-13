@@ -106,6 +106,11 @@ func (tr transactor) transfer(source, destination models.TxnCustomer, amount mod
 }
 
 func (tr transactor) Transact(transaction Transaction) error {
+	// cannot transact within the same account
+	if transaction.Source.UserID == transaction.Destination.UserID {
+		return errors.Error{Code: errors.EINVALID, Message: errors.TransactionWithSameAccount}
+	}
+
 	switch transaction.TxnOperation {
 	case models.TxnOpDeposit:
 		return tr.deposit(transaction.Source, transaction.Destination, transaction.Amount)
