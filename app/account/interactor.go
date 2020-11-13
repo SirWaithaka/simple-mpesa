@@ -11,15 +11,8 @@ import (
 	"github.com/gofrs/uuid"
 )
 
-const (
-	minimumDepositAmount    = 10 // least possible amount that can be deposited into an account
-	minimumWithdrawalAmount = 1  // least possible amount that can be withdrawn from an account
-)
-
 type Interactor interface {
-	GetBalance(userId uuid.UUID) (float64, error)
-	Deposit(userId uuid.UUID, amount uint) (float64, error)
-	Withdraw(userId uuid.UUID, amount uint) (float64, error)
+	GetBalance(userID uuid.UUID) (float64, error)
 }
 
 func NewInteractor(repository Repository, custChan data.ChanNewCustomers, transChan data.ChanNewTransactions) Interactor {
@@ -73,73 +66,13 @@ func (i interactor) GetBalance(userId uuid.UUID) (float64, error) {
 		return 0, err
 	}
 
-	i.postTransactionDetails(userId, *acc, models.TxTypeBalance)
+	// i.postTransactionDetails(userId, *acc, models.TxTypeBalance)
 	return acc.Balance(), nil
 }
 
-// Deposit credits a user's account with an amount
-func (i interactor) Deposit(userId uuid.UUID, amount uint) (float64, error) {
-	if amount < 10 {
-		e := errors.ErrAmountBelowMinimum(minimumDepositAmount, errors.DepositAmountBelowMinimum)
-		return 0, errors.Error{Err: e}
-	}
-
-	acc, err := i.isUserAccAccessible(userId)
-	if err != nil {
-		return 0, err
-	}
-
-	// update balance with amount: add amount
-	amt := acc.Credit(amount)
-	*acc, err = i.repository.UpdateBalance(amt, userId)
-	if err != nil {
-		return 0, err
-	}
-
-	i.postTransactionDetails(userId, *acc, models.TxTypeDeposit)
-	return acc.Balance(), nil
-}
-
-// Withdraw debits a user's account with an amount
-func (i interactor) Withdraw(userId uuid.UUID, amount uint) (float64, error) {
-	if amount < 10 {
-		e := errors.ErrAmountBelowMinimum(minimumWithdrawalAmount, errors.WithdrawAmountBelowMinimum)
-		return 0, errors.Error{Err: e}
-	}
-
-	acc, err := i.isUserAccAccessible(userId)
-	if err != nil {
-		return 0, err
-	}
-
-	// we can implement a double withdrawal check here. That will prevent a user from
-	// withdrawing same amount twice within a stipulated time interval because of system lag.
-
-	// check that balance is more than amount
-	if acc.IsBalanceLessThanAmount(amount) {
-		e := errors.ErrNotEnoughBalance{
-			Message: errors.WithdrawAmountAboveBalance,
-			Amount:  amount,
-			Balance: acc.Balance(),
-		}
-		return 0, errors.Error{Err: e}
-	}
-
-	// update balance with amount: subtract amount
-	amt := acc.Debit(amount)
-	log.Printf("new amount %v", amt)
-	*acc, err = i.repository.UpdateBalance(amt, userId)
-	if err != nil {
-		return 0, err
-	}
-
-	i.postTransactionDetails(userId, *acc, models.TxTypeWithdrawal)
-	return acc.Balance(), nil
-}
-
-func (i interactor) postTransactionDetails(userId uuid.UUID, acc models.Account, txType models.TxType) {
+func (i interactor) postTransactionDetails(userId uuid.UUID, acc models.Account, txnOp models.TxnOperation) {
 	timestamp := time.Now()
-	newTransaction := parseTransactionDetails(userId, acc, txType, timestamp)
+	newTransaction := parseTransactionDetails(userId, acc, txnOp, timestamp)
 
 	go func() { i.transactionsChannel.Writer <- *newTransaction }()
 }
