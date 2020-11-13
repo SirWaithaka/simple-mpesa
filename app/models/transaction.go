@@ -41,16 +41,16 @@ type Transaction struct {
 //
 // A transfer operation/transaction, needs to have a source and destination and the amount being
 // transferred.
-type TxnEvent struct {
-	Source      TxnCustomer // where money is coming from
-	Destination TxnCustomer // where money is going
-	// we can further use this field to describe the specific type of transaction/transfer
-	TxnType TxnOperation
-	// transaction state to track the transaction
-	TxnState TxnState
-	// amount of money if shillings being transacted
-	Amount Shillings
-}
+// type TxnEvent struct {
+// 	Source      TxnCustomer // where money is coming from
+// 	Destination TxnCustomer // where money is going
+// 	// we can further use this field to describe the specific type of transaction/transfer
+// 	TxnOperation TxnOperation
+// 	// transaction state to track the transaction
+// 	TxnState TxnState
+// 	// amount of money if shillings being transacted
+// 	Amount Shillings
+// }
 
 // TxnCustomer is a description of a customer involved in a transaction. We can describe them
 // by their user id and user type; We have defined a customer being an agent, merchant or subscriber.
