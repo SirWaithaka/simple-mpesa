@@ -6,6 +6,7 @@ import (
 	"simple-mpesa/app/routing/account_handlers"
 	"simple-mpesa/app/routing/error_handlers"
 	"simple-mpesa/app/routing/middleware"
+	"simple-mpesa/app/routing/transaction_handlers"
 	"simple-mpesa/app/routing/user_handlers"
 
 	"github.com/gofiber/fiber/v2"
@@ -38,7 +39,7 @@ func apiRouteGroup(api fiber.Router, domain *registry.Domain, config app.Config)
 
 	// create group at /api/transaction
 	transaction := api.Group("/transaction", middleware.AuthByBearerToken(config.Secret))
-	transaction.Post("/deposit", account_handlers.Deposit(domain.Transactor))
-	// transaction.Post("/transfer", account_handlers.(domain.Account))
-	transaction.Post("/withdraw", account_handlers.Withdraw(domain.Transactor))
+	transaction.Post("/deposit", transaction_handlers.Deposit(domain.Transactor))
+	transaction.Post("/transfer", transaction_handlers.Transfer(domain.Transactor))
+	transaction.Post("/withdraw", transaction_handlers.Withdraw(domain.Transactor))
 }
