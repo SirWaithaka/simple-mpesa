@@ -13,6 +13,7 @@ import (
 type Repository interface {
 	Add(models.Subscriber) (models.Subscriber, error)
 	Delete(models.Subscriber) error
+	FetchAll() ([]models.Subscriber, error)
 	FindByID(uuid.UUID) (models.Subscriber, error)
 	FindByEmail(string) (models.Subscriber, error)
 	Update(models.Subscriber) error
@@ -63,6 +64,22 @@ func (r repository) Delete(subscriber models.Subscriber) error {
 		return errors.Error{Err: result.Error, Code: errors.EINTERNAL}
 	}
 	return nil
+}
+
+// FetchAll gets all subscribers in db
+func (r repository) FetchAll() ([]models.Subscriber, error) {
+	var subscribers []models.Subscriber
+	result := r.db.Find(&subscribers)
+	if err := result.Error; err != nil {
+		return nil, errors.Error{Err: result.Error, Code: errors.EINTERNAL}
+	}
+
+	// we might not need to return this error
+	if result.RowsAffected == 0 {
+		return nil, errors.Error{Code: errors.ENOTFOUND}
+	}
+
+	return subscribers, nil
 }
 
 // FindByID searches subscriber by primary id

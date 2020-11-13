@@ -13,6 +13,7 @@ import (
 type Repository interface {
 	Add(models.Agent) (models.Agent, error)
 	Delete(models.Agent) error
+	FetchAll() ([]models.Agent, error)
 	FindByID(uuid.UUID) (models.Agent, error)
 	FindByEmail(string) (models.Agent, error)
 	Update(models.Agent) error
@@ -63,6 +64,22 @@ func (r repository) Delete(agent models.Agent) error {
 		return errors.Error{Err: result.Error, Code: errors.EINTERNAL}
 	}
 	return nil
+}
+
+// FetchAll gets all agents in db
+func (r repository) FetchAll() ([]models.Agent, error) {
+	var agents []models.Agent
+	result := r.db.Find(&agents)
+	if err := result.Error; err != nil {
+		return nil, errors.Error{Err: result.Error, Code: errors.EINTERNAL}
+	}
+
+	// we might not need to return this error
+	if result.RowsAffected == 0 {
+		return nil, errors.Error{Code: errors.ENOTFOUND}
+	}
+
+	return agents, nil
 }
 
 // FindByID searches agent by primary id
