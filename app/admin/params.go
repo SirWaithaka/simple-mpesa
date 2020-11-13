@@ -44,8 +44,8 @@ func (req RegistrationParams) Validate() error {
 }
 
 type AssignFloatParams struct {
-	AgentAccountNumber string           `json:"accountNo"`
-	Amount             models.Shillings `json:"amount"`
+	AgentAccountNumber string           `json:"accountNo" schema:"accountNo" form:"accountNo"`
+	Amount             models.Shillings `json:"amount" schema:"amount" form:"amount"`
 }
 
 func (req AssignFloatParams) Validate() error {
