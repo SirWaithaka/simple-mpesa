@@ -1,16 +1,16 @@
 package tariff
 
 import (
-	"strings"
-
 	"simple-mpesa/app/errors"
 	"simple-mpesa/app/models"
+
+	"github.com/gofrs/uuid"
 )
 
 type Manager interface {
 	GetCharge(operation models.TxnOperation, src models.UserType, dest models.UserType) (models.Cents, error)
-	GetTariff() ([]Tariff, error)
-	UpdateCharge(txOperation models.TxnOperation, source models.UserType, dest models.UserType, charge models.Cents) error
+	GetTariff() ([]Charge, error)
+	UpdateCharge(chargeID uuid.UUID, fee models.Cents) error
 }
 
 func NewManager(repository Repository) Manager {
@@ -33,10 +33,10 @@ func (mg manager) GetCharge(operation models.TxnOperation, src models.UserType, 
 		return models.Cents(0), err
 	}
 
-	return tariff.Charge, nil
+	return tariff.Fee, nil
 }
 
-func (mg manager) GetTariff() ([]Tariff, error) {
+func (mg manager) GetTariff() ([]Charge, error) {
 	charges, err := mg.repository.FetchAll()
 	if err != nil {
 		return nil, err
@@ -49,20 +49,16 @@ func (mg manager) GetTariff() ([]Tariff, error) {
 	return charges, nil
 }
 
-func (mg manager) UpdateCharge(txOperation models.TxnOperation, source models.UserType, dest models.UserType, charge models.Cents) error {
-	// just in case input is not in upper case
-	op := models.TxnOperation(strings.ToUpper(string(txOperation)))
-
-	if ok := models.IsValidTxnOperation(op); !ok {
-		return errors.Error{Code: errors.EINVALID, Message: errors.ErrInvalidOperation}
+func (mg manager) UpdateCharge(chargeID uuid.UUID, fee models.Cents) error {
+	charge, err := mg.repository.FindByID(chargeID)
+	if errors.ErrorCode(err) == errors.ENOTFOUND {
+		return errors.Error{Err: err, Message: errors.ErrTariffNotSet}
+	} else if err != nil {
+		return err
 	}
 
-	_, err := mg.repository.Add(Tariff{
-		Transaction:         op,
-		SourceUserType:      source,
-		DestinationUserType: dest,
-		Charge:              charge,
-	})
+	charge.Fee = fee
+	err = mg.repository.Update(charge)
 	if err != nil {
 		return err
 	}
@@ -77,11 +73,11 @@ func (mg manager) addCharge(txOperation models.TxnOperation, source models.UserT
 		return errors.Error{Code: errors.EINVALID, Message: errors.ErrInvalidOperation}
 	}
 
-	_, err := mg.repository.Add(Tariff{
+	_, err := mg.repository.Add(Charge{
 		Transaction:         txOperation,
 		SourceUserType:      source,
 		DestinationUserType: dest,
-		Charge:              models.Cents(0),
+		Fee:                 models.Cents(0),
 	})
 	if err != nil {
 		return err
