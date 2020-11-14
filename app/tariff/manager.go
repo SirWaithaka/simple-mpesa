@@ -52,7 +52,7 @@ func (mg manager) GetTariff() ([]Charge, error) {
 func (mg manager) UpdateCharge(chargeID uuid.UUID, fee models.Cents) error {
 	charge, err := mg.repository.FindByID(chargeID)
 	if errors.ErrorCode(err) == errors.ENOTFOUND {
-		return errors.Error{Err: err, Message: errors.ErrTariffNotSet}
+		return errors.Error{Err: err, Message: errors.ErrChargeNotFound}
 	} else if err != nil {
 		return err
 	}
