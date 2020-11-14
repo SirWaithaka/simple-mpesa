@@ -111,7 +111,7 @@ func AddCharge(manager tariff.Manager) fiber.Handler {
 			return err
 		}
 
-		err = manager.AddCharge(params.TxnOperation, params.SrcUserType, params.DestUserType, params.Amount)
+		err = manager.UpdateCharge(params.TxnOperation, params.SrcUserType, params.DestUserType, params.Amount)
 		if err != nil {
 			return err
 		}
@@ -119,6 +119,25 @@ func AddCharge(manager tariff.Manager) fiber.Handler {
 		_ = ctx.Status(http.StatusOK).JSON(responses.SuccessResponse{
 			Status:  "success",
 			Message: "charge configured",
+		})
+
+		return nil
+	}
+}
+
+func GetTariff(manager tariff.Manager) fiber.Handler {
+
+	return func(ctx *fiber.Ctx) error {
+
+		charges, err := manager.GetTariff()
+		if err != nil {
+			return err
+		}
+
+		_ = ctx.Status(http.StatusOK).JSON(responses.SuccessResponse{
+			Status:  "success",
+			Message: "tariff retrieved",
+			Data: charges,
 		})
 
 		return nil

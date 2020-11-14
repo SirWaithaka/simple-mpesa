@@ -36,6 +36,7 @@ func apiRouteGroup(api fiber.Router, domain *registry.Domain, config app.Config)
 	admin := api.Group("/admin", middleware.AuthByBearerToken(config.Secret))
 	admin.Post("/assign-float", user_handlers.AssignFloat(domain.Admin))
 	admin.Post("/add-charge", user_handlers.AddCharge(domain.Tariff))
+	admin.Get("/get-tariff", user_handlers.GetTariff(domain.Tariff))
 
 	// create group at /api/account
 	account := api.Group("/account", middleware.AuthByBearerToken(config.Secret))
