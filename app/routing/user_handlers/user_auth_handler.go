@@ -1,4 +1,4 @@
-package admin_handlers
+package user_handlers
 
 import (
 	"simple-mpesa/app"
