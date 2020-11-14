@@ -6,6 +6,7 @@ import (
 
 	validation "github.com/go-ozzo/ozzo-validation/v4"
 	"github.com/go-ozzo/ozzo-validation/v4/is"
+	"github.com/gofrs/uuid"
 )
 
 // LoginParams are properties required during login of an admin
@@ -57,18 +58,14 @@ func (req AssignFloatParams) Validate() error {
 	return errors.ParseValidationErrorMap(err)
 }
 
-type AddChargeParams struct {
-	TxnOperation models.TxnOperation `json:"operation" schema:"operation" form:"operation"`
-	SrcUserType  models.UserType     `json:"sourceUserType" schema:"sourceUserType" form:"sourceUserType"`
-	DestUserType models.UserType     `json:"destinationUserType" schema:"destinationUserType" form:"destinationUserType"`
-	Amount       models.Cents        `json:"amount" schema:"amount" form:"amount"`
+type UpdateChargeParams struct {
+	ChargeID uuid.UUID    `json:"chargeId" schema:"chargeId" form:"chargeId"`
+	Amount   models.Cents `json:"amount" schema:"amount" form:"amount"`
 }
 
-func (req AddChargeParams) Validate() error {
+func (req UpdateChargeParams) Validate() error {
 	err := validation.ValidateStruct(&req,
-		validation.Field(&req.TxnOperation, validation.Required.Error(string(errors.ErrorTransactionOperationRequired))),
-		validation.Field(&req.SrcUserType, validation.Required.Error(string(errors.ErrorSourceTypeRequired))),
-		validation.Field(&req.DestUserType, validation.Required.Error(string(errors.ErrorDestinationTypeRequired))),
+		validation.Field(&req.ChargeID, validation.Required.Error(string(errors.ErrorChargeIDRequired))),
 		validation.Field(&req.Amount, validation.Required.Error(string(errors.ErrorAmountRequired))),
 	)
 
