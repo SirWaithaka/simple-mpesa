@@ -5,6 +5,7 @@ import (
 	"simple-mpesa/app/models"
 	"simple-mpesa/app/storage"
 
+	"github.com/gofrs/uuid"
 	"github.com/jackc/pgconn"
 	"gorm.io/gorm"
 )
@@ -12,7 +13,9 @@ import (
 type Repository interface {
 	Add(Charge) (Charge, error)
 	FetchAll() ([]Charge, error)
+	FindByID(uuid.UUID) (Charge, error)
 	Get(operation models.TxnOperation, src models.UserType, dest models.UserType) (Charge, error)
+	Update(Charge) error
 }
 
 func NewRepository(db *storage.Database) Repository {
@@ -46,6 +49,20 @@ func (r repository) FetchAll() ([]Charge, error) {
 	return charges, nil
 }
 
+func (r repository) FindByID(id uuid.UUID) (Charge, error) {
+	var charge Charge
+	result := r.db.Where(Charge{ID: id}).First(&charge)
+	// check if no record found.
+	if errors.Is(result.Error, gorm.ErrRecordNotFound) {
+		return Charge{}, errors.Error{Code: errors.ENOTFOUND}
+	}
+	if err := result.Error; err != nil {
+		return Charge{}, errors.Error{Err: err, Code: errors.EINTERNAL}
+	}
+
+	return charge, nil
+}
+
 func (r repository) Get(operation models.TxnOperation, src models.UserType, dest models.UserType) (Charge, error) {
 	row := Charge{Transaction: operation, SourceUserType: src, DestinationUserType: dest}
 
@@ -60,4 +77,13 @@ func (r repository) Get(operation models.TxnOperation, src models.UserType, dest
 	}
 
 	return charge, nil
+}
+
+func (r repository) Update(charge Charge) error {
+	var ch Charge
+	result := r.db.Model(&ch).Where(Charge{ID: charge.ID}).Updates(charge)
+	if err := result.Error; err != nil {
+		return errors.Error{Err: result.Error, Code: errors.EINTERNAL}
+	}
+	return nil
 }
