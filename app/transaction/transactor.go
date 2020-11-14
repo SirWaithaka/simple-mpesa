@@ -13,8 +13,8 @@ type Transactor interface {
 	Transact(Transaction) error
 }
 
-func NewTransactor(accountant account.Accountant) Transactor {
-	return &transactor{accountant: accountant}
+func NewTransactor(accountant account.Accountant, manager tariff.Manager) Transactor {
+	return &transactor{accountant: accountant, tariff: manager}
 }
 
 type transactor struct {
@@ -75,7 +75,7 @@ func (tr transactor) withdraw(source, destination models.TxnCustomer, amount mod
 	// withdrawing same amount twice within a stipulated time interval because of system lag.
 
 	// get the charge applicable to this transaction
-	charge, err := tr.tariff.Get(models.TxnOpWithdrawal, source.UserType, destination.UserType)
+	charge, err := tr.tariff.GetCharge(models.TxnOpWithdraw, source.UserType, destination.UserType)
 	if err != nil {
 		return err
 	}
@@ -84,12 +84,12 @@ func (tr transactor) withdraw(source, destination models.TxnCustomer, amount mod
 	// when withdrawing the source is charged the fee (customer)
 	amt := amount.ToCents() + charge
 
-	srcNewBal, err := tr.accountant.DebitAccount(source.UserID, amt, models.TxnOpWithdrawal)
+	srcNewBal, err := tr.accountant.DebitAccount(source.UserID, amt, models.TxnOpWithdraw)
 	if err != nil {
 		return err
 	}
 
-	destNewBal, err := tr.accountant.CreditAccount(destination.UserID, amount.ToCents(), models.TxnOpWithdrawal)
+	destNewBal, err := tr.accountant.CreditAccount(destination.UserID, amount.ToCents(), models.TxnOpWithdraw)
 	if err != nil {
 		return err
 	}
@@ -106,7 +106,7 @@ func (tr transactor) transfer(source, destination models.TxnCustomer, amount mod
 	}
 
 	// get the charge applicable to this transaction
-	charge, err := tr.tariff.Get(models.TxnOpTransfer, source.UserType, destination.UserType)
+	charge, err := tr.tariff.GetCharge(models.TxnOpTransfer, source.UserType, destination.UserType)
 	if err != nil {
 		return err
 	}
@@ -139,7 +139,7 @@ func (tr transactor) Transact(transaction Transaction) error {
 	switch transaction.TxnOperation {
 	case models.TxnOpDeposit:
 		return tr.deposit(transaction.Source, transaction.Destination, transaction.Amount)
-	case models.TxnOpWithdrawal:
+	case models.TxnOpWithdraw:
 		return tr.withdraw(transaction.Source, transaction.Destination, transaction.Amount)
 	case models.TxnOpTransfer:
 		return tr.transfer(transaction.Source, transaction.Destination, transaction.Amount)
