@@ -8,6 +8,7 @@ import (
 	"simple-mpesa/app/customer"
 	"simple-mpesa/app/merchant"
 	"simple-mpesa/app/ports"
+	"simple-mpesa/app/statement"
 	"simple-mpesa/app/storage"
 	"simple-mpesa/app/subscriber"
 	"simple-mpesa/app/transaction"
@@ -30,12 +31,14 @@ func NewDomain(config app.Config, database *storage.Database, channels *Channels
 	agentRepo := agent.NewRepository(database)
 	merchantRepo := merchant.NewRepository(database)
 	subscriberRepo := subscriber.NewRepository(database)
+	statementRepo := statement.NewRepository(database)
 
 	accRepo := account.NewRepository(database)
 	txnRepo := transaction.NewRepository(database)
 
 	// initialize ports and adapters
-	accountant := account.NewAccountant(accRepo)
+	ledger := statement.NewLedger(statementRepo)
+	accountant := account.NewAccountant(accRepo, ledger)
 	customerFinder := customer.NewFinder(agentRepo, merchantRepo, subscriberRepo)
 	transactor := transaction.NewTransactor(accountant)
 
