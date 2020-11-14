@@ -4,6 +4,7 @@ import (
 	"log"
 
 	"simple-mpesa/app/models"
+	"simple-mpesa/app/statement"
 	"simple-mpesa/app/storage"
 )
 
@@ -17,6 +18,7 @@ func Migrate(database *storage.Database) {
 		models.User{},
 		models.Account{},
 		models.Transaction{},
+		statement.Statement{},
 	)
 
 	if err != nil {
