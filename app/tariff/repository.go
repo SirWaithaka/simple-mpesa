@@ -5,6 +5,7 @@ import (
 	"simple-mpesa/app/models"
 	"simple-mpesa/app/storage"
 
+	"github.com/jackc/pgconn"
 	"gorm.io/gorm"
 )
 
@@ -24,6 +25,10 @@ type repository struct {
 func (r repository) Add(tariff Tariff) (Tariff, error) {
 	result := r.db.Create(&tariff)
 	if err := result.Error; err != nil {
+		// we check if the error is a postgres unique constraint violation
+		if pgerr, ok := err.(*pgconn.PgError); ok && pgerr.Code == "23505" {
+			return Tariff{}, errors.Error{Code: errors.ECONFLICT, Message: errors.ErrTariffExists}
+		}
 		return Tariff{}, errors.Error{Err: err, Code: errors.EINTERNAL}
 	}
 
