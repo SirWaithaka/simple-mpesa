@@ -90,6 +90,21 @@ customer and agents can make a withdrawal on behalf of another customer and in t
 3. can deposit money
 4. can make payments
 
+An agent usually operates with a float account, and a separate commission account. The float account is an account they
+use to facilitate withdrawals and deposits. During onboarding, an agent is required to have a minimum amount in
+their float account.
+
+##### - `Float Account`
+When doing a deposit for a customer, the agent receives cash from the customer and initiates the transaction. Money will
+be debited from the agent's float account and moved to the customer's account.
+
+When a customer is withdrawing from an agent, money is debited from the customer's account and credited to the agent's
+float account. The agent then gives the customer cash.
+
+##### - `Commission Account`
+An agent earns some commission from the system for enabling customer withdrawals. The commission is a percentage or a
+fixed amount of the transaction cost that the customer pays when withdrawing.
+
 That's a good brief overview of MPESA and how everything generally comes together.
 
 ### MPESA Components
@@ -210,6 +225,138 @@ code, so we build our own implementation that would work closely to how we exper
 Whatever follows, is the design and architecture of our simple MPESA application.
 
 ### System Architecture
+
+This application is built as a `Monolith` application following Domain Driven Design principles. The application uses a
+postgres database for storage.
+
+### System Design
+
+Domain Driven Design is at the heart of our simple mpesa application.
+
+#### Bounded Contexts
+DDD principles have concepts called contexts. The application uses the following bounded contexts:
+
+1. Admin
+2. Agent
+3. Merchant
+4. Subscriber
+5. Transaction
+6. Account
+7. Statement
+8. Tariff
+9. Auth
+10. Customer
+
+##### 1. Admin Context
+The application needs some form of administration by a super user charge with the responsibility of running and maintaining
+the application to ensure reliability and stability. This user is an `admin` and is given their own bounded context. Some
+responsibilities/actions of this user are:
+
+1. Can login to system or register.
+2. Can assign float to a Super Agent.
+3. Can configure tariff
+4. Can suspend/change status of a customer account
+5. Can view/edit/delete customer accounts
+
+As the application grows and scales the administrator context would have more responsibilities.
+
+1. The application would need more than one administrator and more so more than one category of administrators. In the
+case of MPESA, some examples of administrators with their roles include:
+
+    i. Customer Care - is a part admin who would assist customers with information about the system and troubleshoot
+    problems.
+    
+    ii. Finance - is a part admin whose responsibilities would be financial and accounting aspect in the system.
+    
+    iii. IT - an admin whose responsible for the infrastructure that the system runs on.
+    
+    iv. 
+
+##### 2. Agent Context
+We have acquired or developed a wallet and money transfer service for a Telco and we have been given the go ahead by the
+Central Bank to deploy the application and get some customers to use our system. There are however some initial steps
+the business has to perform to start onboarding new customers. The system should be able to have some level of autonomy
+when it comes to the flow of money. That is where agents come in.
+
+> The initial obstacle in the pilot was gaining the agent’s trust and encouraging them to process cash withdrawals
+> and agent training.
+>
+> *Source [wikipedia](https://en.wikipedia.org/wiki/M-Pesa#cite_note-8)*
+
+Our first initial steps before we can roll out
+
+1. Acquire and entity licensed to hold public money. A bank.
+2. Create a super agent(s) whose task would be depositing money to our bank account.
+3. Once a super agent deposits to our account, we assign them with an equivalent amount of float they can sell
+to other agents.
+4. When we onboard an ordinary agent, they will have a balance of zero, and they will approach the super agent to get
+float.
+
+Agents are important customers to the system. They can also have various categories depending on the business use case.
+For our example we have 2 types of agents:
+
+1. Super Agent
+2. Ordinary Agent
+
+##### 3. Merchant Context
+MPESA has 2 types of merchants.
+
+1. A merchant to provides utility services to their customers
+2. A merchant that sells goods and services to customers
+
+Both merchants have unique ways of how customers pay for their services/goods. However both merchants have an account number.
+
+1.  Pay bill number as an account number for a merchant - Customer provides the `pay bill number`, `a customer
+account number` and the `amount`.
+2.  Till number as an account number for a merchant - Customer provides the `till number` and `amount`.
+
+`Pay bill number` is usually given to utility companies that need to identify from whom the payment is coming from by the
+`customer account number`.
+
+`Till number` is usually given to small scale traders that want to accept payment via MPESA from their customers.
+
+For our example we stick to one general merchant that accepts payment.
+
+##### 4. Subscriber Context
+A subscriber does not have much going on. They can authenticate and perform a transaction.
+
+##### 5. Transaction Context
+Contains all business logic in regard to transactions happening in the system. It enforces the transaction rules and
+business policy.
+
+Business policies:
+
+1. A transaction cannot happen between identical customers i.e a customer cannot transact with themselves
+2. A deposit cannot be done by none other customer than an agent
+3. A customer cannot perform a withdrawal with no other customer than an agent
+4. A super agent is however only allowed to do deposits for other agents only
+5. Customers are not allowed to deposit, withdraw or transfer money below the minimum amount allowed
+6.
+
+##### 6. Account Context
+The main responsibility of this context is managing customer accounts/wallets. Responsibilities:
+
+1. Updating account balances, credit/debit accounts
+2. Updating system ledger after changing account balances
+3. 
+
+##### 7. Statement Context
+The main responsibility of this context is managing the system ledger. If we scale the system, we can view this ledger
+as the statements/transactions event store. Borrowing from `event sourcing` design, our statement context is a record
+of every event with customer transactions.
+
+##### 8. Tariff Context
+This context has a responsibility of configuring and maintaining the tariff used in various transactions.
+
+##### 9. Auth Context
+The system has 4 different types of users, `admin`, `agent`, `subscriber` and `merchant`. The auth context is responsible
+for authenticating and authorizing these users into the system.
+
+##### 10. Customer Context
+This context is mainly an aggregator of the `agent`, `merchant` and `subscriber` contexts. It exposes common functionality
+for, which can be used in other core contexts.
+
+
 
 ## Installation
 
