@@ -46,18 +46,18 @@ func (acc Account) Balance() float64 {
 }
 
 // Credit add an amount to account balance and return it
-func (acc Account) Credit(amount Shillings) Cents {
+func (acc Account) Credit(amount Cents) Cents {
 	// convert incoming amount into cents and add to account balance
-	return amount.ToCents() + acc.AvailableBalance
+	return amount + acc.AvailableBalance
 }
 
 // Debit subtract an amount from account balance and return it
-func (acc Account) Debit(amount Shillings) Cents {
+func (acc Account) Debit(amount Cents) Cents {
 	// convert incoming amount into cents and subtract to account balance
-	return acc.AvailableBalance - amount.ToCents()
+	return acc.AvailableBalance - amount
 }
 
 // IsBalanceLessThanAmount converts amount into cents and returns true if balance is less than amount
-func (acc Account) IsBalanceLessThanAmount(amount Shillings) bool {
-	return acc.AvailableBalance < amount.ToCents()
+func (acc Account) IsBalanceLessThanAmount(amount Cents) bool {
+	return acc.AvailableBalance < amount
 }
