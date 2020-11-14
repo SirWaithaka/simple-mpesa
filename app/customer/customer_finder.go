@@ -78,7 +78,7 @@ func (f finder) FindIDByEmail(email string, userType models.UserType) (uuid.UUID
 			return uuid.Nil, err
 		}
 		return merch.ID, nil
-	case models.UserTypeSubscriber:
+	case models.UserTypSubscriber:
 		sub, err := f.FindSubscriberByEmail(email)
 		if err != nil {
 			return uuid.Nil, err

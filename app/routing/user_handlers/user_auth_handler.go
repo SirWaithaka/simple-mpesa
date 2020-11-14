@@ -21,7 +21,7 @@ func Authenticate(domain *registry.Domain, config app.Config) fiber.Handler {
 			return AuthenticateAgent(domain.Agent, config)(ctx)
 		case models.UserTypMerchant:
 			return AuthenticateMerchant(domain.Merchant, config)(ctx)
-		case models.UserTypeSubscriber:
+		case models.UserTypSubscriber:
 			return AuthenticateSubscriber(domain.Subscriber, config)(ctx)
 		default:
 			return fiber.ErrNotFound
@@ -42,7 +42,7 @@ func Register(domain *registry.Domain) fiber.Handler {
 			return RegisterAgent(domain.Agent)(ctx)
 		case models.UserTypMerchant:
 			return RegisterMerchant(domain.Merchant)(ctx)
-		case models.UserTypeSubscriber:
+		case models.UserTypSubscriber:
 			return RegisterSubscriber(domain.Subscriber)(ctx)
 		default:
 			return fiber.ErrNotFound

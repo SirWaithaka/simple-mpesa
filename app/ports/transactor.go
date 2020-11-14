@@ -99,7 +99,7 @@ func (tr transactorAdapter) Transfer(source models.TxnCustomer, destAccNumber st
 		}
 
 		customerID = merch.ID
-	case models.UserTypeSubscriber:
+	case models.UserTypSubscriber:
 		sub, err := tr.customerFinder.FindSubscriberByEmail(destAccNumber)
 		if err != nil {
 			return err
