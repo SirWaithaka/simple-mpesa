@@ -17,3 +17,8 @@ type Tariff struct {
 
 	gorm.Model
 }
+
+func (t *Tariff) BeforeCreate(tx *gorm.DB) error {
+	t.ID, _ = uuid.NewV4()
+	return nil
+}
