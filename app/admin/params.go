@@ -6,6 +6,7 @@ import (
 
 	validation "github.com/go-ozzo/ozzo-validation/v4"
 	"github.com/go-ozzo/ozzo-validation/v4/is"
+	"github.com/gofrs/uuid"
 )
 
 // LoginParams are properties required during login of an admin
@@ -51,6 +52,20 @@ type AssignFloatParams struct {
 func (req AssignFloatParams) Validate() error {
 	err := validation.ValidateStruct(&req,
 		validation.Field(&req.AgentAccountNumber, validation.Required.Error(string(errors.ErrorAccountNumberRequired))),
+		validation.Field(&req.Amount, validation.Required.Error(string(errors.ErrorAmountRequired))),
+	)
+
+	return errors.ParseValidationErrorMap(err)
+}
+
+type UpdateChargeParams struct {
+	ChargeID uuid.UUID    `json:"chargeId" schema:"chargeId" form:"chargeId"`
+	Amount   models.Cents `json:"amount" schema:"amount" form:"amount"`
+}
+
+func (req UpdateChargeParams) Validate() error {
+	err := validation.ValidateStruct(&req,
+		validation.Field(&req.ChargeID, validation.Required.Error(string(errors.ErrorChargeIDRequired))),
 		validation.Field(&req.Amount, validation.Required.Error(string(errors.ErrorAmountRequired))),
 	)
 

@@ -32,14 +32,14 @@ func AuthenticateSubscriber(subDomain subscriber.Interactor, config app.Config) 
 		}
 
 		// generate an auth token string
-		token, err := auth.GetTokenString(sub.ID, models.UserTypeSubscriber, config.Secret)
+		token, err := auth.GetTokenString(sub.ID, models.UserTypSubscriber, config.Secret)
 		if err != nil {
 			return err
 		}
 
 		signedUser := models.SignedUser{
 			UserID:   sub.ID.String(),
-			UserType: models.UserTypeSubscriber,
+			UserType: models.UserTypSubscriber,
 			Token:    token,
 		}
 		_ = ctx.Status(http.StatusOK).JSON(signedUser)
@@ -67,7 +67,7 @@ func RegisterSubscriber(subDomain subscriber.Interactor) fiber.Handler {
 		}
 
 		// we use a presenter to reformat the response of subscriber.
-		_ = ctx.Status(http.StatusOK).JSON(responses.RegistrationResponse(sub.ID, models.UserTypeSubscriber))
+		_ = ctx.Status(http.StatusOK).JSON(responses.RegistrationResponse(sub.ID, models.UserTypSubscriber))
 
 		return nil
 	}

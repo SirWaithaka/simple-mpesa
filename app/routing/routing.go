@@ -35,11 +35,13 @@ func apiRouteGroup(api fiber.Router, domain *registry.Domain, config app.Config)
 	// create group at /api/admin
 	admin := api.Group("/admin", middleware.AuthByBearerToken(config.Secret))
 	admin.Post("/assign-float", user_handlers.AssignFloat(domain.Admin))
+	admin.Post("/update-charge", user_handlers.UpdateCharge(domain.Tariff))
+	admin.Get("/get-tariff", user_handlers.GetTariff(domain.Tariff))
 
 	// create group at /api/account
 	account := api.Group("/account", middleware.AuthByBearerToken(config.Secret))
 	account.Get("/balance", account_handlers.BalanceEnquiry(domain.Account))
-	account.Get("/statement", account_handlers.MiniStatement(domain.Transaction))
+	account.Get("/statement", account_handlers.MiniStatement(domain.Statement))
 
 	// create group at /api/transaction
 	transaction := api.Group("/transaction", middleware.AuthByBearerToken(config.Secret))

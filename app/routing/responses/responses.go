@@ -9,7 +9,7 @@ import (
 type SuccessResponse struct {
 	Status  string      `json:"status"`
 	Message string      `json:"message"`
-	Data    interface{} `json:"data"`
+	Data    interface{} `json:"data,omitempty"`
 }
 
 func successResponse(message string, data interface{}) SuccessResponse {

@@ -68,7 +68,7 @@ func (tr transactorAdapter) Withdraw(withdrawer models.TxnCustomer, agentNumber 
 			UserType: models.UserTypAgent,
 		},
 
-		TxnOperation: models.TxnOpWithdrawal,
+		TxnOperation: models.TxnOpWithdraw,
 		Amount:       amount,
 	}
 	err = tr.transactor.Transact(tx)
@@ -99,7 +99,7 @@ func (tr transactorAdapter) Transfer(source models.TxnCustomer, destAccNumber st
 		}
 
 		customerID = merch.ID
-	case models.UserTypeSubscriber:
+	case models.UserTypSubscriber:
 		sub, err := tr.customerFinder.FindSubscriberByEmail(destAccNumber)
 		if err != nil {
 			return err

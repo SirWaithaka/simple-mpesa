@@ -5,51 +5,54 @@ import (
 	"time"
 
 	"simple-mpesa/app/models"
+	"simple-mpesa/app/statement"
 
 	"github.com/gofrs/uuid"
 )
 
 type transactionStatement struct {
-	ID        uuid.UUID           `json:"transactionId"`
-	Type      models.TxnOperation `json:"transactionType"`
-	Timestamp time.Time           `json:"timestamp"`
-	Amount    float64             `json:"amount"`
-	UserID    uuid.UUID           `json:"userId"`
-	AccountID uuid.UUID           `json:"accountId"`
+	ID             uuid.UUID           `json:"transactionId"`
+	Type           models.TxnOperation `json:"transactionType"`
+	CreatedAt      time.Time           `json:"createdAt"`
+	CreditedAmount float64             `json:"creditedAmount"`
+	DebitedAmount  float64             `json:"debitedAmount"`
+	UserID         uuid.UUID           `json:"userId"`
+	AccountID      uuid.UUID           `json:"accountId"`
 }
 
 type miniStatementResponse struct {
 	Message string    `json:"message"`
 	UserID  uuid.UUID `json:"userID"`
 
-	Transactions []transactionStatement `json:"transactions"`
+	Statements []transactionStatement `json:"transactions"`
 }
 
-func MiniStatementResponse(userID uuid.UUID, transactions []models.Transaction) SuccessResponse {
-	var txns []transactionStatement
-	for _, txn := range transactions {
-		txns = append(txns, transactionStatement{
-			ID:        txn.ID,
-			Type:      txn.Operation,
-			Timestamp: txn.Timestamp,
-			Amount:    txn.Amount,
-			UserID:    txn.UserID,
-			AccountID: txn.AccountID,
+func MiniStatementResponse(userID uuid.UUID, statements []statement.Statement) SuccessResponse {
+	var stmts []transactionStatement
+	for _, stmt := range statements {
+		stmts = append(stmts, transactionStatement{
+			ID:             stmt.ID,
+			Type:           stmt.Operation,
+			CreatedAt:      stmt.CreatedAt,
+			CreditedAmount: stmt.CreditAmount,
+			DebitedAmount:  stmt.DebitAmount,
+			UserID:         stmt.UserID,
+			AccountID:      stmt.AccountID,
 		})
 	}
 
 	msg := "mini statement retrieved for the past 5 transactions"
 	data := miniStatementResponse{
-		Message:      msg,
-		UserID:       userID,
-		Transactions: txns,
+		Message:    msg,
+		UserID:     userID,
+		Statements: stmts,
 	}
 
 	return successResponse(msg, data)
 }
 
 type transactionResponse struct {
-	Message string    `json:"message"`
+	Message string `json:"message"`
 }
 
 func TransactionResponse() SuccessResponse {

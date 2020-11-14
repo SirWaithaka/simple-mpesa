@@ -8,6 +8,7 @@ import (
 	"simple-mpesa/app/auth"
 	"simple-mpesa/app/models"
 	"simple-mpesa/app/routing/responses"
+	"simple-mpesa/app/tariff"
 
 	"github.com/gofiber/fiber/v2"
 	"github.com/gofrs/uuid"
@@ -93,6 +94,51 @@ func AssignFloat(adminDomain admin.Interactor) fiber.Handler {
 
 		// we use a presenter to reformat the response of admin.
 		_ = ctx.Status(http.StatusOK).JSON(responses.BalanceResponse(uuid.Nil, balance))
+
+		return nil
+	}
+}
+
+func UpdateCharge(manager tariff.Manager) fiber.Handler {
+
+	return func(ctx *fiber.Ctx) error {
+
+		var params admin.UpdateChargeParams
+		_ = ctx.BodyParser(&params)
+
+		err := params.Validate()
+		if err != nil {
+			return err
+		}
+
+		err = manager.UpdateCharge(params.ChargeID, params.Amount)
+		if err != nil {
+			return err
+		}
+
+		_ = ctx.Status(http.StatusOK).JSON(responses.SuccessResponse{
+			Status:  "success",
+			Message: "charge updated",
+		})
+
+		return nil
+	}
+}
+
+func GetTariff(manager tariff.Manager) fiber.Handler {
+
+	return func(ctx *fiber.Ctx) error {
+
+		charges, err := manager.GetTariff()
+		if err != nil {
+			return err
+		}
+
+		_ = ctx.Status(http.StatusOK).JSON(responses.SuccessResponse{
+			Status:  "success",
+			Message: "tariff retrieved",
+			Data: charges,
+		})
 
 		return nil
 	}

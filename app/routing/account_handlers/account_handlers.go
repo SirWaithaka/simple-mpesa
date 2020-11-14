@@ -8,7 +8,7 @@ import (
 	"simple-mpesa/app/errors"
 	"simple-mpesa/app/models"
 	"simple-mpesa/app/routing/responses"
-	"simple-mpesa/app/transaction"
+	"simple-mpesa/app/statement"
 
 	"github.com/gofiber/fiber/v2"
 )
@@ -40,7 +40,7 @@ func BalanceEnquiry(interactor account.Interactor) fiber.Handler {
 
 // MiniStatement returns a small short summary of the
 // most recent transactions on an account.
-func MiniStatement(interactor transaction.Interactor) fiber.Handler {
+func MiniStatement(interactor statement.Interactor) fiber.Handler {
 
 	return func(ctx *fiber.Ctx) error {
 		var userDetails auth.UserAuthDetails
@@ -50,11 +50,11 @@ func MiniStatement(interactor transaction.Interactor) fiber.Handler {
 			userDetails = details
 		}
 
-		transactions, err := interactor.GetStatement(userDetails.UserID)
+		statements, err := interactor.GetStatement(userDetails.UserID)
 		if err != nil {
 			return err
 		}
 
-		return ctx.Status(http.StatusOK).JSON(responses.MiniStatementResponse(userDetails.UserID, *transactions))
+		return ctx.Status(http.StatusOK).JSON(responses.MiniStatementResponse(userDetails.UserID, statements))
 	}
 }

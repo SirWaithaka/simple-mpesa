@@ -83,7 +83,7 @@ func (i interactor) AssignFloat(params AssignFloatParams) (float64, error) {
 		return 0, err
 	}
 
-	balance, err := i.accountant.CreditAccount(agent.ID, params.Amount, models.TxnFloatAssignment)
+	balance, err := i.accountant.CreditAccount(agent.ID, params.Amount.ToCents(), models.TxnFloatAssignment)
 	if err != nil {
 		return 0, err
 	}
