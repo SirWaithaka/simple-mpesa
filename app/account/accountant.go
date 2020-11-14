@@ -9,8 +9,8 @@ import (
 )
 
 type Accountant interface {
-	DebitAccount(userID uuid.UUID, amount models.Shillings, reason models.TxnOperation) (float64, error)
-	CreditAccount(userID uuid.UUID, amount models.Shillings, reason models.TxnOperation) (float64, error)
+	DebitAccount(userID uuid.UUID, amount models.Cents, reason models.TxnOperation) (float64, error)
+	CreditAccount(userID uuid.UUID, amount models.Cents, reason models.TxnOperation) (float64, error)
 }
 
 func NewAccountant(accountRepo Repository, ledger statement.Ledger) Accountant {
@@ -39,7 +39,7 @@ func (a accountant) isUserAccAccessible(userID uuid.UUID) (*models.Account, erro
 
 }
 
-func (a accountant) CreditAccount(userID uuid.UUID, amount models.Shillings, reason models.TxnOperation) (float64, error) {
+func (a accountant) CreditAccount(userID uuid.UUID, amount models.Cents, reason models.TxnOperation) (float64, error) {
 	acc, err := a.isUserAccAccessible(userID)
 	if err != nil {
 		return 0, err
@@ -52,7 +52,7 @@ func (a accountant) CreditAccount(userID uuid.UUID, amount models.Shillings, rea
 		return 0, err
 	}
 
-	err = a.ledger.Record(userID, *acc, reason, amount, statement.TypeCredit)
+	err = a.ledger.Record(userID, *acc, reason, amount.ToShillings(), statement.TypeCredit)
 	if err != nil {
 		return 0, err
 	}
@@ -60,7 +60,7 @@ func (a accountant) CreditAccount(userID uuid.UUID, amount models.Shillings, rea
 	return acc.Balance(), nil
 }
 
-func (a accountant) DebitAccount(userID uuid.UUID, amount models.Shillings, reason models.TxnOperation) (float64, error) {
+func (a accountant) DebitAccount(userID uuid.UUID, amount models.Cents, reason models.TxnOperation) (float64, error) {
 	acc, err := a.isUserAccAccessible(userID)
 	if err != nil {
 		return 0, err
@@ -70,7 +70,7 @@ func (a accountant) DebitAccount(userID uuid.UUID, amount models.Shillings, reas
 	if acc.IsBalanceLessThanAmount(amount) {
 		e := errors.ErrNotEnoughBalance{
 			Message: errors.DebitAmountAboveBalance,
-			Amount:  amount,
+			Amount:  amount.ToShillings(),
 			Balance: acc.Balance(),
 		}
 		return 0, errors.Error{Err: e}
@@ -83,7 +83,7 @@ func (a accountant) DebitAccount(userID uuid.UUID, amount models.Shillings, reas
 		return 0, err
 	}
 
-	err = a.ledger.Record(userID, *acc, reason, amount, statement.TypeDebit)
+	err = a.ledger.Record(userID, *acc, reason, amount.ToShillings(), statement.TypeDebit)
 	if err != nil {
 		return 0, err
 	}
