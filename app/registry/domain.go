@@ -22,6 +22,7 @@ type Domain struct {
 
 	Account     account.Interactor
 	Transaction transaction.Interactor
+	Statement   statement.Interactor
 
 	Transactor ports.TransactorPort
 }
@@ -49,6 +50,7 @@ func NewDomain(config app.Config, database *storage.Database, channels *Channels
 		Subscriber:  subscriber.NewInteractor(config, subscriberRepo, channels.ChannelNewUsers),
 		Account:     account.NewInteractor(accRepo, channels.ChannelNewUsers, channels.ChannelNewTransactions),
 		Transaction: transaction.NewInteractor(txnRepo, channels.ChannelNewTransactions),
+		Statement:   statement.NewInteractor(statementRepo),
 		Transactor:  ports.NewTransactor(customerFinder, transactor),
 	}
 }
