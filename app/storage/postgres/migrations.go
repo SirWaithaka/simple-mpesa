@@ -6,6 +6,7 @@ import (
 	"simple-mpesa/app/models"
 	"simple-mpesa/app/statement"
 	"simple-mpesa/app/storage"
+	"simple-mpesa/app/tariff"
 )
 
 // Migrate updates the db with new columns, and tables
@@ -19,6 +20,7 @@ func Migrate(database *storage.Database) {
 		models.Account{},
 		models.Transaction{},
 		statement.Statement{},
+		tariff.Tariff{},
 	)
 
 	if err != nil {
