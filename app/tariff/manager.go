@@ -9,6 +9,7 @@ import (
 
 type Manager interface {
 	GetCharge(operation models.TxnOperation, src models.UserType, dest models.UserType) (models.Cents, error)
+	GetTariff() ([]Tariff, error)
 	UpdateCharge(txOperation models.TxnOperation, source models.UserType, dest models.UserType, charge models.Cents) error
 }
 
@@ -33,6 +34,19 @@ func (mg manager) GetCharge(operation models.TxnOperation, src models.UserType, 
 	}
 
 	return tariff.Charge, nil
+}
+
+func (mg manager) GetTariff() ([]Tariff, error) {
+	charges, err := mg.repository.FetchAll()
+	if err != nil {
+		return nil, err
+	}
+
+	if len(charges) == 0 {
+		return nil, errors.Error{Code: errors.ENOTFOUND, Message: errors.ErrTariffNotSet}
+	}
+
+	return charges, nil
 }
 
 func (mg manager) UpdateCharge(txOperation models.TxnOperation, source models.UserType, dest models.UserType, charge models.Cents) error {

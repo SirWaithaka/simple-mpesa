@@ -11,6 +11,7 @@ import (
 
 type Repository interface {
 	Add(Tariff) (Tariff, error)
+	FetchAll() ([]Tariff, error)
 	Get(operation models.TxnOperation, src models.UserType, dest models.UserType) (Tariff, error)
 }
 
@@ -33,6 +34,16 @@ func (r repository) Add(tariff Tariff) (Tariff, error) {
 	}
 
 	return tariff, nil
+}
+
+func (r repository) FetchAll() ([]Tariff, error) {
+	var charges []Tariff
+	result := r.db.Find(&charges)
+	if err := result.Error; err != nil {
+		return nil, errors.Error{Err: result.Error, Code: errors.EINTERNAL}
+	}
+
+	return charges, nil
 }
 
 func (r repository) Get(operation models.TxnOperation, src models.UserType, dest models.UserType) (Tariff, error) {
