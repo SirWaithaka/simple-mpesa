@@ -9,9 +9,9 @@ import (
 type TxnOperation string
 
 const (
-	TxnOpDeposit    = TxnOperation("DEPOSIT")
-	TxnOpWithdrawal = TxnOperation("WITHDRAWAL")
-	TxnOpTransfer   = TxnOperation("TRANSFER")
+	TxnOpDeposit  = TxnOperation("DEPOSIT")
+	TxnOpWithdraw = TxnOperation("WITHDRAW")
+	TxnOpTransfer = TxnOperation("TRANSFER")
 
 	// only used when an admin is assigning float to a super agent
 	TxnFloatAssignment = TxnOperation("FLOAT_ASSIGNMENT")
@@ -59,4 +59,15 @@ type Transaction struct {
 type TxnCustomer struct {
 	UserID   uuid.UUID
 	UserType UserType
+}
+
+// IsValidTxnOperation returns true if the given operation is among the defined
+func IsValidTxnOperation(operation TxnOperation) bool {
+	validOps := [3]TxnOperation{TxnOpDeposit, TxnOpWithdraw, TxnOpTransfer}
+	for _, op := range validOps {
+		if op == operation {
+			return true
+		}
+	}
+	return false
 }
