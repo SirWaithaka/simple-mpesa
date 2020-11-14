@@ -68,7 +68,7 @@ func (tr transactorAdapter) Withdraw(withdrawer models.TxnCustomer, agentNumber 
 			UserType: models.UserTypAgent,
 		},
 
-		TxnOperation: models.TxnOpWithdrawal,
+		TxnOperation: models.TxnOpWithdraw,
 		Amount:       amount,
 	}
 	err = tr.transactor.Transact(tx)
