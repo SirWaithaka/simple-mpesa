@@ -10,9 +10,9 @@ import (
 )
 
 type Repository interface {
-	Add(Tariff) (Tariff, error)
-	FetchAll() ([]Tariff, error)
-	Get(operation models.TxnOperation, src models.UserType, dest models.UserType) (Tariff, error)
+	Add(Charge) (Charge, error)
+	FetchAll() ([]Charge, error)
+	Get(operation models.TxnOperation, src models.UserType, dest models.UserType) (Charge, error)
 }
 
 func NewRepository(db *storage.Database) Repository {
@@ -23,21 +23,21 @@ type repository struct {
 	db *storage.Database
 }
 
-func (r repository) Add(tariff Tariff) (Tariff, error) {
-	result := r.db.Create(&tariff)
+func (r repository) Add(charge Charge) (Charge, error) {
+	result := r.db.Create(&charge)
 	if err := result.Error; err != nil {
 		// we check if the error is a postgres unique constraint violation
 		if pgerr, ok := err.(*pgconn.PgError); ok && pgerr.Code == "23505" {
-			return Tariff{}, errors.Error{Code: errors.ECONFLICT, Message: errors.ErrTariffExists}
+			return Charge{}, errors.Error{Code: errors.ECONFLICT, Message: errors.ErrChargeExists}
 		}
-		return Tariff{}, errors.Error{Err: err, Code: errors.EINTERNAL}
+		return Charge{}, errors.Error{Err: err, Code: errors.EINTERNAL}
 	}
 
-	return tariff, nil
+	return charge, nil
 }
 
-func (r repository) FetchAll() ([]Tariff, error) {
-	var charges []Tariff
+func (r repository) FetchAll() ([]Charge, error) {
+	var charges []Charge
 	result := r.db.Find(&charges)
 	if err := result.Error; err != nil {
 		return nil, errors.Error{Err: result.Error, Code: errors.EINTERNAL}
@@ -46,18 +46,18 @@ func (r repository) FetchAll() ([]Tariff, error) {
 	return charges, nil
 }
 
-func (r repository) Get(operation models.TxnOperation, src models.UserType, dest models.UserType) (Tariff, error) {
-	row := Tariff{Transaction: operation, SourceUserType: src, DestinationUserType: dest}
+func (r repository) Get(operation models.TxnOperation, src models.UserType, dest models.UserType) (Charge, error) {
+	row := Charge{Transaction: operation, SourceUserType: src, DestinationUserType: dest}
 
-	var tariff Tariff
-	result := r.db.Where(row).First(&tariff)
+	var charge Charge
+	result := r.db.Where(row).First(&charge)
 	// check if no record found.
 	if errors.Is(result.Error, gorm.ErrRecordNotFound) {
-		return Tariff{}, errors.Error{Code: errors.ENOTFOUND}
+		return Charge{}, errors.Error{Code: errors.ENOTFOUND}
 	}
 	if err := result.Error; err != nil {
-		return Tariff{}, errors.Error{Err: err, Code: errors.EINTERNAL}
+		return Charge{}, errors.Error{Err: err, Code: errors.EINTERNAL}
 	}
 
-	return tariff, nil
+	return charge, nil
 }

@@ -7,18 +7,18 @@ import (
 	"gorm.io/gorm"
 )
 
-type Tariff struct {
+type Charge struct {
 	ID uuid.UUID
 
 	Transaction         models.TxnOperation `gorm:"uniqueIndex:idx_unique_tx_identity"`
 	SourceUserType      models.UserType     `gorm:"uniqueIndex:idx_unique_tx_identity"`
 	DestinationUserType models.UserType     `gorm:"uniqueIndex:idx_unique_tx_identity"`
-	Charge              models.Cents
+	Fee                 models.Cents
 
 	gorm.Model
 }
 
-func (t *Tariff) BeforeCreate(tx *gorm.DB) error {
+func (t *Charge) BeforeCreate(tx *gorm.DB) error {
 	t.ID, _ = uuid.NewV4()
 	return nil
 }
