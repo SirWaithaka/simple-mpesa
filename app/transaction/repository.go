@@ -1,18 +1,13 @@
 package transaction
 
 import (
-	"time"
-
 	"simple-mpesa/app/errors"
 	"simple-mpesa/app/models"
 	"simple-mpesa/app/storage"
-
-	"github.com/gofrs/uuid"
 )
 
 type Repository interface {
 	Add(models.Transaction) (models.Transaction, error)
-	GetTransactions(userId uuid.UUID, from time.Time, limit int) (*[]models.Transaction, error)
 }
 
 type repository struct {
@@ -30,20 +25,4 @@ func (r repository) Add(tx models.Transaction) (models.Transaction, error) {
 	}
 
 	return tx, nil
-}
-
-func (r repository) GetTransactions(userId uuid.UUID, from time.Time, limit int) (*[]models.Transaction, error) {
-	var transactions []models.Transaction
-
-	result := r.database.Where(
-		models.Transaction{UserID: userId},
-	).Where(
-		"timestamp <= ?", from,
-	).Order("timestamp desc").Limit(limit).Find(&transactions)
-
-	if err := result.Error; err != nil {
-		return nil, errors.Error{Err: err, Code: errors.EINTERNAL}
-	}
-
-	return &transactions, nil
 }

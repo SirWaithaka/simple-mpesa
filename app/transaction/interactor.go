@@ -2,13 +2,10 @@ package transaction
 
 import (
 	"log"
-	"time"
 
 	"simple-mpesa/app/data"
 	"simple-mpesa/app/errors"
 	"simple-mpesa/app/models"
-
-	"github.com/gofrs/uuid"
 )
 
 const (
@@ -19,7 +16,6 @@ const (
 
 type Interactor interface {
 	AddTransaction(models.Transaction) error
-	GetStatement(userId uuid.UUID) (*[]models.Transaction, error)
 }
 
 type interactor struct {
@@ -49,16 +45,6 @@ func (i interactor) AddTransaction(tx models.Transaction) error {
 		return err
 	}
 	return nil
-}
-
-func (i interactor) GetStatement(userId uuid.UUID) (*[]models.Transaction, error) {
-	now := time.Now()
-	transactions, err := i.repository.GetTransactions(userId, now, 5)
-	if err != nil {
-		return nil, err
-	}
-
-	return transactions, nil
 }
 
 // func (i interactor) listenOnTxnEvents() {
