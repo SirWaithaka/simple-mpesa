@@ -12,7 +12,9 @@ const (
 	TxnOpDeposit    = TxnOperation("DEPOSIT")
 	TxnOpWithdrawal = TxnOperation("WITHDRAWAL")
 	TxnOpTransfer   = TxnOperation("TRANSFER")
-	// TxnOpBalance    = TxnOperation("BALANCE_ENQUIRY")
+
+	// only used when an admin is assigning float to a super agent
+	TxnFloatAssignment = TxnOperation("FLOAT_ASSIGNMENT")
 )
 
 type TxnState string

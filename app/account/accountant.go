@@ -3,20 +3,22 @@ package account
 import (
 	"simple-mpesa/app/errors"
 	"simple-mpesa/app/models"
+	"simple-mpesa/app/statement"
 
 	"github.com/gofrs/uuid"
 )
 
 type Accountant interface {
-	DebitAccount(userID uuid.UUID, amount models.Shillings) (float64, error)
-	CreditAccount(userID uuid.UUID, amount models.Shillings) (float64, error)
+	DebitAccount(userID uuid.UUID, amount models.Shillings, reason models.TxnOperation) (float64, error)
+	CreditAccount(userID uuid.UUID, amount models.Shillings, reason models.TxnOperation) (float64, error)
 }
 
-func NewAccountant(accountRepo Repository) Accountant {
-	return &accountant{accountRepo}
+func NewAccountant(accountRepo Repository, ledger statement.Ledger) Accountant {
+	return &accountant{repository: accountRepo, ledger: ledger}
 }
 
 type accountant struct {
+	ledger     statement.Ledger
 	repository Repository
 }
 
@@ -37,7 +39,7 @@ func (a accountant) isUserAccAccessible(userID uuid.UUID) (*models.Account, erro
 
 }
 
-func (a accountant) CreditAccount(userID uuid.UUID, amount models.Shillings) (float64, error) {
+func (a accountant) CreditAccount(userID uuid.UUID, amount models.Shillings, reason models.TxnOperation) (float64, error) {
 	acc, err := a.isUserAccAccessible(userID)
 	if err != nil {
 		return 0, err
@@ -50,11 +52,15 @@ func (a accountant) CreditAccount(userID uuid.UUID, amount models.Shillings) (fl
 		return 0, err
 	}
 
-	// a.postTransactionDetails(userID, *acc, models.TxnOpDeposit)
+	err = a.ledger.Record(userID, *acc, reason, amount, statement.TypeCredit)
+	if err != nil {
+		return 0, err
+	}
+
 	return acc.Balance(), nil
 }
 
-func (a accountant) DebitAccount(userID uuid.UUID, amount models.Shillings) (float64, error) {
+func (a accountant) DebitAccount(userID uuid.UUID, amount models.Shillings, reason models.TxnOperation) (float64, error) {
 	acc, err := a.isUserAccAccessible(userID)
 	if err != nil {
 		return 0, err
@@ -77,6 +83,10 @@ func (a accountant) DebitAccount(userID uuid.UUID, amount models.Shillings) (flo
 		return 0, err
 	}
 
-	// a.postTransactionDetails(userID, *acc, models.TxnOpWithdrawal)
+	err = a.ledger.Record(userID, *acc, reason, amount, statement.TypeDebit)
+	if err != nil {
+		return 0, err
+	}
+
 	return acc.Balance(), nil
 }

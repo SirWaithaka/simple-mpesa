@@ -38,12 +38,12 @@ func (tr transactor) deposit(source, destination models.TxnCustomer, amount mode
 		return errors.Error{Code: errors.EINVALID, Message: errors.CustomerCantDeposit}
 	}
 
-	srcNewBal, err := tr.accountant.DebitAccount(source.UserID, amount)
+	srcNewBal, err := tr.accountant.DebitAccount(source.UserID, amount, models.TxnOpDeposit)
 	if err != nil {
 		return err
 	}
 
-	destNewBal, err := tr.accountant.CreditAccount(destination.UserID, amount)
+	destNewBal, err := tr.accountant.CreditAccount(destination.UserID, amount, models.TxnOpDeposit)
 	if err != nil {
 		return err
 	}
@@ -69,12 +69,12 @@ func (tr transactor) withdraw(source, destination models.TxnCustomer, amount mod
 	// we can implement a double withdrawal check here. That will prevent a user from
 	// withdrawing same amount twice within a stipulated time interval because of system lag.
 
-	srcNewBal, err := tr.accountant.DebitAccount(source.UserID, amount)
+	srcNewBal, err := tr.accountant.DebitAccount(source.UserID, amount, models.TxnOpWithdrawal)
 	if err != nil {
 		return err
 	}
 
-	destNewBal, err := tr.accountant.CreditAccount(destination.UserID, amount)
+	destNewBal, err := tr.accountant.CreditAccount(destination.UserID, amount, models.TxnOpWithdrawal)
 	if err != nil {
 		return err
 	}
@@ -90,12 +90,12 @@ func (tr transactor) transfer(source, destination models.TxnCustomer, amount mod
 		return errors.Error{Err: e}
 	}
 
-	srcNewBal, err := tr.accountant.DebitAccount(source.UserID, amount)
+	srcNewBal, err := tr.accountant.DebitAccount(source.UserID, amount, models.TxnOpTransfer)
 	if err != nil {
 		return err
 	}
 
-	destNewBal, err := tr.accountant.CreditAccount(destination.UserID, amount)
+	destNewBal, err := tr.accountant.CreditAccount(destination.UserID, amount, models.TxnOpTransfer)
 	if err != nil {
 		return err
 	}
