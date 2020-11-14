@@ -20,7 +20,7 @@ func Migrate(database *storage.Database) {
 		models.Account{},
 		models.Transaction{},
 		statement.Statement{},
-		tariff.Tariff{},
+		tariff.Charge{},
 	)
 
 	if err != nil {
