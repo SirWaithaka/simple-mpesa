@@ -37,20 +37,18 @@ func (e ValidationErrors) Error() string {
 }
 
 const (
-	ErrorFirstNameRequired            = ValidationError("first_name is a required field")
-	ErrorLastNameRequired             = ValidationError("last_name is a required field")
-	ErrorEmailRequired                = ValidationError("email is a required field")
-	ErrorPhoneNumberRequired          = ValidationError("phoneNumber is a required field")
-	ErrorPasswordRequired             = ValidationError("password is a required field")
-	ErrorInvalidUsernameOrPassword    = ValidationError("provided wrong username or password")
-	ErrorAmountRequired               = ValidationError("amount is a required field")
-	ErrorAgentNumberRequired          = ValidationError("agentNumber is a required field")
-	ErrorCustomerTypeRequired         = ValidationError("customerType is a required field")
-	ErrorAgentIDRequired              = ValidationError("agentID is a required field")
-	ErrorAccountNumberRequired        = ValidationError("accountNo is a required field")
-	ErrorTransactionOperationRequired = ValidationError("operation is a required field")
-	ErrorSourceTypeRequired           = ValidationError("sourceUserType is a required field")
-	ErrorDestinationTypeRequired      = ValidationError("destinationUserType is a required field")
+	ErrorFirstNameRequired         = ValidationError("first_name is a required field")
+	ErrorLastNameRequired          = ValidationError("last_name is a required field")
+	ErrorEmailRequired             = ValidationError("email is a required field")
+	ErrorPhoneNumberRequired       = ValidationError("phoneNumber is a required field")
+	ErrorPasswordRequired          = ValidationError("password is a required field")
+	ErrorInvalidUsernameOrPassword = ValidationError("provided wrong username or password")
+	ErrorAmountRequired            = ValidationError("amount is a required field")
+	ErrorAgentNumberRequired       = ValidationError("agentNumber is a required field")
+	ErrorCustomerTypeRequired      = ValidationError("customerType is a required field")
+	ErrorAgentIDRequired           = ValidationError("agentID is a required field")
+	ErrorAccountNumberRequired     = ValidationError("accountNo is a required field")
+	ErrorChargeIDRequired          = ValidationError("chargeId is a required field")
 )
 
 // ParseValidationErrorMap takes in the error map that go-ozzo validation
