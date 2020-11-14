@@ -6,6 +6,7 @@ import (
 	"simple-mpesa/app/account"
 	"simple-mpesa/app/errors"
 	"simple-mpesa/app/models"
+	"simple-mpesa/app/tariff"
 )
 
 type Transactor interface {
@@ -13,11 +14,12 @@ type Transactor interface {
 }
 
 func NewTransactor(accountant account.Accountant) Transactor {
-	return &transactor{accountant}
+	return &transactor{accountant: accountant}
 }
 
 type transactor struct {
 	accountant account.Accountant
+	tariff     tariff.Manager
 }
 
 // in mobile money a deposit will happen from the account of an agent to the other customer. The source is the agent's
@@ -38,12 +40,15 @@ func (tr transactor) deposit(source, destination models.TxnCustomer, amount mode
 		return errors.Error{Code: errors.EINVALID, Message: errors.CustomerCantDeposit}
 	}
 
-	srcNewBal, err := tr.accountant.DebitAccount(source.UserID, amount, models.TxnOpDeposit)
+	// get the charge applicable to this transaction
+	// usually depositing has no transaction cost
+
+	srcNewBal, err := tr.accountant.DebitAccount(source.UserID, amount.ToCents(), models.TxnOpDeposit)
 	if err != nil {
 		return err
 	}
 
-	destNewBal, err := tr.accountant.CreditAccount(destination.UserID, amount, models.TxnOpDeposit)
+	destNewBal, err := tr.accountant.CreditAccount(destination.UserID, amount.ToCents(), models.TxnOpDeposit)
 	if err != nil {
 		return err
 	}
@@ -69,12 +74,22 @@ func (tr transactor) withdraw(source, destination models.TxnCustomer, amount mod
 	// we can implement a double withdrawal check here. That will prevent a user from
 	// withdrawing same amount twice within a stipulated time interval because of system lag.
 
-	srcNewBal, err := tr.accountant.DebitAccount(source.UserID, amount, models.TxnOpWithdrawal)
+	// get the charge applicable to this transaction
+	charge, err := tr.tariff.Get(models.TxnOpWithdrawal, source.UserType, destination.UserType)
 	if err != nil {
 		return err
 	}
 
-	destNewBal, err := tr.accountant.CreditAccount(destination.UserID, amount, models.TxnOpWithdrawal)
+	// we apply a transaction fee to the transaction
+	// when withdrawing the source is charged the fee (customer)
+	amt := amount.ToCents() + charge
+
+	srcNewBal, err := tr.accountant.DebitAccount(source.UserID, amt, models.TxnOpWithdrawal)
+	if err != nil {
+		return err
+	}
+
+	destNewBal, err := tr.accountant.CreditAccount(destination.UserID, amount.ToCents(), models.TxnOpWithdrawal)
 	if err != nil {
 		return err
 	}
@@ -90,12 +105,22 @@ func (tr transactor) transfer(source, destination models.TxnCustomer, amount mod
 		return errors.Error{Err: e}
 	}
 
-	srcNewBal, err := tr.accountant.DebitAccount(source.UserID, amount, models.TxnOpTransfer)
+	// get the charge applicable to this transaction
+	charge, err := tr.tariff.Get(models.TxnOpTransfer, source.UserType, destination.UserType)
 	if err != nil {
 		return err
 	}
 
-	destNewBal, err := tr.accountant.CreditAccount(destination.UserID, amount, models.TxnOpTransfer)
+	// we apply the transaction fee to the transaction
+	// when making a transfer, it is the source that is charged
+	amt := amount.ToCents() + charge
+
+	srcNewBal, err := tr.accountant.DebitAccount(source.UserID, amt, models.TxnOpTransfer)
+	if err != nil {
+		return err
+	}
+
+	destNewBal, err := tr.accountant.CreditAccount(destination.UserID, amount.ToCents(), models.TxnOpTransfer)
 	if err != nil {
 		return err
 	}
