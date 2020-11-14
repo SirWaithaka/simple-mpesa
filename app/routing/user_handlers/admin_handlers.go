@@ -99,11 +99,11 @@ func AssignFloat(adminDomain admin.Interactor) fiber.Handler {
 	}
 }
 
-func AddCharge(manager tariff.Manager) fiber.Handler {
+func UpdateCharge(manager tariff.Manager) fiber.Handler {
 
 	return func(ctx *fiber.Ctx) error {
 
-		var params admin.AddChargeParams
+		var params admin.UpdateChargeParams
 		_ = ctx.BodyParser(&params)
 
 		err := params.Validate()
@@ -111,14 +111,14 @@ func AddCharge(manager tariff.Manager) fiber.Handler {
 			return err
 		}
 
-		err = manager.UpdateCharge(params.TxnOperation, params.SrcUserType, params.DestUserType, params.Amount)
+		err = manager.UpdateCharge(params.ChargeID, params.Amount)
 		if err != nil {
 			return err
 		}
 
 		_ = ctx.Status(http.StatusOK).JSON(responses.SuccessResponse{
 			Status:  "success",
-			Message: "charge configured",
+			Message: "charge updated",
 		})
 
 		return nil
