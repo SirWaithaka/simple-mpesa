@@ -31,8 +31,14 @@ func (tr transactor) deposit(source, destination models.TxnCustomer, amount mode
 	}
 
 	// the source should always be an agent
-	if source.UserType != models.UserTypAgent {
+	// a super agent too is allowed to do deposits to other agents
+	if !source.UserType.IsAgent() {
 		return errors.Error{Code: errors.EINVALID, Message: errors.DepositOnlyAtAgent}
+	}
+
+	// a super agent is only allowed to deposit to another agent's account
+	if source.UserType == models.UserTypSuperAgent && destination.UserType != models.UserTypAgent {
+		return errors.Error{Code: errors.EINVALID, Message: errors.SuperAgentCantDeposit}
 	}
 
 	// a merchant is not allowed to deposit
@@ -64,6 +70,11 @@ func (tr transactor) withdraw(source, destination models.TxnCustomer, amount mod
 	if amount < minimumWithdrawalAmount {
 		e := errors.ErrAmountBelowMinimum(minimumWithdrawalAmount, errors.WithdrawAmountBelowMinimum)
 		return errors.Error{Err: e}
+	}
+
+	// a super agent cannot perform withdrawals for customers or withdraw
+	if destination.UserType == models.UserTypSuperAgent || source.UserType == models.UserTypSuperAgent {
+		return errors.Error{Code: errors.EINVALID, Message: errors.SuperAgentCantWithdraw}
 	}
 
 	// the destination should always be an agent
@@ -103,6 +114,12 @@ func (tr transactor) transfer(source, destination models.TxnCustomer, amount mod
 	if amount < minimumTransferAmount {
 		e := errors.ErrAmountBelowMinimum(minimumTransferAmount, errors.TransferAmountBelowMinimum)
 		return errors.Error{Err: e}
+	}
+
+	// a super agent is not allowed to make a transfer
+	// can only do a deposit
+	if source.UserType == models.UserTypSuperAgent || destination.UserType == models.UserTypSuperAgent {
+		return errors.Error{Code: errors.EINVALID, Message: errors.SuperAgentCantTransfer}
 	}
 
 	// get the charge applicable to this transaction
