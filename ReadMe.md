@@ -1,6 +1,7 @@
 Hi,
 
 If you love this project, and you are looking for a Go Engineer, hit me up [@SirWaithaka](https://twitter.com/craftsmon)
+or [email](sirewaithaka@gmail.com)
 
 # Simple MPESA RESTful API
 
