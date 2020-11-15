@@ -97,7 +97,7 @@ func (r repository) FindByEmail(email string) (models.Agent, error) {
 // Update
 func (r repository) Update(agent models.Agent) error {
 	var u models.Agent
-	result := r.db.Model(&u).Omit("id").Updates(agent)
+	result := r.db.Debug().Model(&u).Where(models.Agent{ID: agent.ID}).Omit("id").Updates(agent)
 	if err := result.Error; err != nil {
 		return errors.Error{Err: result.Error, Code: errors.EINTERNAL}
 	}

@@ -20,6 +20,9 @@ type Agent struct {
 	// transactions with other customers
 	AgentNumber string `gorm:"column:agent_number;unique"`
 
+	// an extra column/property that tells us if the agent is a super agent
+	SuperAgent SuperAgentStatus `gorm:"default:'0'"`// PS: bool values dont work well with gorm during updates
+
 	gorm.Model
 }
 
@@ -27,4 +30,25 @@ type Agent struct {
 func (u *Agent) BeforeCreate(tx *gorm.DB) error {
 	u.ID, _ = uuid.NewV4()
 	return nil
+}
+
+func (u Agent) IsSuperAgent() bool {
+	return u.SuperAgent == IsSuperAgent
+}
+
+// SuperAgentStatus
+type SuperAgentStatus string
+
+const (
+	IsNotSuperAgent = SuperAgentStatus('0')
+	IsSuperAgent    = SuperAgentStatus('1')
+)
+
+// Not returns the opposite, if that makes sense
+func (status SuperAgentStatus) Not() SuperAgentStatus {
+	if status == IsNotSuperAgent {
+		return IsSuperAgent
+	} else {
+		return IsNotSuperAgent
+	}
 }

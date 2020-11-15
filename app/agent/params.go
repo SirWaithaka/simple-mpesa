@@ -44,3 +44,16 @@ func (req RegistrationParams) Validate() error {
 
 	return errors.ParseValidationErrorMap(err)
 }
+
+type MakeSuperAgentParams struct {
+	Email string `json:"email" schema:"email" form:"email"`
+}
+
+func (req MakeSuperAgentParams) Validate() error {
+
+	err := validation.ValidateStruct(&req,
+		validation.Field(&req.Email, validation.Required.Error(string(errors.ErrorEmailRequired)), is.EmailFormat),
+	)
+
+	return errors.ParseValidationErrorMap(err)
+}

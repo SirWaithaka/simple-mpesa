@@ -1,6 +1,8 @@
 package agent
 
 import (
+	"log"
+
 	"simple-mpesa/app"
 	"simple-mpesa/app/data"
 	"simple-mpesa/app/errors"
@@ -11,6 +13,7 @@ import (
 type Interactor interface {
 	AuthenticateByEmail(email, password string) (models.Agent, error)
 	Register(RegistrationParams) (models.Agent, error)
+	UpdateSuperAgentStatus(email string) error
 }
 
 func NewInteractor(config app.Config, agentRepo Repository, custChan data.ChanNewCustomers) Interactor {
@@ -72,6 +75,25 @@ func (ui interactor) Register(params RegistrationParams) (models.Agent, error) {
 	// tell channel listeners that a new agent has been created.
 	ui.postNewAgentToChannel(&agt)
 	return agt, nil
+}
+
+func (ui interactor) UpdateSuperAgentStatus(email string) error {
+	agent, err := ui.repository.FindByEmail(email)
+	if errors.ErrorCode(err) == errors.ENOTFOUND {
+		return errors.Error{Err: err, Message: errors.ErrUserNotFound}
+	} else if err != nil {
+		return err
+	}
+
+	log.Printf("status before: %v", agent.SuperAgent)
+	agent.SuperAgent = agent.SuperAgent.Not()
+	log.Printf("status after: %v", agent.SuperAgent)
+	err = ui.repository.Update(agent)
+	if err != nil {
+		return err
+	}
+
+	return nil
 }
 
 // take the newly created agent and post them to channel
