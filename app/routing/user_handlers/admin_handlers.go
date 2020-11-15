@@ -5,6 +5,7 @@ import (
 
 	"simple-mpesa/app"
 	"simple-mpesa/app/admin"
+	"simple-mpesa/app/agent"
 	"simple-mpesa/app/auth"
 	"simple-mpesa/app/models"
 	"simple-mpesa/app/routing/responses"
@@ -140,6 +141,32 @@ func GetTariff(manager tariff.Manager) fiber.Handler {
 		}
 
 		_ = ctx.Status(http.StatusOK).JSON(responses.TariffResponse(charges))
+
+		return nil
+	}
+}
+
+func UpdateSuperAgentStatus(agentDomain agent.Interactor) fiber.Handler {
+
+	return func(ctx *fiber.Ctx) error {
+
+		var params agent.MakeSuperAgentParams
+		_ = ctx.BodyParser(&params)
+
+		err := params.Validate()
+		if err != nil {
+			return err
+		}
+
+		err = agentDomain.UpdateSuperAgentStatus(params.Email)
+		if err != nil {
+			return err
+		}
+
+		_ = ctx.Status(http.StatusOK).JSON(responses.SuccessResponse{
+			Status:  "success",
+			Message: "Super Agent Status updated",
+		})
 
 		return nil
 	}

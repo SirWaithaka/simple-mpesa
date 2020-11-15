@@ -92,7 +92,7 @@ customer and agents can make a withdrawal on behalf of another customer and in t
 
 An agent usually operates with a float account, and a separate commission account. The float account is an account they
 use to facilitate withdrawals and deposits. During onboarding, an agent is required to have a minimum amount in
-their float account.
+their float account before they can begin transacting. Agents can acquire this float from a `super-agent`.
 
 ##### - `Float Account`
 When doing a deposit for a customer, the agent receives cash from the customer and initiates the transaction. Money will
