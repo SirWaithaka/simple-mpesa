@@ -31,15 +31,21 @@ func AuthenticateAgent(agentDomain agent.Interactor, config app.Config) fiber.Ha
 			return err
 		}
 
+		// check if agent is a super agent
+		agentType := models.UserTypAgent
+		if agt.IsSuperAgent() {
+			agentType = models.UserTypSuperAgent
+		}
+
 		// generate an auth token string
-		token, err := auth.GetTokenString(agt.ID, models.UserTypAgent, config.Secret)
+		token, err := auth.GetTokenString(agt.ID, agentType, config.Secret)
 		if err != nil {
 			return err
 		}
 
 		signedUser := models.SignedUser{
 			UserID:   agt.ID.String(),
-			UserType: models.UserTypAgent,
+			UserType: agentType,
 			Token:    token,
 		}
 		_ = ctx.Status(http.StatusOK).JSON(signedUser)
