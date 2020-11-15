@@ -83,6 +83,11 @@ func (i interactor) AssignFloat(params AssignFloatParams) (float64, error) {
 		return 0, err
 	}
 
+	// float is only assignable to a super agent
+	if !agent.IsSuperAgent() {
+		return 0, errors.Error{Code: errors.EINVALID, Message: errors.ErrAgentNotSuperAgent}
+	}
+
 	balance, err := i.accountant.CreditAccount(agent.ID, params.Amount.ToCents(), models.TxnFloatAssignment)
 	if err != nil {
 		return 0, err
