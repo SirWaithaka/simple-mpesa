@@ -16,7 +16,6 @@ func Migrate(database *storage.Database) {
 		models.Agent{},
 		models.Merchant{},
 		models.Subscriber{},
-		models.User{},
 		models.Account{},
 		models.Transaction{},
 		statement.Statement{},

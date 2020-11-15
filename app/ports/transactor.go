@@ -1,5 +1,9 @@
 package ports
 
+/**
+	ports is definitely not the best name for this package.
+ */
+
 import (
 	"simple-mpesa/app/customer"
 	"simple-mpesa/app/models"
@@ -8,6 +12,11 @@ import (
 	"github.com/gofrs/uuid"
 )
 
+// TransactorPort is not a good name. Its function is to expose an interface to the application layer that it
+// can use to perform transactions.
+//
+// To keep the Transaction context clean from a dependency of the agent, merchant and subscriber contexts,
+// i chose to create this port separately.
 type TransactorPort interface {
 	Deposit(depositor models.TxnCustomer, customerNumber string, customerType models.UserType, amount models.Shillings) error
 	Transfer(source models.TxnCustomer, destAccNumber string, destCustomerType models.UserType, amount models.Shillings) error
