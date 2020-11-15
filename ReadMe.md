@@ -462,6 +462,7 @@ func apiRouteGroup(api fiber.Router, domain *registry.Domain, config app.Config)
 	admin.Post("/assign-float", user_handlers.AssignFloat(domain.Admin))
 	admin.Post("/update-charge", user_handlers.UpdateCharge(domain.Tariff))
 	admin.Get("/get-tariff", user_handlers.GetTariff(domain.Tariff))
+	admin.Put("/super-agent-status", user_handlers.UpdateSuperAgentStatus(domain.Agent))
 
 	// create group at /api/account
 	account := api.Group("/account", middleware.AuthByBearerToken(config.Secret))
@@ -483,6 +484,7 @@ POST /api/user/<user_type> # for registration   <-- user_type can be either of a
 POST /api/admin/assign-float
 POST /api/admin/update-charge
 GET /api/admin/get-tariff
+PUT /api/admin/super-agent-status
 GET /api/account/balance
 POST /api/account/statement
 POST /api/transaction/deposit
@@ -523,7 +525,8 @@ Response example
 ```
 
 ##### Agent Registration
-An agent can be registered to the api with the following `POST` parameters
+At minimum, you need to create 2 agents, one of which will become a `super agent`. An agent can be registered to the api
+with the following `POST` parameters
 
 `firstName`, `lastName`, `email`,  `phoneNumber`, `password`
 
@@ -638,9 +641,35 @@ Response example
 #### Initial Steps Before Transacting
 There are some initial setups that need to be done before you can begin doing transactions.
 
-##### 1. Assigning Float
-Before you can start transacting, you need to login as an administrator and assign float to your `super-agent` using the
-following endpoint
+##### 1. Creating a super agent
+Before you can start transacting, you need to login as an administrator and create a super agent by changing the status
+of an existing agent. When registering an agent, you ought to have created at minimum 2 agents. It is now that we need
+make one of those agents a super agent.
+
+The following endpoint is used to update the `super agent status` of an agent.
+
+`PUT /api/admin/super-agent-status` requires the following post parameters: `email`
+
+Curl request example
+```bash
+curl --request PUT \
+  --url http://localhost:6700/api/admin/super-agent-status \
+  --header 'authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyIjp7InVzZXJJZCI6Ijc2YmM0YWEzLTAyNWQtNGQ1YS1hNWZiLWY1NDk1NTdmNjM0YSIsInVzZXJUeXBlIjoiYWRtaW5pc3RyYXRvciJ9LCJleHAiOjE2MDU0NTE4MDUsImlhdCI6MTYwNTQzMDIwNX0.8lTWl9hGr9GTST7WpEpzKdm_gqhMkf4qUellLx4o5bw' \
+  --header 'content-type: application/x-www-form-urlencoded' \
+  --data email=agent_waithaka@email.com
+```
+
+Response example
+
+```json
+{
+  "status": "success",
+  "message": "Super Agent Status updated"
+}
+```
+
+##### 2. Assigning Float
+Logged in as an administrator, you need to assign float to your `super-agent` using the following endpoint
 
 `POST /api/admin/assign-float`
 
@@ -665,11 +694,11 @@ Response example
 }
 ```
 
-##### 2. Transfer Float to agents
+##### 3. Transfer Float to agents
 The `super-agent` is limited to depositing to agents only. You will need to transfer the acquired float to other agents
 you have registered.
 
-##### 3. Configure Tariff
+##### 4. Configure Tariff
 The default tariff in the system is set to zero amount for all chargeable transactions. You could begin testing transactions
 using the default tariff and later choose to configure your own tariff. Choose your poison :-).
 
