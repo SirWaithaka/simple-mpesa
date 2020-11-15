@@ -19,7 +19,7 @@ COPY configs/ ./configs
 
 # Build the application
 RUN mkdir bin/
-RUN go build -o bin/wallet-server cmd/wallet-server.go
+RUN go build -o bin/mpesa-server cmd/mpesa-server.go
 
 
 # Start the second image
@@ -42,9 +42,9 @@ COPY ReadMe.md/ ./ReadMe.md
 # copy application configuration from example file
 COPY config.yml.example config.yml
 
-COPY --from=go-builder /go/src/application/bin/wallet-server .
+COPY --from=go-builder /go/src/application/bin/mpesa-server .
 
 # expose the port that the server starts on
 EXPOSE 6700
 
-CMD ["./wallet-server"]
+CMD ["./mpesa-server"]
