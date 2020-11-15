@@ -360,7 +360,7 @@ for, which can be used in other core contexts.
 
 ## Installation
 
-To begin with the application uses postgres as the backend database.
+To begin with, the application uses postgres as the backend database.
 
 ### Database Installation
 
@@ -424,8 +424,9 @@ database installation step.
 
 ##### Using the Binary
 ```bash
-$ go build -o bin/wallet-server cmd/wallet-server.go 
-$ ./bin/wallet-server
+$ mkdir bin
+$ go build -o bin/mpesa-server cmd/mpesa-server.go 
+$ ./bin/mpesa-server
 ```
 
 It will install all dependencies required and produce a binary for your platform.
