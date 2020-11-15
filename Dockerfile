@@ -33,18 +33,17 @@ RUN cp /usr/share/zoneinfo/Africa/Nairobi /etc/localtime
 RUN echo "Africa/Nairobi" > /etc/timezone
 
 # set the working director in the container
-WORKDIR /root/app
+WORKDIR /go/app/
 
 # copy extra files that can be useful to someone reading the application image
-COPY Dockerfile/ ./Dockerfile
-COPY ReadMe.md/ ./ReadMe.md
+COPY Dockerfile .
+COPY ReadMe.md .
+COPY config.yml .
 
-# copy application configuration from example file
-COPY config.yml.example config.yml
-
-COPY --from=go-builder /go/src/application/bin/mpesa-server .
+RUN mkdir bin/
+COPY --from=go-builder /go/src/application/bin/mpesa-server ./bin
 
 # expose the port that the server starts on
 EXPOSE 6700
 
-CMD ["./mpesa-server"]
+CMD ["./bin/mpesa-server"]
