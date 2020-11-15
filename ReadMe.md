@@ -1,3 +1,7 @@
+Hi,
+
+If you love this project, and you are looking for a Go Engineer, hit me up [@SirWaithaka](https://twitter.com/craftsmon)
+
 # Simple MPESA RESTful API
 
 As the name of the project suggests, this is a simple implementation of MPESA. If you are East-African you already know what
