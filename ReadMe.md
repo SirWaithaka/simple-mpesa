@@ -436,7 +436,7 @@ Make sure you have docker installed and working properly.
 
 ```bash
 $ docker build -t simple-mpesa:latest .
-$ docker container create --name mpesa-server -p 6700:6700 --restart unless-stopped simple-mpesa
+$ docker container create --network=host --name mpesa-server --restart unless-stopped simple-mpesa
 $ docker container start mpesa-server
 ```
 
