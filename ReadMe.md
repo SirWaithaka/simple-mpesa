@@ -444,7 +444,7 @@ The server will start at port `6700`.
 
 Enjoy.
 
-## API
+## API Usage
 
 A description of the api.
 
@@ -676,7 +676,96 @@ using the default tariff and later choose to configure your own tariff. Choose y
 You can configure a tariff by updating the available charges. The system doesn't allow you to add any other charge band.
 
 `GET /api/admin/get-tariff` - use this endpoint to get the available configured transaction charges
-`POST /api/admin/update-charge` - use this endpoint to update a charge using its `id`. The amount should be in `cents`.
+
+Response example
+```json
+{
+  "status": "success",
+  "message": "Tariff retrieved",
+  "data": [
+    {
+      "id": "acf3e6bf-c9de-45b4-a8b6-bf97f92b783a",
+      "txnOperation": "WITHDRAW",
+      "srcUserType": "subscriber",
+      "destUserType": "agent",
+      "fee": 0
+    },
+    {
+      "id": "0e5a4aaa-135a-4464-96c9-d021f769bdb7",
+      "txnOperation": "WITHDRAW",
+      "srcUserType": "merchant",
+      "destUserType": "agent",
+      "fee": 0
+    },
+    {
+      "id": "243e7ecc-c2dd-41bb-9953-1278050bfb64",
+      "txnOperation": "WITHDRAW",
+      "srcUserType": "agent",
+      "destUserType": "agent",
+      "fee": 0
+    },
+    {
+      "id": "f8835176-316c-49de-b001-687e2c4a338d",
+      "txnOperation": "TRANSFER",
+      "srcUserType": "agent",
+      "destUserType": "agent",
+      "fee": 0
+    },
+    {
+      "id": "4edeb6d0-37cd-4c67-997a-0b3fa93b722d",
+      "txnOperation": "TRANSFER",
+      "srcUserType": "subscriber",
+      "destUserType": "subscriber",
+      "fee": 0
+    },
+    {
+      "id": "94c0ae8b-a131-41b9-b5af-5235b8926fa4",
+      "txnOperation": "TRANSFER",
+      "srcUserType": "merchant",
+      "destUserType": "subscriber",
+      "fee": 0
+    },
+    {
+      "id": "450e4baa-58c3-41b3-abe5-a55555492e0c",
+      "txnOperation": "TRANSFER",
+      "srcUserType": "subscriber",
+      "destUserType": "merchant",
+      "fee": 0
+    },
+    {
+      "id": "3623a89f-c496-41c8-b6c9-73429cc4ef9d",
+      "txnOperation": "TRANSFER",
+      "srcUserType": "agent",
+      "destUserType": "merchant",
+      "fee": 0
+    }
+  ]
+}
+```
+
+`POST /api/admin/update-charge` - use this endpoint to update a charge using its `id`.
+
+You need the following `POST` parameters
+
+`amount`, `chargeId` - The amount should be in `cents`.
+
+Curl request example
+```bash
+curl --request POST \
+  --url http://localhost:6700/api/admin/update-charge \
+  --header 'authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyIjp7InVzZXJJZCI6Ijc2YmM0YWEzLTAyNWQtNGQ1YS1hNWZiLWY1NDk1NTdmNjM0YSIsInVzZXJUeXBlIjoiYWRtaW5pc3RyYXRvciJ9LCJleHAiOjE2MDU0NTE4MDUsImlhdCI6MTYwNTQzMDIwNX0.8lTWl9hGr9GTST7WpEpzKdm_gqhMkf4qUellLx4o5bw' \
+  --header 'content-type: application/x-www-form-urlencoded' \
+  --data amount=1050 \
+  --data chargeId=acf3e6bf-c9de-45b4-a8b6-bf97f92b783a
+```
+
+Response example
+```json
+{
+  "status": "success",
+  "message": "charge configured"
+}
+```
 
 #### Performing Transactions
 While configuring a charge requires you to provide the amount in `cents`, performing transactions requires the amount to

@@ -139,11 +139,7 @@ func GetTariff(manager tariff.Manager) fiber.Handler {
 			return err
 		}
 
-		_ = ctx.Status(http.StatusOK).JSON(responses.SuccessResponse{
-			Status:  "success",
-			Message: "tariff retrieved",
-			Data: charges,
-		})
+		_ = ctx.Status(http.StatusOK).JSON(responses.TariffResponse(charges))
 
 		return nil
 	}
