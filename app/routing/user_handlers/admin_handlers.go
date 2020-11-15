@@ -11,7 +11,6 @@ import (
 	"simple-mpesa/app/tariff"
 
 	"github.com/gofiber/fiber/v2"
-	"github.com/gofrs/uuid"
 )
 
 func AuthenticateAdmin(adminDomain admin.Interactor, config app.Config) fiber.Handler {
@@ -93,7 +92,13 @@ func AssignFloat(adminDomain admin.Interactor) fiber.Handler {
 		}
 
 		// we use a presenter to reformat the response of admin.
-		_ = ctx.Status(http.StatusOK).JSON(responses.BalanceResponse(uuid.Nil, balance))
+		_ = ctx.Status(http.StatusOK).JSON(responses.SuccessResponse{
+			Status:  "success",
+			Message: "Float has been assigned.",
+			Data:    map[string]interface{}{
+				"balance": balance,
+			},
+		})
 
 		return nil
 	}
