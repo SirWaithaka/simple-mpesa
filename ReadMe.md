@@ -484,8 +484,8 @@ func apiRouteGroup(api fiber.Router, domain *registry.Domain, config app.Config)
 
 The routes are mounted on the prefix `/api` so your requests should point to
 ```
-POST /api/login/<user_type>                     <-- user_type can be either of agent, admin, merchant, subscriber
-POST /api/user/<user_type> # for registration   <-- user_type can be either of agent, admin, merchant, subscriber
+POST /api/login/<user_type>                     <-- user_type can be either of agent, admininistrator, merchant, subscriber
+POST /api/user/<user_type> # for registration   <-- user_type can be either of agent, admininistrator, merchant, subscriber
 POST /api/admin/assign-float
 POST /api/admin/update-charge
 GET /api/admin/get-tariff
