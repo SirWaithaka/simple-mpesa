@@ -22,7 +22,6 @@ type Domain struct {
 	Subscriber subscriber.Interactor
 
 	Account     account.Interactor
-	Transaction transaction.Interactor
 	Statement   statement.Interactor
 	Tariff      tariff.Manager
 
@@ -36,7 +35,6 @@ func NewDomain(config app.Config, database *storage.Database, channels *Channels
 	subscriberRepo := subscriber.NewRepository(database)
 
 	accRepo := account.NewRepository(database)
-	txnRepo := transaction.NewRepository(database)
 	statementRepo := statement.NewRepository(database)
 	tariffRepo := tariff.NewRepository(database)
 
@@ -52,8 +50,7 @@ func NewDomain(config app.Config, database *storage.Database, channels *Channels
 		Agent:       agent.NewInteractor(config, agentRepo, channels.ChannelNewUsers),
 		Merchant:    merchant.NewInteractor(config, merchantRepo, channels.ChannelNewUsers),
 		Subscriber:  subscriber.NewInteractor(config, subscriberRepo, channels.ChannelNewUsers),
-		Account:     account.NewInteractor(accRepo, channels.ChannelNewUsers, channels.ChannelNewTransactions),
-		Transaction: transaction.NewInteractor(txnRepo, channels.ChannelNewTransactions),
+		Account:     account.NewInteractor(accRepo, channels.ChannelNewUsers),
 		Statement:   statement.NewInteractor(statementRepo),
 		Transactor:  ports.NewTransactor(customerFinder, transactor),
 		Tariff:      tariffManager,

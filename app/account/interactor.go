@@ -2,7 +2,6 @@ package account
 
 import (
 	"log"
-	"time"
 
 	"simple-mpesa/app/data"
 	"simple-mpesa/app/errors"
@@ -15,11 +14,10 @@ type Interactor interface {
 	GetBalance(userID uuid.UUID) (float64, error)
 }
 
-func NewInteractor(repository Repository, custChan data.ChanNewCustomers, transChan data.ChanNewTransactions) Interactor {
+func NewInteractor(repository Repository, custChan data.ChanNewCustomers) Interactor {
 	intr := &interactor{
 		repository:          repository,
 		customersChannel:    custChan,
-		transactionsChannel: transChan,
 	}
 
 	go intr.listenOnNewUsers()
@@ -30,7 +28,6 @@ func NewInteractor(repository Repository, custChan data.ChanNewCustomers, transC
 type interactor struct {
 	repository          Repository
 	customersChannel    data.ChanNewCustomers
-	transactionsChannel data.ChanNewTransactions
 }
 
 func (i interactor) isUserAccAccessible(userID uuid.UUID) (*models.Account, error) {
@@ -68,13 +65,6 @@ func (i interactor) GetBalance(userId uuid.UUID) (float64, error) {
 
 	// i.postTransactionDetails(userId, *acc, models.TxTypeBalance)
 	return acc.Balance(), nil
-}
-
-func (i interactor) postTransactionDetails(userId uuid.UUID, acc models.Account, txnOp models.TxnOperation) {
-	timestamp := time.Now()
-	newTransaction := parseTransactionDetails(userId, acc, txnOp, timestamp)
-
-	go func() { i.transactionsChannel.Writer <- *newTransaction }()
 }
 
 func (i interactor) listenOnNewUsers() {

@@ -9,6 +9,12 @@ import (
 	"simple-mpesa/app/tariff"
 )
 
+const (
+	minimumDepositAmount    = models.Shillings(10) // least possible amount that can be deposited into an account
+	minimumWithdrawalAmount = models.Shillings(1)  // least possible amount that can be withdrawn from an account
+	minimumTransferAmount   = models.Shillings(10) // least possible amount that can be transferred to another account
+)
+
 type Transactor interface {
 	Transact(Transaction) error
 }
