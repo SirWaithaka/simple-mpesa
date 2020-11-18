@@ -5,7 +5,7 @@ import (
 )
 
 type Channels struct {
-	ChannelNewUsers        data.ChanNewCustomers
+	ChannelNewUsers data.ChanNewCustomers
 }
 
 func NewChannels() *Channels {
