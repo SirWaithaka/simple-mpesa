@@ -5,11 +5,11 @@ import (
 	"log"
 	"os"
 
-	"simple-mpesa/app"
-	"simple-mpesa/app/registry"
-	"simple-mpesa/app/routing"
-	"simple-mpesa/app/storage/postgres"
-	"simple-mpesa/configs"
+	"simple-mpesa/src"
+	"simple-mpesa/src/configs"
+	"simple-mpesa/src/registry"
+	"simple-mpesa/src/routing"
+	"simple-mpesa/src/storage/postgres"
 )
 
 func main() {
@@ -18,7 +18,7 @@ func main() {
 	// read yaml config file. Dont pass path to read
 	// from default path
 	yamlConfig := configs.ReadYaml("")
-	config := app.GetConfig(*yamlConfig)
+	config := src.GetConfig(*yamlConfig)
 
 	database, err := postgres.NewDatabase(config)
 	if err != nil {

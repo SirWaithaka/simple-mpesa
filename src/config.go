@@ -3,7 +3,7 @@ package src
 import (
 	"fmt"
 
-	"simple-mpesa/configs"
+	"simple-mpesa/src/configs"
 )
 
 type Database struct {

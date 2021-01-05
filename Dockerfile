@@ -13,9 +13,9 @@ COPY go.sum .
 RUN go mod download
 
 # Copy project source files
-COPY app/ ./app
+COPY src/ ./app
 COPY cmd/ ./cmd
-COPY configs/ ./configs
+COPY src/configs/ ./configs
 
 # Build the application
 RUN mkdir bin/
