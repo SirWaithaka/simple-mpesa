@@ -8,6 +8,7 @@ import (
 	"simple-mpesa/src/customer"
 	"simple-mpesa/src/merchant"
 	"simple-mpesa/src/ports"
+	"simple-mpesa/src/repositories"
 	"simple-mpesa/src/statement"
 	"simple-mpesa/src/storage"
 	"simple-mpesa/src/subscriber"
@@ -30,15 +31,15 @@ type Domain struct {
 }
 
 func NewDomain(config src.Config, database *storage.Database, channels *Channels) *Domain {
-	adminRepo := admin.NewRepository(database)
-	agentRepo := agent.NewRepository(database)
-	merchantRepo := merchant.NewRepository(database)
-	subscriberRepo := subscriber.NewRepository(database)
+	adminRepo := repositories.NewAdminRepository(database)
+	agentRepo := repositories.NewAgentRepository(database)
+	merchantRepo := repositories.NewMerchantRepository(database)
+	subscriberRepo := repositories.NewSubscriberRepository(database)
 
-	accRepo := account.NewRepository(database)
-	txnRepo := transaction.NewRepository(database)
-	statementRepo := statement.NewRepository(database)
-	tariffRepo := tariff.NewRepository(database)
+	accRepo := repositories.NewAccountRepository(database)
+	txnRepo := repositories.NewTransactionRepository(database)
+	statementRepo := repositories.NewStatementRepository(database)
+	tariffRepo := repositories.NewTariffRepository(database)
 
 	// initialize ports and adapters
 	ledger := statement.NewLedger(statementRepo)
