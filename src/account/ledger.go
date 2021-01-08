@@ -1,37 +1,36 @@
-package statement
+package account
 
 import (
 	"time"
 
-	"simple-mpesa/src/account"
-	"simple-mpesa/src/models"
+	"simple-mpesa/src/value_objects"
 
 	"github.com/gofrs/uuid"
 )
 
 type Ledger interface {
-	Record(userID uuid.UUID, acc account.Account, txnOp models.TxnOperation, amount models.Shillings, stmtType Type) error
+	Record(userID uuid.UUID, acc Account, txnOp value_objects.TxnOperation, amount value_objects.Shillings, txnType TransactionType) error
 }
 
-func NewLedger(repository Repository) Ledger {
+func NewLedger(repository StatementRepository) Ledger {
 	return &ledger{repository}
 }
 
 type ledger struct {
-	statementRepo Repository
+	statementRepo StatementRepository
 }
 
-func (l ledger) Record(userID uuid.UUID, acc account.Account, txnOp models.TxnOperation, amount models.Shillings, stmtType Type) error {
+func (l ledger) Record(userID uuid.UUID, acc Account, txnOp value_objects.TxnOperation, amount value_objects.Shillings, txnType TransactionType) error {
 	statement := Statement{
-		Operation:    txnOp,
-		UserID:       userID,
-		AccountID:    acc.ID,
-		CreatedAt:    time.Now(),
+		Operation: txnOp,
+		UserID:    userID,
+		AccountID: acc.ID,
+		CreatedAt: time.Now(),
 	}
 
-	if stmtType == TypeCredit {
+	if txnType == TxnTypeCredit {
 		statement.CreditAmount = float64(amount)
-	} else if stmtType == TypeDebit {
+	} else if txnType == TxnTypeDebit {
 		statement.DebitAmount = float64(amount)
 	}
 

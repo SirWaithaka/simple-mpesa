@@ -6,18 +6,22 @@ import (
 
 	"simple-mpesa/src/data"
 	"simple-mpesa/src/errors"
-	"simple-mpesa/src/models"
+	"simple-mpesa/src/value_objects"
 
 	"github.com/gofrs/uuid"
 )
 
+const miniStatementCount = uint(5)
+
 type Interactor interface {
 	GetBalance(userID uuid.UUID) (float64, error)
+	GetStatement(userId uuid.UUID) ([]Statement, error)
 }
 
-func NewInteractor(repository Repository, custChan data.ChanNewCustomers, transChan data.ChanNewTransactions) Interactor {
+func NewInteractor(repository Repository, statementRepo StatementRepository, custChan data.ChanNewCustomers, transChan data.ChanNewTransactions) Interactor {
 	intr := &interactor{
 		repository:          repository,
+		statementRepo:       statementRepo,
 		customersChannel:    custChan,
 		transactionsChannel: transChan,
 	}
@@ -29,11 +33,12 @@ func NewInteractor(repository Repository, custChan data.ChanNewCustomers, transC
 
 type interactor struct {
 	repository          Repository
+	statementRepo       StatementRepository
 	customersChannel    data.ChanNewCustomers
 	transactionsChannel data.ChanNewTransactions
 }
 
-func (i interactor) isUserAccAccessible(userID uuid.UUID) (*models.Account, error) {
+func (i interactor) isUserAccAccessible(userID uuid.UUID) (*Account, error) {
 	acc, err := i.repository.GetAccountByUserID(userID)
 	if errors.ErrorCode(err) == errors.ENOTFOUND {
 		return nil, errors.Error{Message: errors.AccountNotCreated, Err: err}
@@ -41,7 +46,7 @@ func (i interactor) isUserAccAccessible(userID uuid.UUID) (*models.Account, erro
 		return nil, err
 	}
 
-	if acc.Status == models.StatusFrozen || acc.Status == models.StatusSuspended {
+	if acc.Status == StatusFrozen || acc.Status == StatusSuspended {
 		e := errors.ErrAccountAccess{Reason: string(acc.Status)}
 		return nil, errors.Error{Err: e}
 	}
@@ -51,10 +56,10 @@ func (i interactor) isUserAccAccessible(userID uuid.UUID) (*models.Account, erro
 }
 
 // CreateAccount creates an account for a certain user
-func (i interactor) CreateAccount(userId uuid.UUID) (models.Account, error) {
+func (i interactor) CreateAccount(userId uuid.UUID) (Account, error) {
 	acc, err := i.repository.Create(userId)
 	if err != nil {
-		return models.Account{}, err
+		return Account{}, err
 	}
 	return acc, nil
 }
@@ -70,7 +75,17 @@ func (i interactor) GetBalance(userId uuid.UUID) (float64, error) {
 	return acc.Balance(), nil
 }
 
-func (i interactor) postTransactionDetails(userId uuid.UUID, acc models.Account, txnOp models.TxnOperation) {
+func (i interactor) GetStatement(userID uuid.UUID) ([]Statement, error) {
+	now := time.Now()
+	transactions, err := i.statementRepo.GetStatements(userID, now, miniStatementCount)
+	if err != nil {
+		return nil, err
+	}
+
+	return transactions, nil
+}
+
+func (i interactor) postTransactionDetails(userId uuid.UUID, acc Account, txnOp value_objects.TxnOperation) {
 	timestamp := time.Now()
 	newTransaction := parseTransactionDetails(userId, acc, txnOp, timestamp)
 

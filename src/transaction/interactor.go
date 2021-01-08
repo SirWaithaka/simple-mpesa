@@ -5,23 +5,22 @@ import (
 
 	"simple-mpesa/src/data"
 	"simple-mpesa/src/errors"
-	"simple-mpesa/src/models"
+	"simple-mpesa/src/value_objects"
 )
 
 const (
-	minimumDepositAmount    = models.Shillings(10) // least possible amount that can be deposited into an account
-	minimumWithdrawalAmount = models.Shillings(1)  // least possible amount that can be withdrawn from an account
-	minimumTransferAmount   = models.Shillings(10) // least possible amount that can be transferred to another account
+	minimumDepositAmount    = value_objects.Shillings(10) // least possible amount that can be deposited into an account
+	minimumWithdrawalAmount = value_objects.Shillings(1)  // least possible amount that can be withdrawn from an account
+	minimumTransferAmount   = value_objects.Shillings(10) // least possible amount that can be transferred to another account
 )
 
 type Interactor interface {
-	AddTransaction(models.Transaction) error
+	AddTransaction(Statement) error
 }
 
 type interactor struct {
 	repository       Repository
 	transChannel     data.ChanNewTransactions
-	// txnEventsChannel data.ChanNewTxnEvents
 }
 
 func NewInteractor(repository Repository, transChan data.ChanNewTransactions) Interactor {
@@ -35,7 +34,7 @@ func NewInteractor(repository Repository, transChan data.ChanNewTransactions) In
 	return intr
 }
 
-func (i interactor) AddTransaction(tx models.Transaction) error {
+func (i interactor) AddTransaction(tx Statement) error {
 	_, err := i.repository.Add(tx)
 	if err != nil {
 		// if we get an error we are going to add the
@@ -46,19 +45,6 @@ func (i interactor) AddTransaction(tx models.Transaction) error {
 	}
 	return nil
 }
-
-// func (i interactor) listenOnTxnEvents() {
-// 	for {
-// 		select {
-// 		case event := <-i.txnEventsChannel.Reader:
-// 			err := i.transact(event)
-// 			if err != nil { // if we get an error processing the transaction event, we can log, or send to customer
-// 				log.Println(err)
-// 				continue
-// 			}
-// 		}
-// 	}
-// }
 
 func (i interactor) listenOnCreatedTransactions() {
 	for {

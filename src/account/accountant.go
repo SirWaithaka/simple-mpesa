@@ -2,27 +2,26 @@ package account
 
 import (
 	"simple-mpesa/src/errors"
-	"simple-mpesa/src/models"
-	"simple-mpesa/src/statement"
+	"simple-mpesa/src/value_objects"
 
 	"github.com/gofrs/uuid"
 )
 
 type Accountant interface {
-	DebitAccount(userID uuid.UUID, amount models.Cents, reason models.TxnOperation) (float64, error)
-	CreditAccount(userID uuid.UUID, amount models.Cents, reason models.TxnOperation) (float64, error)
+	DebitAccount(userID uuid.UUID, amount value_objects.Cents, reason value_objects.TxnOperation) (float64, error)
+	CreditAccount(userID uuid.UUID, amount value_objects.Cents, reason value_objects.TxnOperation) (float64, error)
 }
 
-func NewAccountant(accountRepo Repository, ledger statement.Ledger) Accountant {
+func NewAccountant(accountRepo Repository, ledger Ledger) Accountant {
 	return &accountant{repository: accountRepo, ledger: ledger}
 }
 
 type accountant struct {
-	ledger     statement.Ledger
+	ledger     Ledger
 	repository Repository
 }
 
-func (a accountant) isUserAccAccessible(userID uuid.UUID) (*models.Account, error) {
+func (a accountant) isUserAccAccessible(userID uuid.UUID) (*Account, error) {
 	acc, err := a.repository.GetAccountByUserID(userID)
 	if errors.ErrorCode(err) == errors.ENOTFOUND {
 		return nil, errors.Error{Message: errors.AccountNotCreated, Err: err}
@@ -30,7 +29,7 @@ func (a accountant) isUserAccAccessible(userID uuid.UUID) (*models.Account, erro
 		return nil, err
 	}
 
-	if acc.Status == models.StatusFrozen || acc.Status == models.StatusSuspended {
+	if acc.Status == StatusFrozen || acc.Status == StatusSuspended {
 		e := errors.ErrAccountAccess{Reason: string(acc.Status)}
 		return nil, errors.Error{Err: e}
 	}
@@ -39,7 +38,7 @@ func (a accountant) isUserAccAccessible(userID uuid.UUID) (*models.Account, erro
 
 }
 
-func (a accountant) CreditAccount(userID uuid.UUID, amount models.Cents, reason models.TxnOperation) (float64, error) {
+func (a accountant) CreditAccount(userID uuid.UUID, amount value_objects.Cents, reason value_objects.TxnOperation) (float64, error) {
 	acc, err := a.isUserAccAccessible(userID)
 	if err != nil {
 		return 0, err
@@ -52,7 +51,7 @@ func (a accountant) CreditAccount(userID uuid.UUID, amount models.Cents, reason 
 		return 0, err
 	}
 
-	err = a.ledger.Record(userID, *acc, reason, amount.ToShillings(), statement.TypeCredit)
+	err = a.ledger.Record(userID, *acc, reason, amount.ToShillings(), TxnTypeCredit)
 	if err != nil {
 		return 0, err
 	}
@@ -60,7 +59,7 @@ func (a accountant) CreditAccount(userID uuid.UUID, amount models.Cents, reason 
 	return acc.Balance(), nil
 }
 
-func (a accountant) DebitAccount(userID uuid.UUID, amount models.Cents, reason models.TxnOperation) (float64, error) {
+func (a accountant) DebitAccount(userID uuid.UUID, amount value_objects.Cents, reason value_objects.TxnOperation) (float64, error) {
 	acc, err := a.isUserAccAccessible(userID)
 	if err != nil {
 		return 0, err
@@ -83,7 +82,7 @@ func (a accountant) DebitAccount(userID uuid.UUID, amount models.Cents, reason m
 		return 0, err
 	}
 
-	err = a.ledger.Record(userID, *acc, reason, amount.ToShillings(), statement.TypeDebit)
+	err = a.ledger.Record(userID, *acc, reason, amount.ToShillings(), TxnTypeDebit)
 	if err != nil {
 		return 0, err
 	}

@@ -3,22 +3,21 @@ package account
 import (
 	"time"
 
-	"simple-mpesa/src/models"
+	"simple-mpesa/src/value_objects"
 
 	"github.com/gofrs/uuid"
-	"gorm.io/gorm"
 )
 
-type Type string
+type TransactionType string
 
 const (
-	TypeCredit = Type("CREDIT")
-	TypeDebit  = Type("DEBIT")
+	TxnTypeCredit = TransactionType("CREDIT")
+	TxnTypeDebit  = TransactionType("DEBIT")
 )
 
 type Statement struct {
 	ID           uuid.UUID
-	Operation    models.TxnOperation
+	Operation    value_objects.TxnOperation
 	DebitAmount  float64
 	CreditAmount float64
 	UserID       uuid.UUID
@@ -26,11 +25,7 @@ type Statement struct {
 	CreatedAt    time.Time
 }
 
-func (s *Statement) BeforeCreate(tx *gorm.DB) error {
-	s.ID, _ = uuid.NewV4()
-	return nil
-}
-
-func (Statement) TableName() string {
-	return "statements"
+type StatementRepository interface {
+	Add(Statement) (Statement, error)
+	GetStatements(userID uuid.UUID, from time.Time, limit uint) ([]Statement, error)
 }

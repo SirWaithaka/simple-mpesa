@@ -4,15 +4,14 @@ import (
 	"time"
 
 	"simple-mpesa/src/data"
-	"simple-mpesa/src/models"
 
 	"github.com/gofrs/uuid"
 )
 
-func parseToTransaction(newTx data.TransactionContract) *models.Transaction {
+func parseToTransaction(newTx data.TransactionContract) *Statement {
 	id, _ := uuid.NewV4()
 
-	return &models.Transaction{
+	return &Statement{
 		ID:        id,
 		Operation: newTx.TxnOperation,
 		Timestamp: time.Now(),

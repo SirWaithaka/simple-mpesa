@@ -2,18 +2,18 @@ package transaction
 
 import (
 	"simple-mpesa/src/errors"
-	"simple-mpesa/src/models"
+	"simple-mpesa/src/value_objects"
 
 	validation "github.com/go-ozzo/ozzo-validation/v4"
 )
 
 type DepositParams struct {
-	Amount models.Shillings `json:"amount" schema:"amount" form:"amount"`
+	Amount value_objects.Shillings `json:"amount" schema:"amount" form:"amount"`
 	// In a production system, the customer number is usually a generated number for the case
 	// of a merchant of agent and a mobile number for a subscriber , but we are going to use the
 	// customer's email as a replacement
-	CustomerNumber string          `json:"accountNo" schema:"accountNo" form:"accountNo"`
-	CustomerType   models.UserType `json:"customerType" schema:"customerType" form:"customerType"`
+	CustomerNumber string                 `json:"accountNo" schema:"accountNo" form:"accountNo"`
+	CustomerType   value_objects.UserType `json:"customerType" schema:"customerType" form:"customerType"`
 }
 
 func (req DepositParams) Validate() error {
@@ -28,13 +28,13 @@ func (req DepositParams) Validate() error {
 }
 
 type TransferParams struct {
-	Amount models.Shillings `json:"amount" schema:"amount" form:"amount"`
+	Amount value_objects.Shillings `json:"amount" schema:"amount" form:"amount"`
 
 	// In a production system, the account number is usually
 	// a generated number, but we are going to use the customer's
 	// email as a replacement
-	DestAccountNo string          `json:"accountNo" schema:"accountNo" form:"accountNo"`
-	DestUserType  models.UserType `json:"customerType" schema:"customerType" form:"customerType"`
+	DestAccountNo string                 `json:"accountNo" schema:"accountNo" form:"accountNo"`
+	DestUserType  value_objects.UserType `json:"customerType" schema:"customerType" form:"customerType"`
 }
 
 func (req TransferParams) Validate() error {
@@ -49,7 +49,7 @@ func (req TransferParams) Validate() error {
 }
 
 type WithdrawParams struct {
-	Amount models.Shillings `json:"amount" schema:"amount" form:"amount"`
+	Amount value_objects.Shillings `json:"amount" schema:"amount" form:"amount"`
 	// In a production system, the agent number is usually
 	// a generated number, but we are going to use the agent's
 	// email as a replacement

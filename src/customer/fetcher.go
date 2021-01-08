@@ -3,14 +3,13 @@ package customer
 import (
 	"simple-mpesa/src/agent"
 	"simple-mpesa/src/merchant"
-	"simple-mpesa/src/models"
 	"simple-mpesa/src/subscriber"
 )
 
 type CustomersFetcher interface {
-	GetAllAgents() ([]models.Agent, error)
-	GetAllMerchants() ([]models.Merchant, error)
-	GetAllSubscribers() ([]models.Subscriber, error)
+	GetAllAgents() ([]agent.Agent, error)
+	GetAllMerchants() ([]merchant.Merchant, error)
+	GetAllSubscribers() ([]subscriber.Subscriber, error)
 }
 
 type customerFetcher struct {
@@ -19,14 +18,14 @@ type customerFetcher struct {
 	subRepo   subscriber.Repository
 }
 
-func (fetcher customerFetcher) GetAllAgents() ([]models.Agent, error) {
+func (fetcher customerFetcher) GetAllAgents() ([]agent.Agent, error) {
 	return fetcher.agentRepo.FetchAll()
 }
 
-func (fetcher customerFetcher) GetAllMerchants() ([]models.Merchant, error) {
+func (fetcher customerFetcher) GetAllMerchants() ([]merchant.Merchant, error) {
 	return fetcher.merchRepo.FetchAll()
 }
 
-func (fetcher customerFetcher) GetAllSubscribers() ([]models.Subscriber, error) {
+func (fetcher customerFetcher) GetAllSubscribers() ([]subscriber.Subscriber, error) {
 	return fetcher.subRepo.FetchAll()
 }
