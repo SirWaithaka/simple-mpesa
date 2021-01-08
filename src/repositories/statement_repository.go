@@ -3,35 +3,35 @@ package repositories
 import (
 	"time"
 
+	"simple-mpesa/src/account"
 	"simple-mpesa/src/errors"
-	"simple-mpesa/src/statement"
 	"simple-mpesa/src/storage"
 
 	"github.com/gofrs/uuid"
 )
 
-func NewStatementRepository(database *storage.Database) *Statement {
-	return &Statement{db: database}
+func NewStatementRepository(database *storage.Database) *StatementRepository {
+	return &StatementRepository{db: database}
 }
 
-type Statement struct {
+type StatementRepository struct {
 	db *storage.Database
 }
 
-func (r Statement) Add(stmt statement.Statement) (statement.Statement, error) {
+func (r StatementRepository) Add(stmt account.Statement) (account.Statement, error) {
 	result := r.db.Create(&stmt)
 	if err := result.Error; err != nil {
-		return statement.Statement{}, errors.Error{Err: err, Code: errors.EINTERNAL}
+		return account.Statement{}, errors.Error{Err: err, Code: errors.EINTERNAL}
 	}
 
 	return stmt, nil
 }
 
-func (r Statement) GetStatements(userID uuid.UUID, from time.Time, limit uint) ([]statement.Statement, error) {
-	var statements []statement.Statement
+func (r StatementRepository) GetStatements(userID uuid.UUID, from time.Time, limit uint) ([]account.Statement, error) {
+	var statements []account.Statement
 
 	result := r.db.Where(
-		statement.Statement{UserID: userID},
+		account.Statement{UserID: userID},
 	).Where(
 		"created_at <= ?", from,
 	).Order("created_at desc").Limit(int(limit)).Find(&statements)

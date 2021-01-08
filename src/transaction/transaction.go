@@ -1,7 +1,9 @@
-package models
+package transaction
 
 import (
 	"time"
+
+	"simple-mpesa/src/models"
 
 	"github.com/gofrs/uuid"
 )
@@ -58,7 +60,7 @@ type Transaction struct {
 // by their user id and user type; We have defined a customer being an agent, merchant or subscriber.
 type TxnCustomer struct {
 	UserID   uuid.UUID
-	UserType UserType
+	UserType models.UserType
 }
 
 // IsValidTxnOperation returns true if the given operation is among the defined

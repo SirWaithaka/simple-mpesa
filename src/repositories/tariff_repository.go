@@ -2,9 +2,9 @@ package repositories
 
 import (
 	"simple-mpesa/src/errors"
-	"simple-mpesa/src/models"
 	"simple-mpesa/src/storage"
 	"simple-mpesa/src/tariff"
+	"simple-mpesa/src/value_objects"
 
 	"github.com/gofrs/uuid"
 	"github.com/jackc/pgconn"
@@ -56,7 +56,7 @@ func (r Tariff) FindByID(id uuid.UUID) (tariff.Charge, error) {
 	return charge, nil
 }
 
-func (r Tariff) Get(operation models.TxnOperation, src models.UserType, dest models.UserType) (tariff.Charge, error) {
+func (r Tariff) Get(operation value_objects.TxnOperation, src value_objects.UserType, dest value_objects.UserType) (tariff.Charge, error) {
 	row := tariff.Charge{Transaction: operation, SourceUserType: src, DestinationUserType: dest}
 
 	var charge tariff.Charge

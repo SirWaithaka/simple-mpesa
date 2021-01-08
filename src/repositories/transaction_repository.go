@@ -2,22 +2,22 @@ package repositories
 
 import (
 	"simple-mpesa/src/errors"
-	"simple-mpesa/src/models"
 	"simple-mpesa/src/storage"
+	"simple-mpesa/src/transaction"
 )
 
-type Transaction struct {
+type TransactionRepository struct {
 	database *storage.Database
 }
 
-func NewTransactionRepository(db *storage.Database) *Transaction {
-	return &Transaction{db}
+func NewTransactionRepository(db *storage.Database) *TransactionRepository {
+	return &TransactionRepository{db}
 }
 
-func (r Transaction) Add(tx models.Transaction) (models.Transaction, error) {
+func (r TransactionRepository) Add(tx transaction.Statement) (transaction.Statement, error) {
 	result := r.database.Create(&tx)
 	if err := result.Error; err != nil {
-		return models.Transaction{}, errors.Error{Err: err, Code: errors.EINTERNAL}
+		return transaction.Statement{}, errors.Error{Err: err, Code: errors.EINTERNAL}
 	}
 
 	return tx, nil

@@ -2,7 +2,7 @@ package repositories
 
 import (
 	"simple-mpesa/src/errors"
-	"simple-mpesa/src/models"
+	"simple-mpesa/src/merchant"
 	"simple-mpesa/src/storage"
 
 	"github.com/gofrs/uuid"
@@ -10,47 +10,47 @@ import (
 	"gorm.io/gorm"
 )
 
-func NewMerchantRepository(database *storage.Database) *Merchant {
-	return &Merchant{db: database}
+func NewMerchantRepository(database *storage.Database) *MerchantRepository {
+	return &MerchantRepository{db: database}
 }
 
-type Merchant struct {
+type MerchantRepository struct {
 	db *storage.Database
 }
 
-func (r Merchant) searchBy(row models.Merchant) (models.Merchant, error) {
-	var merchant models.Merchant
-	result := r.db.Where(row).First(&merchant)
+func (r MerchantRepository) searchBy(row merchant.Merchant) (merchant.Merchant, error) {
+	var m merchant.Merchant
+	result := r.db.Where(row).First(&m)
 	// check if no record found.
 	if errors.Is(result.Error, gorm.ErrRecordNotFound) {
-		return models.Merchant{}, errors.Error{Code: errors.ENOTFOUND}
+		return merchant.Merchant{}, errors.Error{Code: errors.ENOTFOUND}
 	}
 	if err := result.Error; err != nil {
-		return models.Merchant{}, errors.Error{Err: err, Code: errors.EINTERNAL}
+		return merchant.Merchant{}, errors.Error{Err: err, Code: errors.EINTERNAL}
 	}
 
-	return merchant, nil
+	return m, nil
 }
 
 // Add a merchant if already not in db.
-func (r Merchant) Add(merchant models.Merchant) (models.Merchant, error) {
+func (r MerchantRepository) Add(m merchant.Merchant) (merchant.Merchant, error) {
 	// add new merchant to merchants table, if query return violation of unique key column,
 	// we know that the merchant with given record exists and return that merchant instead
-	result := r.db.Model(models.Merchant{}).Create(&merchant)
+	result := r.db.Model(merchant.Merchant{}).Create(&m)
 	if err := result.Error; err != nil {
 		// we check if the error is a postgres unique constraint violation
 		if pgerr, ok := err.(*pgconn.PgError); ok && pgerr.Code == "23505" {
-			return merchant, errors.Error{Code: errors.ECONFLICT, Message: errors.ErrUserExists}
+			return m, errors.Error{Code: errors.ECONFLICT, Message: errors.ErrUserExists}
 		}
-		return models.Merchant{}, errors.Error{Err: result.Error, Code: errors.EINTERNAL}
+		return merchant.Merchant{}, errors.Error{Err: result.Error, Code: errors.EINTERNAL}
 	}
 
-	return merchant, nil
+	return m, nil
 }
 
 // Delete a merchant
-func (r Merchant) Delete(merchant models.Merchant) error {
-	result := r.db.Delete(&merchant)
+func (r MerchantRepository) Delete(m merchant.Merchant) error {
+	result := r.db.Delete(&m)
 	if result.Error != nil {
 		return errors.Error{Err: result.Error, Code: errors.EINTERNAL}
 	}
@@ -58,8 +58,8 @@ func (r Merchant) Delete(merchant models.Merchant) error {
 }
 
 // FetchAll gets all merchants in db
-func (r Merchant) FetchAll() ([]models.Merchant, error) {
-	var merchants []models.Merchant
+func (r MerchantRepository) FetchAll() ([]merchant.Merchant, error) {
+	var merchants []merchant.Merchant
 	result := r.db.Find(&merchants)
 	if err := result.Error; err != nil {
 		return nil, errors.Error{Err: result.Error, Code: errors.EINTERNAL}
@@ -74,21 +74,20 @@ func (r Merchant) FetchAll() ([]models.Merchant, error) {
 }
 
 // FindByID searches merchant by primary id
-func (r Merchant) FindByID(id uuid.UUID) (models.Merchant, error) {
-	merchant, err := r.searchBy(models.Merchant{ID: id})
-	return merchant, err
+func (r MerchantRepository) FindByID(id uuid.UUID) (merchant.Merchant, error) {
+	m, err := r.searchBy(merchant.Merchant{ID: id})
+	return m, err
 }
 
 // FindByEmail searches merchant by email
-func (r Merchant) FindByEmail(email string) (models.Merchant, error) {
-	merchant, err := r.searchBy(models.Merchant{Email: email})
-	return merchant, err
+func (r MerchantRepository) FindByEmail(email string) (merchant.Merchant, error) {
+	m, err := r.searchBy(merchant.Merchant{Email: email})
+	return m, err
 }
 
 // Update
-func (r Merchant) Update(merchant models.Merchant) error {
-	var merch models.Merchant
-	result := r.db.Model(&merch).Omit("id").Updates(merchant)
+func (r MerchantRepository) Update(m merchant.Merchant) error {
+	result := r.db.Model(&merchant.Merchant{}).Omit("id").Updates(m)
 	if err := result.Error; err != nil {
 		return errors.Error{Err: result.Error, Code: errors.EINTERNAL}
 	}

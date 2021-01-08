@@ -3,13 +3,14 @@ package statement
 import (
 	"time"
 
+	"simple-mpesa/src/account"
 	"simple-mpesa/src/models"
 
 	"github.com/gofrs/uuid"
 )
 
 type Ledger interface {
-	Record(userID uuid.UUID, acc models.Account, txnOp models.TxnOperation, amount models.Shillings, stmtType Type) error
+	Record(userID uuid.UUID, acc account.Account, txnOp models.TxnOperation, amount models.Shillings, stmtType Type) error
 }
 
 func NewLedger(repository Repository) Ledger {
@@ -20,7 +21,7 @@ type ledger struct {
 	statementRepo Repository
 }
 
-func (l ledger) Record(userID uuid.UUID, acc models.Account, txnOp models.TxnOperation, amount models.Shillings, stmtType Type) error {
+func (l ledger) Record(userID uuid.UUID, acc account.Account, txnOp models.TxnOperation, amount models.Shillings, stmtType Type) error {
 	statement := Statement{
 		Operation:    txnOp,
 		UserID:       userID,

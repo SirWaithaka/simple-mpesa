@@ -1,6 +1,8 @@
-package models
+package account
 
 import (
+	"simple-mpesa/src/models"
+
 	"github.com/gofrs/uuid"
 	"gorm.io/gorm"
 )
@@ -31,7 +33,7 @@ type Account struct {
 	ID uuid.UUID
 
 	// balance will be stored in cents
-	AvailableBalance Cents `gorm:"column:available_balance"`
+	AvailableBalance models.Cents `gorm:"column:available_balance"`
 
 	Status      AccountStatus `gorm:"column:status"`
 	AccountType AccountType   `gorm:"column:account_type"`
@@ -46,18 +48,18 @@ func (acc Account) Balance() float64 {
 }
 
 // Credit add an amount to account balance and return it
-func (acc Account) Credit(amount Cents) Cents {
+func (acc Account) Credit(amount models.Cents) models.Cents {
 	// convert incoming amount into cents and add to account balance
 	return amount + acc.AvailableBalance
 }
 
 // Debit subtract an amount from account balance and return it
-func (acc Account) Debit(amount Cents) Cents {
+func (acc Account) Debit(amount models.Cents) models.Cents {
 	// convert incoming amount into cents and subtract to account balance
 	return acc.AvailableBalance - amount
 }
 
 // IsBalanceLessThanAmount converts amount into cents and returns true if balance is less than amount
-func (acc Account) IsBalanceLessThanAmount(amount Cents) bool {
+func (acc Account) IsBalanceLessThanAmount(amount models.Cents) bool {
 	return acc.AvailableBalance < amount
 }

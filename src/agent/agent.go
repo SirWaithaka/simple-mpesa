@@ -1,4 +1,4 @@
-package models
+package agent
 
 import (
 	"github.com/gofrs/uuid"
@@ -21,7 +21,7 @@ type Agent struct {
 	// AgentNumber string `gorm:"column:agent_number;unique"`
 
 	// an extra column/property that tells us if the agent is a super agent
-	SuperAgent SuperAgentStatus `gorm:"default:'0'"`// PS: bool values dont work well with gorm during updates
+	SuperAgent SuperAgentStatus `gorm:"default:'0'"` // PS: bool values dont work well with gorm during updates
 
 	gorm.Model
 }
