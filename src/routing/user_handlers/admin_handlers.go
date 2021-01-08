@@ -7,9 +7,9 @@ import (
 	"simple-mpesa/src/admin"
 	"simple-mpesa/src/agent"
 	"simple-mpesa/src/auth"
-	"simple-mpesa/src/models"
 	"simple-mpesa/src/routing/responses"
 	"simple-mpesa/src/tariff"
+	"simple-mpesa/src/value_objects"
 
 	"github.com/gofiber/fiber/v2"
 )
@@ -34,14 +34,14 @@ func AuthenticateAdmin(adminDomain admin.Interactor, config src.Config) fiber.Ha
 		}
 
 		// generate an auth token string
-		token, err := auth.GetTokenString(adm.ID, models.UserTypAdmin, config.Secret)
+		token, err := auth.GetTokenString(adm.ID, value_objects.UserTypAdmin, config.Secret)
 		if err != nil {
 			return err
 		}
 
-		signedUser := models.SignedUser{
+		signedUser := value_objects.SignedUser{
 			UserID:   adm.ID.String(),
-			UserType: models.UserTypAdmin,
+			UserType: value_objects.UserTypAdmin,
 			Token:    token,
 		}
 		_ = ctx.Status(http.StatusOK).JSON(signedUser)
@@ -69,7 +69,7 @@ func RegisterAdmin(adminDomain admin.Interactor) fiber.Handler {
 		}
 
 		// we use a presenter to reformat the response of admin.
-		_ = ctx.Status(http.StatusOK).JSON(responses.RegistrationResponse(adm.ID, models.UserTypAdmin))
+		_ = ctx.Status(http.StatusOK).JSON(responses.RegistrationResponse(adm.ID, value_objects.UserTypAdmin))
 
 		return nil
 	}

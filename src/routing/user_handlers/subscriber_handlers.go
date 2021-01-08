@@ -5,9 +5,9 @@ import (
 
 	"simple-mpesa/src"
 	"simple-mpesa/src/auth"
-	"simple-mpesa/src/models"
 	"simple-mpesa/src/routing/responses"
 	"simple-mpesa/src/subscriber"
+	"simple-mpesa/src/value_objects"
 
 	"github.com/gofiber/fiber/v2"
 )
@@ -32,14 +32,14 @@ func AuthenticateSubscriber(subDomain subscriber.Interactor, config src.Config) 
 		}
 
 		// generate an auth token string
-		token, err := auth.GetTokenString(sub.ID, models.UserTypSubscriber, config.Secret)
+		token, err := auth.GetTokenString(sub.ID, value_objects.UserTypSubscriber, config.Secret)
 		if err != nil {
 			return err
 		}
 
-		signedUser := models.SignedUser{
+		signedUser := value_objects.SignedUser{
 			UserID:   sub.ID.String(),
-			UserType: models.UserTypSubscriber,
+			UserType: value_objects.UserTypSubscriber,
 			Token:    token,
 		}
 		_ = ctx.Status(http.StatusOK).JSON(signedUser)
@@ -67,7 +67,7 @@ func RegisterSubscriber(subDomain subscriber.Interactor) fiber.Handler {
 		}
 
 		// we use a presenter to reformat the response of subscriber.
-		_ = ctx.Status(http.StatusOK).JSON(responses.RegistrationResponse(sub.ID, models.UserTypSubscriber))
+		_ = ctx.Status(http.StatusOK).JSON(responses.RegistrationResponse(sub.ID, value_objects.UserTypSubscriber))
 
 		return nil
 	}

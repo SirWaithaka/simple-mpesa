@@ -6,8 +6,8 @@ import (
 	"simple-mpesa/src"
 	"simple-mpesa/src/agent"
 	"simple-mpesa/src/auth"
-	"simple-mpesa/src/models"
 	"simple-mpesa/src/routing/responses"
+	"simple-mpesa/src/value_objects"
 
 	"github.com/gofiber/fiber/v2"
 )
@@ -32,9 +32,9 @@ func AuthenticateAgent(agentDomain agent.Interactor, config src.Config) fiber.Ha
 		}
 
 		// check if agent is a super agent
-		agentType := models.UserTypAgent
+		agentType := value_objects.UserTypAgent
 		if agt.IsSuperAgent() {
-			agentType = models.UserTypSuperAgent
+			agentType = value_objects.UserTypSuperAgent
 		}
 
 		// generate an auth token string
@@ -43,7 +43,7 @@ func AuthenticateAgent(agentDomain agent.Interactor, config src.Config) fiber.Ha
 			return err
 		}
 
-		signedUser := models.SignedUser{
+		signedUser := value_objects.SignedUser{
 			UserID:   agt.ID.String(),
 			UserType: agentType,
 			Token:    token,
@@ -73,7 +73,7 @@ func RegisterAgent(agentDomain agent.Interactor) fiber.Handler {
 		}
 
 		// we use a presenter to reformat the response of agent.
-		_ = ctx.Status(http.StatusOK).JSON(responses.RegistrationResponse(agt.ID, models.UserTypAgent))
+		_ = ctx.Status(http.StatusOK).JSON(responses.RegistrationResponse(agt.ID, value_objects.UserTypAgent))
 
 		return nil
 	}

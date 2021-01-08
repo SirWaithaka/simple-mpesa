@@ -6,8 +6,8 @@ import (
 	"simple-mpesa/src"
 	"simple-mpesa/src/auth"
 	"simple-mpesa/src/merchant"
-	"simple-mpesa/src/models"
 	"simple-mpesa/src/routing/responses"
+	"simple-mpesa/src/value_objects"
 
 	"github.com/gofiber/fiber/v2"
 )
@@ -32,14 +32,14 @@ func AuthenticateMerchant(merchDomain merchant.Interactor, config src.Config) fi
 		}
 
 		// generate an auth token string
-		token, err := auth.GetTokenString(merch.ID, models.UserTypMerchant, config.Secret)
+		token, err := auth.GetTokenString(merch.ID, value_objects.UserTypMerchant, config.Secret)
 		if err != nil {
 			return err
 		}
 
-		signedUser := models.SignedUser{
+		signedUser := value_objects.SignedUser{
 			UserID:   merch.ID.String(),
-			UserType: models.UserTypMerchant,
+			UserType: value_objects.UserTypMerchant,
 			Token:    token,
 		}
 		_ = ctx.Status(http.StatusOK).JSON(signedUser)
@@ -67,7 +67,7 @@ func RegisterMerchant(merchDomain merchant.Interactor) fiber.Handler {
 		}
 
 		// we use a presenter to reformat the response of merchant.
-		_ = ctx.Status(http.StatusOK).JSON(responses.RegistrationResponse(merch.ID, models.UserTypMerchant))
+		_ = ctx.Status(http.StatusOK).JSON(responses.RegistrationResponse(merch.ID, value_objects.UserTypMerchant))
 
 		return nil
 	}
