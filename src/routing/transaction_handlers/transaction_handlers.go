@@ -5,8 +5,6 @@ import (
 
 	"simple-mpesa/src/auth"
 	"simple-mpesa/src/errors"
-	"simple-mpesa/src/models"
-	"simple-mpesa/src/ports"
 	"simple-mpesa/src/routing/responses"
 	"simple-mpesa/src/transaction"
 
@@ -14,7 +12,7 @@ import (
 )
 
 // Deposit allows user to deposit or credit their account.
-func Deposit(txnAdapter ports.TransactorPort) fiber.Handler {
+func Deposit(transactor transaction.Facade) fiber.Handler {
 
 	return func(ctx *fiber.Ctx) error {
 		var userDetails auth.UserAuthDetails
@@ -34,11 +32,11 @@ func Deposit(txnAdapter ports.TransactorPort) fiber.Handler {
 			return err
 		}
 
-		depositor := models.TxnCustomer{
+		depositor := transaction.TxnCustomer{
 			UserType: userDetails.UserType,
 			UserID:   userDetails.UserID,
 		}
-		err = txnAdapter.Deposit(depositor, p.CustomerNumber, p.CustomerType, p.Amount)
+		err = transactor.Deposit(depositor, p.CustomerNumber, p.CustomerType, p.Amount)
 		if err != nil {
 			return err
 		}
@@ -48,7 +46,7 @@ func Deposit(txnAdapter ports.TransactorPort) fiber.Handler {
 }
 
 // Withdraw allows user to withdraw or debit their account.
-func Withdraw(txnAdapter ports.TransactorPort) fiber.Handler {
+func Withdraw(transactor transaction.Facade) fiber.Handler {
 
 	return func(ctx *fiber.Ctx) error {
 		var userDetails auth.UserAuthDetails
@@ -68,11 +66,11 @@ func Withdraw(txnAdapter ports.TransactorPort) fiber.Handler {
 			return err
 		}
 
-		withdrawer := models.TxnCustomer{
+		withdrawer := transaction.TxnCustomer{
 			UserID:   userDetails.UserID,
 			UserType: userDetails.UserType,
 		}
-		err = txnAdapter.Withdraw(withdrawer, p.AgentNumber, p.Amount)
+		err = transactor.Withdraw(withdrawer, p.AgentNumber, p.Amount)
 		if err != nil {
 			return err
 		}
@@ -81,7 +79,7 @@ func Withdraw(txnAdapter ports.TransactorPort) fiber.Handler {
 	}
 }
 
-func Transfer(txnAdapter ports.TransactorPort) fiber.Handler {
+func Transfer(transactor transaction.Facade) fiber.Handler {
 
 	return func(ctx *fiber.Ctx) error {
 		var userDetails auth.UserAuthDetails
@@ -101,11 +99,11 @@ func Transfer(txnAdapter ports.TransactorPort) fiber.Handler {
 			return err
 		}
 
-		source := models.TxnCustomer{
+		source := transaction.TxnCustomer{
 			UserID:   userDetails.UserID,
 			UserType: userDetails.UserType,
 		}
-		err = txnAdapter.Transfer(source, p.DestAccountNo, p.DestUserType, p.Amount)
+		err = transactor.Transfer(source, p.DestAccountNo, p.DestUserType, p.Amount)
 		if err != nil {
 			return err
 		}

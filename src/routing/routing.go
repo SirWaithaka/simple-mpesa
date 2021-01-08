@@ -42,11 +42,11 @@ func apiRouteGroup(api fiber.Router, domain *registry.Domain, config src.Config)
 	// create group at /api/account
 	account := api.Group("/account", middleware.AuthByBearerToken(config.Secret))
 	account.Get("/balance", account_handlers.BalanceEnquiry(domain.Account))
-	account.Get("/statement", account_handlers.MiniStatement(domain.Statement))
+	account.Get("/statement", account_handlers.MiniStatement(domain.Account))
 
 	// create group at /api/transaction
 	transaction := api.Group("/transaction", middleware.AuthByBearerToken(config.Secret))
-	transaction.Post("/deposit", transaction_handlers.Deposit(domain.Transactor))
-	transaction.Post("/transfer", transaction_handlers.Transfer(domain.Transactor))
-	transaction.Post("/withdraw", transaction_handlers.Withdraw(domain.Transactor))
+	transaction.Post("/deposit", transaction_handlers.Deposit(domain.Transaction))
+	transaction.Post("/transfer", transaction_handlers.Transfer(domain.Transaction))
+	transaction.Post("/withdraw", transaction_handlers.Withdraw(domain.Transaction))
 }

@@ -6,9 +6,8 @@ import (
 	"simple-mpesa/src/account"
 	"simple-mpesa/src/auth"
 	"simple-mpesa/src/errors"
-	"simple-mpesa/src/models"
 	"simple-mpesa/src/routing/responses"
-	"simple-mpesa/src/statement"
+	"simple-mpesa/src/value_objects"
 
 	"github.com/gofiber/fiber/v2"
 )
@@ -25,7 +24,7 @@ func BalanceEnquiry(interactor account.Interactor) fiber.Handler {
 		}
 
 		// we check if user is admin, we return error
-		if userDetails.UserType == models.UserTypAdmin {
+		if userDetails.UserType == value_objects.UserTypAdmin {
 			return errors.Error{Code: errors.EINVALID, Message: errors.UserCantHaveAccount}
 		}
 
@@ -40,7 +39,7 @@ func BalanceEnquiry(interactor account.Interactor) fiber.Handler {
 
 // MiniStatement returns a small short summary of the
 // most recent transactions on an account.
-func MiniStatement(interactor statement.Interactor) fiber.Handler {
+func MiniStatement(interactor account.Interactor) fiber.Handler {
 
 	return func(ctx *fiber.Ctx) error {
 		var userDetails auth.UserAuthDetails
