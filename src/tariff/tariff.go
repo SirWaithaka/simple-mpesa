@@ -1,7 +1,7 @@
 package tariff
 
 import (
-	"simple-mpesa/src/models"
+	"simple-mpesa/src/value_objects"
 
 	"github.com/gofrs/uuid"
 	"gorm.io/gorm"
@@ -10,17 +10,12 @@ import (
 type Charge struct {
 	ID uuid.UUID
 
-	Transaction         models.TxnOperation `gorm:"uniqueIndex:idx_unique_tx_identity"`
-	SourceUserType      models.UserType     `gorm:"uniqueIndex:idx_unique_tx_identity"`
-	DestinationUserType models.UserType     `gorm:"uniqueIndex:idx_unique_tx_identity"`
-	Fee                 models.Cents
+	Transaction         value_objects.TxnOperation
+	SourceUserType      value_objects.UserType
+	DestinationUserType value_objects.UserType
+	Fee                 value_objects.Cents
 
 	gorm.Model
-}
-
-func (t *Charge) BeforeCreate(tx *gorm.DB) error {
-	t.ID, _ = uuid.NewV4()
-	return nil
 }
 
 // ValidTransaction defines a format to identify all allowable transactions between customers
@@ -28,6 +23,14 @@ func (t *Charge) BeforeCreate(tx *gorm.DB) error {
 // Index 0 is the source while index 1 is the destination
 //
 // Example
-// 1. Validation{models.UserTypSubscriber, models.UserTypMerchant}
+// 1. Validation{value_objects.UserTypSubscriber, value_objects.UserTypMerchant}
 // Describes a valid transaction (transfer) between a subscriber to a merchant
-type ValidTransaction [2]models.UserType
+type ValidTransaction [2]value_objects.UserType
+
+type Repository interface {
+	Add(Charge) (Charge, error)
+	FetchAll() ([]Charge, error)
+	FindByID(uuid.UUID) (Charge, error)
+	Get(operation value_objects.TxnOperation, src value_objects.UserType, dest value_objects.UserType) (Charge, error)
+	Update(Charge) error
+}
