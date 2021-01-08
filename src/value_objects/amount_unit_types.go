@@ -1,4 +1,4 @@
-package models
+package value_objects
 
 // Shillings is the unit of money used in Kenyan Currency (KES). A shilling
 // has 100 cents

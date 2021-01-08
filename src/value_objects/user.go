@@ -1,4 +1,4 @@
-package models
+package value_objects
 
 import (
 	"time"
