@@ -1,26 +1,26 @@
-package models
+package subscriber
 
 import (
 	"github.com/gofrs/uuid"
-	"gorm.io/gorm"
 )
 
 // Subscriber
 type Subscriber struct {
 	ID    uuid.UUID
-	Email string `gorm:"not null;unique"` // email is used as account number
+	Email string // email is used as account number
 
 	FirstName   string
 	LastName    string
-	PhoneNumber string `gorm:"not null;unique"`
+	PhoneNumber string
 	PassportNo  string
-	Password    string `gorm:"not null"`
-
-	gorm.Model
+	Password    string
 }
 
-// BeforeCreate hook will be used to add uuid to entity before adding to db
-func (u *Subscriber) BeforeCreate(tx *gorm.DB) error {
-	u.ID, _ = uuid.NewV4()
-	return nil
+type Repository interface {
+	Add(Subscriber) (Subscriber, error)
+	Delete(Subscriber) error
+	FetchAll() ([]Subscriber, error)
+	FindByID(uuid.UUID) (Subscriber, error)
+	FindByEmail(string) (Subscriber, error)
+	Update(Subscriber) error
 }

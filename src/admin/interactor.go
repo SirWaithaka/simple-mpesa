@@ -6,12 +6,12 @@ import (
 	"simple-mpesa/src/customer"
 	"simple-mpesa/src/errors"
 	"simple-mpesa/src/helpers"
-	"simple-mpesa/src/models"
+	"simple-mpesa/src/value_objects"
 )
 
 type Interactor interface {
-	AuthenticateByEmail(email, password string) (models.Admin, error)
-	Register(RegistrationParams) (models.Admin, error)
+	AuthenticateByEmail(email, password string) (Administrator, error)
+	Register(RegistrationParams) (Administrator, error)
 	AssignFloat(AssignFloatParams) (float64, error)
 }
 
@@ -32,26 +32,26 @@ type interactor struct {
 }
 
 // AuthenticateByEmail verifies a admin by the provided unique email address
-func (i interactor) AuthenticateByEmail(email, password string) (models.Admin, error) {
+func (i interactor) AuthenticateByEmail(email, password string) (Administrator, error) {
 	// search for admin by email.
 	admin, err := i.repository.GetByEmail(email)
 	if errors.ErrorCode(err) == errors.ENOTFOUND {
-		return models.Admin{}, errors.Error{Err: err, Message: errors.ErrUserNotFound}
+		return Administrator{}, errors.Error{Err: err, Message: errors.ErrUserNotFound}
 	} else if err != nil {
-		return models.Admin{}, err
+		return Administrator{}, err
 	}
 
 	// validate password
 	if err := helpers.ComparePasswordToHash(admin.Password, password); err != nil {
-		return models.Admin{}, errors.Unauthorized{Message: errors.ErrorMessage(err)}
+		return Administrator{}, errors.Unauthorized{Message: errors.ErrorMessage(err)}
 	}
 
 	return admin, nil
 }
 
 // Register takes in a admin object and adds the admin to db.
-func (i interactor) Register(params RegistrationParams) (models.Admin, error) {
-	admin := models.Admin{
+func (i interactor) Register(params RegistrationParams) (Administrator, error) {
+	admin := Administrator{
 		FirstName: params.FirstName,
 		LastName:  params.LastName,
 		Email:     params.Email,
@@ -61,14 +61,14 @@ func (i interactor) Register(params RegistrationParams) (models.Admin, error) {
 	// hash admin password before adding to db.
 	passwordHash, err := helpers.HashPassword(admin.Password)
 	if err != nil { // if we get an error, it means our hashing func dint work
-		return models.Admin{}, errors.Error{Err: err, Code: errors.EINTERNAL}
+		return Administrator{}, errors.Error{Err: err, Code: errors.EINTERNAL}
 	}
 
 	// change password to hashed string
 	admin.Password = passwordHash
 	adm, err := i.repository.Add(admin)
 	if err != nil {
-		return models.Admin{}, err
+		return Administrator{}, err
 	}
 
 	return adm, nil
@@ -88,7 +88,7 @@ func (i interactor) AssignFloat(params AssignFloatParams) (float64, error) {
 		return 0, errors.Error{Code: errors.EINVALID, Message: errors.ErrAgentNotSuperAgent}
 	}
 
-	balance, err := i.accountant.CreditAccount(agent.ID, params.Amount.ToCents(), models.TxnFloatAssignment)
+	balance, err := i.accountant.CreditAccount(agent.ID, params.Amount.ToCents(), value_objects.TxnFloatAssignment)
 	if err != nil {
 		return 0, err
 	}

@@ -2,7 +2,7 @@ package admin
 
 import (
 	"simple-mpesa/src/errors"
-	"simple-mpesa/src/models"
+	"simple-mpesa/src/value_objects"
 
 	validation "github.com/go-ozzo/ozzo-validation/v4"
 	"github.com/go-ozzo/ozzo-validation/v4/is"
@@ -45,8 +45,8 @@ func (req RegistrationParams) Validate() error {
 }
 
 type AssignFloatParams struct {
-	AgentAccountNumber string           `json:"accountNo" schema:"accountNo" form:"accountNo"`
-	Amount             models.Shillings `json:"amount" schema:"amount" form:"amount"`
+	AgentAccountNumber string                  `json:"accountNo" schema:"accountNo" form:"accountNo"`
+	Amount             value_objects.Shillings `json:"amount" schema:"amount" form:"amount"`
 }
 
 func (req AssignFloatParams) Validate() error {
@@ -59,8 +59,8 @@ func (req AssignFloatParams) Validate() error {
 }
 
 type UpdateChargeParams struct {
-	ChargeID uuid.UUID    `json:"chargeId" schema:"chargeId" form:"chargeId"`
-	Amount   models.Cents `json:"amount" schema:"amount" form:"amount"`
+	ChargeID uuid.UUID           `json:"chargeId" schema:"chargeId" form:"chargeId"`
+	Amount   value_objects.Cents `json:"amount" schema:"amount" form:"amount"`
 }
 
 func (req UpdateChargeParams) Validate() error {

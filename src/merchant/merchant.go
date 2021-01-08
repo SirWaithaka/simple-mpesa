@@ -1,30 +1,30 @@
-package models
+package merchant
 
 import (
 	"github.com/gofrs/uuid"
-	"gorm.io/gorm"
 )
 
 // Merchant
 type Merchant struct {
 	ID    uuid.UUID
-	Email string `gorm:"not null;unique"` // email is used as account number
+	Email string // email is used as account number
 
 	FirstName   string
 	LastName    string
-	PhoneNumber string `gorm:"not null;unique"`
+	PhoneNumber string
 	PassportNo  string
-	Password    string `gorm:"not null"`
+	Password    string
 
 	// a merchant is usually assigned a till number they use to accept
 	// payments from other customers
-	TillNumber string `gorm:"column:till_number;unique"`
-
-	gorm.Model
+	TillNumber string
 }
 
-// BeforeCreate hook will be used to add uuid to entity before adding to db
-func (u *Merchant) BeforeCreate(tx *gorm.DB) error {
-	u.ID, _ = uuid.NewV4()
-	return nil
+type Repository interface {
+	Add(Merchant) (Merchant, error)
+	Delete(Merchant) error
+	FetchAll() ([]Merchant, error)
+	FindByID(uuid.UUID) (Merchant, error)
+	FindByEmail(string) (Merchant, error)
+	Update(Merchant) error
 }
