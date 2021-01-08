@@ -2,34 +2,21 @@ package agent
 
 import (
 	"github.com/gofrs/uuid"
-	"gorm.io/gorm"
 )
 
 // Agent
 type Agent struct {
 	ID    uuid.UUID
-	Email string `gorm:"not null;unique"` // email is used as account number
+	Email string // email is used as account number
 
 	FirstName   string
 	LastName    string
-	PhoneNumber string `gorm:"not null;unique"`
+	PhoneNumber string
 	PassportNo  string
-	Password    string `gorm:"not null"`
-
-	// an agent is usually assigned an agent number that they use for
-	// transactions with other customers
-	// AgentNumber string `gorm:"column:agent_number;unique"`
+	Password    string
 
 	// an extra column/property that tells us if the agent is a super agent
-	SuperAgent SuperAgentStatus `gorm:"default:'0'"` // PS: bool values dont work well with gorm during updates
-
-	gorm.Model
-}
-
-// BeforeCreate hook will be used to add uuid to entity before adding to db
-func (u *Agent) BeforeCreate(tx *gorm.DB) error {
-	u.ID, _ = uuid.NewV4()
-	return nil
+	SuperAgent SuperAgentStatus // PS: bool values dont work well with gorm during updates
 }
 
 func (u Agent) IsSuperAgent() bool {
@@ -51,4 +38,13 @@ func (status SuperAgentStatus) Not() SuperAgentStatus {
 	} else {
 		return IsNotSuperAgent
 	}
+}
+
+type Repository interface {
+	Add(Agent) (Agent, error)
+	Delete(Agent) error
+	FetchAll() ([]Agent, error)
+	FindByID(uuid.UUID) (Agent, error)
+	FindByEmail(string) (Agent, error)
+	Update(Agent) error
 }

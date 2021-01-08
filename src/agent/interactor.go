@@ -7,12 +7,11 @@ import (
 	"simple-mpesa/src/data"
 	"simple-mpesa/src/errors"
 	"simple-mpesa/src/helpers"
-	"simple-mpesa/src/models"
 )
 
 type Interactor interface {
-	AuthenticateByEmail(email, password string) (models.Agent, error)
-	Register(RegistrationParams) (models.Agent, error)
+	AuthenticateByEmail(email, password string) (Agent, error)
+	Register(RegistrationParams) (Agent, error)
 	UpdateSuperAgentStatus(email string) error
 }
 
@@ -31,26 +30,26 @@ type interactor struct {
 }
 
 // AuthenticateByEmail verifies an agent by the provided unique email address
-func (ui interactor) AuthenticateByEmail(email, password string) (models.Agent, error) {
+func (ui interactor) AuthenticateByEmail(email, password string) (Agent, error) {
 	// search for agent by email.
 	agent, err := ui.repository.FindByEmail(email)
 	if errors.ErrorCode(err) == errors.ENOTFOUND {
-		return models.Agent{}, errors.Error{Err: err, Message: errors.ErrUserNotFound}
+		return Agent{}, errors.Error{Err: err, Message: errors.ErrUserNotFound}
 	} else if err != nil {
-		return models.Agent{}, err
+		return Agent{}, err
 	}
 
 	// validate password
 	if err := helpers.ComparePasswordToHash(agent.Password, password); err != nil {
-		return models.Agent{}, errors.Unauthorized{Message: errors.ErrorMessage(err)}
+		return Agent{}, errors.Unauthorized{Message: errors.ErrorMessage(err)}
 	}
 
 	return agent, nil
 }
 
 // Register takes in a agent object and adds the agent to db.
-func (ui interactor) Register(params RegistrationParams) (models.Agent, error) {
-	agent := models.Agent{
+func (ui interactor) Register(params RegistrationParams) (Agent, error) {
+	agent := Agent{
 		FirstName:   params.FirstName,
 		LastName:    params.LastName,
 		Email:       params.Email,
@@ -62,14 +61,14 @@ func (ui interactor) Register(params RegistrationParams) (models.Agent, error) {
 	// hash agent password before adding to db.
 	passwordHash, err := helpers.HashPassword(agent.Password)
 	if err != nil { // if we get an error, it means our hashing func dint work
-		return models.Agent{}, errors.Error{Err: err, Code: errors.EINTERNAL}
+		return Agent{}, errors.Error{Err: err, Code: errors.EINTERNAL}
 	}
 
 	// change password to hashed string
 	agent.Password = passwordHash
 	agt, err := ui.repository.Add(agent)
 	if err != nil {
-		return models.Agent{}, err
+		return Agent{}, err
 	}
 
 	// tell channel listeners that a new agent has been created.
@@ -99,7 +98,7 @@ func (ui interactor) UpdateSuperAgentStatus(email string) error {
 // take the newly created agent and post them to channel
 // that listens for newly created customers and acts upon them
 // like creating an account for them automatically.
-func (ui interactor) postNewAgentToChannel(agent *models.Agent) {
+func (ui interactor) postNewAgentToChannel(agent *Agent) {
 	newAgent := parseToNewAgent(*agent)
 	go func() { ui.customersChannel.Writer <- newAgent }()
 }
