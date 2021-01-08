@@ -1,7 +1,7 @@
 package responses
 
 import (
-	"simple-mpesa/src/models"
+	"simple-mpesa/src/value_objects"
 
 	"github.com/gofrs/uuid"
 )
@@ -23,7 +23,7 @@ func successResponse(message string, data interface{}) SuccessResponse {
 	}
 }
 
-func RegistrationResponse(userID uuid.UUID, userType models.UserType) interface{} {
+func RegistrationResponse(userID uuid.UUID, userType value_objects.UserType) interface{} {
 	data := map[string]interface{}{
 		"userID": userID,
 		"userType": userType,

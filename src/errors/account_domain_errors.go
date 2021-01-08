@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"strconv"
 
-	"simple-mpesa/src/models"
+	"simple-mpesa/src/value_objects"
 
 	"github.com/gofrs/uuid"
 )
@@ -37,7 +37,7 @@ func (err ErrAccountAccess) Error() string {
 
 // errAmountBelowMinimum
 type errAmountBelowMinimum struct {
-	MinAmount models.Shillings // minimum amount allowable for deposit or withdraw
+	MinAmount value_objects.Shillings // minimum amount allowable for deposit or withdraw
 	Message   ERMessage
 }
 
@@ -45,14 +45,14 @@ func (err errAmountBelowMinimum) Error() string {
 	return string(err.Message) + " " + strconv.Itoa(int(err.MinAmount))
 }
 
-func ErrAmountBelowMinimum(min models.Shillings, message ERMessage) error {
+func ErrAmountBelowMinimum(min value_objects.Shillings, message ERMessage) error {
 	return errAmountBelowMinimum{MinAmount: min, Message: message}
 }
 
 // ErrNotEnoughBalance
 type ErrNotEnoughBalance struct {
 	Message ERMessage
-	Amount  models.Shillings
+	Amount  value_objects.Shillings
 	Balance float64
 }
 

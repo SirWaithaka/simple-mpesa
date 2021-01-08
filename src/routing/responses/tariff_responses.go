@@ -1,18 +1,18 @@
 package responses
 
 import (
-	"simple-mpesa/src/models"
 	"simple-mpesa/src/tariff"
+	"simple-mpesa/src/value_objects"
 
 	"github.com/gofrs/uuid"
 )
 
 type tariffResponse struct {
-	ID          uuid.UUID           `json:"id"`
-	Operation   models.TxnOperation `json:"txnOperation"`
-	Source      models.UserType     `json:"srcUserType"`
-	Destination models.UserType     `json:"destUserType"`
-	Fee         models.Cents        `json:"fee"`
+	ID          uuid.UUID                  `json:"id"`
+	Operation   value_objects.TxnOperation `json:"txnOperation"`
+	Source      value_objects.UserType     `json:"srcUserType"`
+	Destination value_objects.UserType     `json:"destUserType"`
+	Fee         value_objects.Cents        `json:"fee"`
 }
 
 func TariffResponse(charges []tariff.Charge) SuccessResponse {

@@ -4,20 +4,20 @@ import (
 	"fmt"
 	"time"
 
-	"simple-mpesa/src/models"
-	"simple-mpesa/src/statement"
+	"simple-mpesa/src/account"
+	"simple-mpesa/src/value_objects"
 
 	"github.com/gofrs/uuid"
 )
 
 type transactionStatement struct {
-	ID             uuid.UUID           `json:"transactionId"`
-	Type           models.TxnOperation `json:"transactionType"`
-	CreatedAt      time.Time           `json:"createdAt"`
-	CreditedAmount float64             `json:"creditedAmount"`
-	DebitedAmount  float64             `json:"debitedAmount"`
-	UserID         uuid.UUID           `json:"userId"`
-	AccountID      uuid.UUID           `json:"accountId"`
+	ID             uuid.UUID                  `json:"transactionId"`
+	Type           value_objects.TxnOperation `json:"transactionType"`
+	CreatedAt      time.Time                  `json:"createdAt"`
+	CreditedAmount float64                    `json:"creditedAmount"`
+	DebitedAmount  float64                    `json:"debitedAmount"`
+	UserID         uuid.UUID                  `json:"userId"`
+	AccountID      uuid.UUID                  `json:"accountId"`
 }
 
 type miniStatementResponse struct {
@@ -27,7 +27,7 @@ type miniStatementResponse struct {
 	Statements []transactionStatement `json:"transactions"`
 }
 
-func MiniStatementResponse(userID uuid.UUID, statements []statement.Statement) SuccessResponse {
+func MiniStatementResponse(userID uuid.UUID, statements []account.Statement) SuccessResponse {
 	var stmts []transactionStatement
 	for _, stmt := range statements {
 		stmts = append(stmts, transactionStatement{

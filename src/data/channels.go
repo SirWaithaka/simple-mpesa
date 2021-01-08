@@ -3,7 +3,7 @@ package data
 import (
 	"time"
 
-	"simple-mpesa/src/models"
+	"simple-mpesa/src/value_objects"
 
 	"github.com/gofrs/uuid"
 )
@@ -26,7 +26,7 @@ type TransactionContract struct {
 	UserID       uuid.UUID
 	AccountID    uuid.UUID
 	Amount       float64
-	TxnOperation models.TxnOperation // transaction operation type
+	TxnOperation value_objects.TxnOperation // transaction operation type
 	Timestamp    time.Time
 }
 

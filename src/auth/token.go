@@ -4,7 +4,7 @@ import (
 	"log"
 	"time"
 
-	"simple-mpesa/src/models"
+	"simple-mpesa/src/value_objects"
 
 	"github.com/dgrijalva/jwt-go"
 	"github.com/gofrs/uuid"
@@ -20,8 +20,8 @@ func (err TokenParsingError) Error() string {
 }
 
 type UserAuthDetails struct {
-	UserID   uuid.UUID       `json:"userId"`
-	UserType models.UserType `json:"userType"`
+	UserID   uuid.UUID              `json:"userId"`
+	UserType value_objects.UserType `json:"userType"`
 }
 
 type TokenClaims struct {
@@ -30,7 +30,7 @@ type TokenClaims struct {
 	jwt.StandardClaims
 }
 
-func generateToken(userID uuid.UUID, userType models.UserType) *jwt.Token {
+func generateToken(userID uuid.UUID, userType value_objects.UserType) *jwt.Token {
 
 	issuedAt := time.Now().Unix()
 	expirationTime := time.Now().Add(6 * time.Hour).Unix()
@@ -54,7 +54,7 @@ func generateToken(userID uuid.UUID, userType models.UserType) *jwt.Token {
 }
 
 // GetTokenString generates a jwt access token for a user
-func GetTokenString(userID uuid.UUID, userType models.UserType, secret string) (string, error) {
+func GetTokenString(userID uuid.UUID, userType value_objects.UserType, secret string) (string, error) {
 	token := generateToken(userID, userType)
 
 	str, err := token.SignedString([]byte(secret))
