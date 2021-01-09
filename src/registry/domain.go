@@ -7,9 +7,7 @@ import (
 	"simple-mpesa/src/agent"
 	"simple-mpesa/src/customer"
 	"simple-mpesa/src/merchant"
-	"simple-mpesa/src/ports"
 	"simple-mpesa/src/repositories"
-	"simple-mpesa/src/statement"
 	"simple-mpesa/src/storage"
 	"simple-mpesa/src/subscriber"
 	"simple-mpesa/src/tariff"
@@ -23,11 +21,8 @@ type Domain struct {
 	Subscriber subscriber.Interactor
 
 	Account     account.Interactor
-	Transaction transaction.Interactor
-	Statement   statement.Interactor
+	Transaction transaction.Facade
 	Tariff      tariff.Manager
-
-	Transactor ports.TransactorPort
 }
 
 func NewDomain(config src.Config, database *storage.Database, channels *Channels) *Domain {
@@ -37,12 +32,12 @@ func NewDomain(config src.Config, database *storage.Database, channels *Channels
 	subscriberRepo := repositories.NewSubscriberRepository(database)
 
 	accRepo := repositories.NewAccountRepository(database)
-	txnRepo := repositories.NewTransactionRepository(database)
+	// txnRepo := repositories.NewTransactionRepository(database)
 	statementRepo := repositories.NewStatementRepository(database)
 	tariffRepo := repositories.NewTariffRepository(database)
 
 	// initialize ports and adapters
-	ledger := statement.NewLedger(statementRepo)
+	ledger := account.NewLedger(statementRepo)
 	tariffManager := tariff.NewManager(tariffRepo)
 	accountant := account.NewAccountant(accRepo, ledger)
 	customerFinder := customer.NewFinder(agentRepo, merchantRepo, subscriberRepo)
@@ -53,10 +48,8 @@ func NewDomain(config src.Config, database *storage.Database, channels *Channels
 		Agent:       agent.NewInteractor(config, agentRepo, channels.ChannelNewUsers),
 		Merchant:    merchant.NewInteractor(config, merchantRepo, channels.ChannelNewUsers),
 		Subscriber:  subscriber.NewInteractor(config, subscriberRepo, channels.ChannelNewUsers),
-		Account:     account.NewInteractor(accRepo, channels.ChannelNewUsers, channels.ChannelNewTransactions),
-		Transaction: transaction.NewInteractor(txnRepo, channels.ChannelNewTransactions),
-		Statement:   statement.NewInteractor(statementRepo),
-		Transactor:  ports.NewTransactor(customerFinder, transactor),
+		Account:     account.NewInteractor(accRepo, statementRepo, channels.ChannelNewUsers, channels.ChannelNewTransactions),
+		Transaction: transaction.NewFacade(customerFinder, transactor),
 		Tariff:      tariffManager,
 	}
 }
