@@ -3,10 +3,10 @@ package transaction
 import (
 	"log"
 
-	"simple-mpesa/src/account"
+	"simple-mpesa/src/domain/account"
+	"simple-mpesa/src/domain/tariff"
+	"simple-mpesa/src/domain/value_objects"
 	"simple-mpesa/src/errors"
-	"simple-mpesa/src/tariff"
-	"simple-mpesa/src/value_objects"
 )
 
 type Transactor interface {

@@ -1,10 +1,10 @@
-package repositories
+package pg
 
 import (
 	"simple-mpesa/src/account"
 	"simple-mpesa/src/errors"
-	"simple-mpesa/src/value_objects"
 	"simple-mpesa/src/storage"
+	"simple-mpesa/src/value_objects"
 
 	"github.com/gofrs/uuid"
 	"github.com/jackc/pgconn"

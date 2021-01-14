@@ -2,8 +2,8 @@ package admin
 
 import (
 	"simple-mpesa/src"
-	"simple-mpesa/src/account"
-	"simple-mpesa/src/customer"
+	"simple-mpesa/src/domain/account"
+	"simple-mpesa/src/domain/customer"
 	"simple-mpesa/src/errors"
 	"simple-mpesa/src/helpers"
 	"simple-mpesa/src/value_objects"

@@ -1,11 +1,11 @@
 package customer
 
 import (
-	"simple-mpesa/src/agent"
+	"simple-mpesa/src/domain/agent"
+	"simple-mpesa/src/domain/merchant"
+	"simple-mpesa/src/domain/subscriber"
 	"simple-mpesa/src/errors"
-	"simple-mpesa/src/merchant"
 	"simple-mpesa/src/value_objects"
-	"simple-mpesa/src/subscriber"
 
 	"github.com/gofrs/uuid"
 )

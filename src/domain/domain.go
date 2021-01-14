@@ -1,17 +1,18 @@
-package registry
+package domain
 
 import (
 	"simple-mpesa/src"
-	"simple-mpesa/src/account"
-	"simple-mpesa/src/admin"
-	"simple-mpesa/src/agent"
-	"simple-mpesa/src/customer"
-	"simple-mpesa/src/merchant"
-	"simple-mpesa/src/repositories"
+	"simple-mpesa/src/domain/account"
+	"simple-mpesa/src/domain/admin"
+	"simple-mpesa/src/domain/agent"
+	"simple-mpesa/src/domain/customer"
+	"simple-mpesa/src/domain/merchant"
+	"simple-mpesa/src/domain/subscriber"
+	"simple-mpesa/src/domain/tariff"
+	"simple-mpesa/src/domain/transaction"
+	"simple-mpesa/src/registry"
+	"simple-mpesa/src/repositories/pg"
 	"simple-mpesa/src/storage"
-	"simple-mpesa/src/subscriber"
-	"simple-mpesa/src/tariff"
-	"simple-mpesa/src/transaction"
 )
 
 type Domain struct {
@@ -25,16 +26,16 @@ type Domain struct {
 	Tariff      tariff.Manager
 }
 
-func NewDomain(config src.Config, database *storage.Database, channels *Channels) *Domain {
-	adminRepo := repositories.NewAdminRepository(database)
-	agentRepo := repositories.NewAgentRepository(database)
-	merchantRepo := repositories.NewMerchantRepository(database)
-	subscriberRepo := repositories.NewSubscriberRepository(database)
+func NewDomain(config src.Config, database *storage.Database, channels *registry.Channels) *Domain {
+	adminRepo := pg.NewAdminRepository(database)
+	agentRepo := pg.NewAgentRepository(database)
+	merchantRepo := pg.NewMerchantRepository(database)
+	subscriberRepo := pg.NewSubscriberRepository(database)
 
-	accRepo := repositories.NewAccountRepository(database)
+	accRepo := pg.NewAccountRepository(database)
 	// txnRepo := repositories.NewTransactionRepository(database)
-	statementRepo := repositories.NewStatementRepository(database)
-	tariffRepo := repositories.NewTariffRepository(database)
+	statementRepo := pg.NewStatementRepository(database)
+	tariffRepo := pg.NewTariffRepository(database)
 
 	// initialize ports and adapters
 	ledger := account.NewLedger(statementRepo)

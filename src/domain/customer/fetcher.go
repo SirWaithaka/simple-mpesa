@@ -1,9 +1,9 @@
 package customer
 
 import (
-	"simple-mpesa/src/agent"
-	"simple-mpesa/src/merchant"
-	"simple-mpesa/src/subscriber"
+	"simple-mpesa/src/domain/agent"
+	"simple-mpesa/src/domain/merchant"
+	"simple-mpesa/src/domain/subscriber"
 )
 
 type CustomersFetcher interface {

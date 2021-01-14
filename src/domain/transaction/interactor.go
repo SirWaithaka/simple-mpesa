@@ -4,8 +4,8 @@ import (
 	"log"
 
 	"simple-mpesa/src/data"
+	"simple-mpesa/src/domain/value_objects"
 	"simple-mpesa/src/errors"
-	"simple-mpesa/src/value_objects"
 )
 
 const (
@@ -19,14 +19,14 @@ type Interactor interface {
 }
 
 type interactor struct {
-	repository       Repository
-	transChannel     data.ChanNewTransactions
+	repository   Repository
+	transChannel data.ChanNewTransactions
 }
 
 func NewInteractor(repository Repository, transChan data.ChanNewTransactions) Interactor {
 	intr := &interactor{
-		repository:       repository,
-		transChannel:     transChan,
+		repository:   repository,
+		transChannel: transChan,
 	}
 
 	go intr.listenOnCreatedTransactions()
