@@ -1,9 +1,9 @@
-package repositories
+package pg
 
 import (
+	"simple-mpesa/src/domain/subscriber"
 	"simple-mpesa/src/errors"
 	"simple-mpesa/src/storage"
-	"simple-mpesa/src/subscriber"
 
 	"github.com/gofrs/uuid"
 	"github.com/jackc/pgconn"

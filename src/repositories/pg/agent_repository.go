@@ -1,8 +1,9 @@
-package repositories
+package pg
 
 import (
-	"simple-mpesa/src/agent"
+	"simple-mpesa/src/domain/agent"
 	"simple-mpesa/src/errors"
+	"simple-mpesa/src/repositories/schema"
 	"simple-mpesa/src/storage"
 
 	"github.com/gofrs/uuid"
@@ -36,7 +37,7 @@ func (r AgentRepository) searchBy(row agent.Agent) (agent.Agent, error) {
 func (r AgentRepository) Add(a agent.Agent) (agent.Agent, error) {
 	// add new agent to agents table, if query return violation of unique key column,
 	// we know that the agent with given record exists and return that agent instead
-	result := r.db.Model(Agent{}).Create(&a)
+	result := r.db.Model(&schema.Agent{}).Create(&a)
 	if err := result.Error; err != nil {
 		// we check if the error is a postgres unique constraint violation
 		if pgerr, ok := err.(*pgconn.PgError); ok && pgerr.Code == "23505" {
@@ -93,4 +94,3 @@ func (r AgentRepository) Update(a agent.Agent) error {
 	}
 	return nil
 }
-

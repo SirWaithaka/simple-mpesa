@@ -1,7 +1,7 @@
-package repositories
+package pg
 
 import (
-	"simple-mpesa/src/admin"
+	"simple-mpesa/src/domain/admin"
 	"simple-mpesa/src/errors"
 	"simple-mpesa/src/storage"
 

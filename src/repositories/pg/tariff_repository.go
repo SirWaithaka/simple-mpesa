@@ -1,9 +1,9 @@
-package repositories
+package pg
 
 import (
+	"simple-mpesa/src/domain/tariff"
 	"simple-mpesa/src/errors"
 	"simple-mpesa/src/storage"
-	"simple-mpesa/src/tariff"
 	"simple-mpesa/src/value_objects"
 
 	"github.com/gofrs/uuid"

@@ -1,9 +1,9 @@
-package repositories
+package pg
 
 import (
+	"simple-mpesa/src/domain/transaction"
 	"simple-mpesa/src/errors"
 	"simple-mpesa/src/storage"
-	"simple-mpesa/src/transaction"
 )
 
 type TransactionRepository struct {

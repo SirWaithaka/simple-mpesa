@@ -1,8 +1,8 @@
-package repositories
+package pg
 
 import (
+	"simple-mpesa/src/domain/merchant"
 	"simple-mpesa/src/errors"
-	"simple-mpesa/src/merchant"
 	"simple-mpesa/src/storage"
 
 	"github.com/gofrs/uuid"
