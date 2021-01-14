@@ -4,11 +4,11 @@ import (
 	"net/http"
 
 	"simple-mpesa/src"
-	"simple-mpesa/src/admin"
-	"simple-mpesa/src/agent"
-	"simple-mpesa/src/auth"
+	"simple-mpesa/src/domain/admin"
+	"simple-mpesa/src/domain/agent"
+	"simple-mpesa/src/domain/auth"
+	"simple-mpesa/src/domain/tariff"
 	"simple-mpesa/src/routing/responses"
-	"simple-mpesa/src/tariff"
 	"simple-mpesa/src/value_objects"
 
 	"github.com/gofiber/fiber/v2"

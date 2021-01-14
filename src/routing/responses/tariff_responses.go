@@ -1,7 +1,7 @@
 package responses
 
 import (
-	"simple-mpesa/src/tariff"
+	"simple-mpesa/src/domain/tariff"
 	"simple-mpesa/src/value_objects"
 
 	"github.com/gofrs/uuid"

@@ -4,9 +4,9 @@ import (
 	"net/http"
 
 	"simple-mpesa/src"
-	"simple-mpesa/src/auth"
+	"simple-mpesa/src/domain/auth"
+	"simple-mpesa/src/domain/subscriber"
 	"simple-mpesa/src/routing/responses"
-	"simple-mpesa/src/subscriber"
 	"simple-mpesa/src/value_objects"
 
 	"github.com/gofiber/fiber/v2"

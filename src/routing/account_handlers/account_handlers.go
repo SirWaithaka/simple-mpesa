@@ -3,8 +3,8 @@ package account_handlers
 import (
 	"net/http"
 
-	"simple-mpesa/src/account"
-	"simple-mpesa/src/auth"
+	"simple-mpesa/src/domain/account"
+	"simple-mpesa/src/domain/auth"
 	"simple-mpesa/src/errors"
 	"simple-mpesa/src/routing/responses"
 	"simple-mpesa/src/value_objects"

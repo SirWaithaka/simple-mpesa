@@ -2,7 +2,7 @@ package routing
 
 import (
 	"simple-mpesa/src"
-	"simple-mpesa/src/registry"
+	"simple-mpesa/src/domain"
 	"simple-mpesa/src/routing/account_handlers"
 	"simple-mpesa/src/routing/error_handlers"
 	"simple-mpesa/src/routing/middleware"
@@ -13,7 +13,7 @@ import (
 	"github.com/gofiber/fiber/v2/middleware/logger"
 )
 
-func Router(domain *registry.Domain, config src.Config) *fiber.App {
+func Router(domain *domain.Domain, config src.Config) *fiber.App {
 
 	srv := fiber.New(
 		fiber.Config{ErrorHandler: error_handlers.ErrorHandler},
@@ -27,7 +27,7 @@ func Router(domain *registry.Domain, config src.Config) *fiber.App {
 	return srv
 }
 
-func apiRouteGroup(api fiber.Router, domain *registry.Domain, config src.Config) {
+func apiRouteGroup(api fiber.Router, domain *domain.Domain, config src.Config) {
 
 	api.Post("/login/:user_type", user_handlers.Authenticate(domain, config))
 	api.Post("/user/:user_type", user_handlers.Register(domain))

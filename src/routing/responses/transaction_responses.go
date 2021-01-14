@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"time"
 
-	"simple-mpesa/src/account"
+	"simple-mpesa/src/domain/account"
 	"simple-mpesa/src/value_objects"
 
 	"github.com/gofrs/uuid"

@@ -4,8 +4,8 @@ import (
 	"net/http"
 
 	"simple-mpesa/src"
-	"simple-mpesa/src/auth"
-	"simple-mpesa/src/merchant"
+	"simple-mpesa/src/domain/auth"
+	"simple-mpesa/src/domain/merchant"
 	"simple-mpesa/src/routing/responses"
 	"simple-mpesa/src/value_objects"
 

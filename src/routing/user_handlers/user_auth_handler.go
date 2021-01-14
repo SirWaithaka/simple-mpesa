@@ -2,13 +2,13 @@ package user_handlers
 
 import (
 	"simple-mpesa/src"
+	"simple-mpesa/src/domain"
 	"simple-mpesa/src/value_objects"
-	"simple-mpesa/src/registry"
 
 	"github.com/gofiber/fiber/v2"
 )
 
-func Authenticate(domain *registry.Domain, config src.Config) fiber.Handler {
+func Authenticate(domain *domain.Domain, config src.Config) fiber.Handler {
 
 	return func(ctx *fiber.Ctx) error {
 		// get the user type authenticating
@@ -29,7 +29,7 @@ func Authenticate(domain *registry.Domain, config src.Config) fiber.Handler {
 	}
 }
 
-func Register(domain *registry.Domain) fiber.Handler {
+func Register(domain *domain.Domain) fiber.Handler {
 
 	return func(ctx *fiber.Ctx) error {
 		// get the user type authenticating

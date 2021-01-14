@@ -3,7 +3,7 @@ package middleware
 import (
 	"strings"
 
-	"simple-mpesa/src/auth"
+	"simple-mpesa/src/domain/auth"
 	"simple-mpesa/src/errors"
 
 	"github.com/dgrijalva/jwt-go"
