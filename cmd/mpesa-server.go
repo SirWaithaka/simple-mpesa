@@ -7,6 +7,7 @@ import (
 
 	"simple-mpesa/src"
 	"simple-mpesa/src/configs"
+	"simple-mpesa/src/domain"
 	"simple-mpesa/src/registry"
 	"simple-mpesa/src/routing"
 	"simple-mpesa/src/storage/postgres"
@@ -30,10 +31,10 @@ func main() {
 	postgres.Migrate(database)
 
 	channels := registry.NewChannels()
-	domain := registry.NewDomain(config, database, channels)
+	domains := domain.NewDomain(config, database, channels)
 
 	// create the fiber server.
-	server := routing.Router(domain, config) // add endpoints
+	server := routing.Router(domains, config) // add endpoints
 
 	// listen and serve
 	port := fmt.Sprintf(":%v", 6700)
