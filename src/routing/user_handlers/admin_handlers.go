@@ -4,7 +4,7 @@ import (
 	"net/http"
 
 	"simple-mpesa/src"
-	"simple-mpesa/src/domain/admin"
+	"simple-mpesa/src/domain/administrator"
 	"simple-mpesa/src/domain/agent"
 	"simple-mpesa/src/domain/auth"
 	"simple-mpesa/src/domain/tariff"
@@ -14,10 +14,10 @@ import (
 	"github.com/gofiber/fiber/v2"
 )
 
-func AuthenticateAdmin(adminDomain admin.Interactor, config src.Config) fiber.Handler {
+func AuthenticateAdmin(adminDomain administrator.Interactor, config src.Config) fiber.Handler {
 
 	return func(ctx *fiber.Ctx) error {
-		var params admin.LoginParams
+		var params administrator.LoginParams
 		_ = ctx.BodyParser(&params)
 
 		err := params.Validate()
@@ -50,11 +50,11 @@ func AuthenticateAdmin(adminDomain admin.Interactor, config src.Config) fiber.Ha
 	}
 }
 
-func RegisterAdmin(adminDomain admin.Interactor) fiber.Handler {
+func RegisterAdmin(adminDomain administrator.Interactor) fiber.Handler {
 
 	return func(ctx *fiber.Ctx) error {
 
-		var params admin.RegistrationParams
+		var params administrator.RegistrationParams
 		_ = ctx.BodyParser(&params)
 
 		err := params.Validate()
@@ -75,11 +75,11 @@ func RegisterAdmin(adminDomain admin.Interactor) fiber.Handler {
 	}
 }
 
-func AssignFloat(adminDomain admin.Interactor) fiber.Handler {
+func AssignFloat(adminDomain administrator.Interactor) fiber.Handler {
 
 	return func(ctx *fiber.Ctx) error {
 
-		var params admin.AssignFloatParams
+		var params administrator.AssignFloatParams
 		_ = ctx.BodyParser(&params)
 
 		err := params.Validate()
@@ -109,7 +109,7 @@ func UpdateCharge(manager tariff.Manager) fiber.Handler {
 
 	return func(ctx *fiber.Ctx) error {
 
-		var params admin.UpdateChargeParams
+		var params administrator.UpdateChargeParams
 		_ = ctx.BodyParser(&params)
 
 		err := params.Validate()

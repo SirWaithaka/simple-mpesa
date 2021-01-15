@@ -3,7 +3,7 @@ package domain
 import (
 	"simple-mpesa/src"
 	"simple-mpesa/src/domain/account"
-	"simple-mpesa/src/domain/admin"
+	"simple-mpesa/src/domain/administrator"
 	"simple-mpesa/src/domain/agent"
 	"simple-mpesa/src/domain/customer"
 	"simple-mpesa/src/domain/merchant"
@@ -16,7 +16,7 @@ import (
 )
 
 type Domain struct {
-	Admin      admin.Interactor
+	Admin      administrator.Interactor
 	Agent      agent.Interactor
 	Merchant   merchant.Interactor
 	Subscriber subscriber.Interactor
@@ -45,7 +45,7 @@ func NewDomain(config src.Config, database *storage.Database, channels *registry
 	transactor := transaction.NewTransactor(accountant, tariffManager)
 
 	return &Domain{
-		Admin:       admin.NewInteractor(config, adminRepo, accountant, customerFinder),
+		Admin:       administrator.NewInteractor(config, adminRepo, accountant, customerFinder),
 		Agent:       agent.NewInteractor(config, agentRepo, channels.ChannelNewUsers),
 		Merchant:    merchant.NewInteractor(config, merchantRepo, channels.ChannelNewUsers),
 		Subscriber:  subscriber.NewInteractor(config, subscriberRepo, channels.ChannelNewUsers),

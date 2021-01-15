@@ -1,4 +1,4 @@
-package admin
+package administrator
 
 import (
 	"simple-mpesa/src/domain/value_objects"

@@ -1,4 +1,4 @@
-package admin
+package administrator
 
 import (
 	"simple-mpesa/src"
@@ -10,8 +10,8 @@ import (
 )
 
 type Interactor interface {
-	AuthenticateByEmail(email, password string) (Administrator, error)
-	Register(RegistrationParams) (Administrator, error)
+	AuthenticateByEmail(email, password string) (Admin, error)
+	Register(RegistrationParams) (Admin, error)
 	AssignFloat(AssignFloatParams) (float64, error)
 }
 
@@ -32,26 +32,26 @@ type interactor struct {
 }
 
 // AuthenticateByEmail verifies a admin by the provided unique email address
-func (i interactor) AuthenticateByEmail(email, password string) (Administrator, error) {
+func (i interactor) AuthenticateByEmail(email, password string) (Admin, error) {
 	// search for admin by email.
 	admin, err := i.repository.GetByEmail(email)
 	if errors.ErrorCode(err) == errors.ENOTFOUND {
-		return Administrator{}, errors.Error{Err: err, Message: errors.ErrUserNotFound}
+		return Admin{}, errors.Error{Err: err, Message: errors.ErrUserNotFound}
 	} else if err != nil {
-		return Administrator{}, err
+		return Admin{}, err
 	}
 
 	// validate password
 	if err := helpers.ComparePasswordToHash(admin.Password, password); err != nil {
-		return Administrator{}, errors.Unauthorized{Message: errors.ErrorMessage(err)}
+		return Admin{}, errors.Unauthorized{Message: errors.ErrorMessage(err)}
 	}
 
 	return admin, nil
 }
 
 // Register takes in a admin object and adds the admin to db.
-func (i interactor) Register(params RegistrationParams) (Administrator, error) {
-	admin := Administrator{
+func (i interactor) Register(params RegistrationParams) (Admin, error) {
+	admin := Admin{
 		FirstName: params.FirstName,
 		LastName:  params.LastName,
 		Email:     params.Email,
@@ -61,14 +61,14 @@ func (i interactor) Register(params RegistrationParams) (Administrator, error) {
 	// hash admin password before adding to db.
 	passwordHash, err := helpers.HashPassword(admin.Password)
 	if err != nil { // if we get an error, it means our hashing func dint work
-		return Administrator{}, errors.Error{Err: err, Code: errors.EINTERNAL}
+		return Admin{}, errors.Error{Err: err, Code: errors.EINTERNAL}
 	}
 
 	// change password to hashed string
 	admin.Password = passwordHash
 	adm, err := i.repository.Add(admin)
 	if err != nil {
-		return Administrator{}, err
+		return Admin{}, err
 	}
 
 	return adm, nil
