@@ -5,8 +5,8 @@ import (
 	"time"
 
 	"simple-mpesa/src/data"
+	"simple-mpesa/src/domain/value_objects"
 	"simple-mpesa/src/errors"
-	"simple-mpesa/src/value_objects"
 
 	"github.com/gofrs/uuid"
 )

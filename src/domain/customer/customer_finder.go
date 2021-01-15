@@ -4,8 +4,8 @@ import (
 	"simple-mpesa/src/domain/agent"
 	"simple-mpesa/src/domain/merchant"
 	"simple-mpesa/src/domain/subscriber"
+	"simple-mpesa/src/domain/value_objects"
 	"simple-mpesa/src/errors"
-	"simple-mpesa/src/value_objects"
 
 	"github.com/gofrs/uuid"
 )

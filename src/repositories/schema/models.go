@@ -1,9 +1,7 @@
-package repositories
+package schema
 
 import (
 	"time"
-
-	"simple-mpesa/src/value_objects"
 
 	"github.com/gofrs/uuid"
 	"gorm.io/gorm"
@@ -64,11 +62,12 @@ type Agent struct {
 
 type Statement struct {
 	ID           uuid.UUID
-	Operation    value_objects.TxnOperation
+	Operation    string
 	DebitAmount  float64
 	CreditAmount float64
 	UserID       uuid.UUID
 	AccountID    uuid.UUID
+
 	CreatedAt    time.Time
 }
 

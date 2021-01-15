@@ -1,8 +1,8 @@
 package admin
 
 import (
+	"simple-mpesa/src/domain/value_objects"
 	"simple-mpesa/src/errors"
-	"simple-mpesa/src/value_objects"
 
 	validation "github.com/go-ozzo/ozzo-validation/v4"
 	"github.com/go-ozzo/ozzo-validation/v4/is"

@@ -8,8 +8,8 @@ import (
 	"simple-mpesa/src/domain/agent"
 	"simple-mpesa/src/domain/auth"
 	"simple-mpesa/src/domain/tariff"
+	"simple-mpesa/src/domain/value_objects"
 	"simple-mpesa/src/routing/responses"
-	"simple-mpesa/src/value_objects"
 
 	"github.com/gofiber/fiber/v2"
 )

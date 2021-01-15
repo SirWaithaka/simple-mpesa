@@ -2,9 +2,9 @@ package pg
 
 import (
 	"simple-mpesa/src/domain/tariff"
+	"simple-mpesa/src/domain/value_objects"
 	"simple-mpesa/src/errors"
 	"simple-mpesa/src/storage"
-	"simple-mpesa/src/value_objects"
 
 	"github.com/gofrs/uuid"
 	"github.com/jackc/pgconn"
@@ -80,4 +80,3 @@ func (r Tariff) Update(charge tariff.Charge) error {
 	}
 	return nil
 }
-

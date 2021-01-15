@@ -3,10 +3,10 @@ package transaction_handlers
 import (
 	"net/http"
 
-	"simple-mpesa/src/auth"
+	"simple-mpesa/src/domain/auth"
+	"simple-mpesa/src/domain/transaction"
 	"simple-mpesa/src/errors"
 	"simple-mpesa/src/routing/responses"
-	"simple-mpesa/src/transaction"
 
 	"github.com/gofiber/fiber/v2"
 )

@@ -3,7 +3,7 @@ package user_handlers
 import (
 	"simple-mpesa/src"
 	"simple-mpesa/src/domain"
-	"simple-mpesa/src/value_objects"
+	"simple-mpesa/src/domain/value_objects"
 
 	"github.com/gofiber/fiber/v2"
 )

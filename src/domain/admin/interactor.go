@@ -4,9 +4,9 @@ import (
 	"simple-mpesa/src"
 	"simple-mpesa/src/domain/account"
 	"simple-mpesa/src/domain/customer"
+	"simple-mpesa/src/domain/value_objects"
 	"simple-mpesa/src/errors"
 	"simple-mpesa/src/helpers"
-	"simple-mpesa/src/value_objects"
 )
 
 type Interactor interface {
