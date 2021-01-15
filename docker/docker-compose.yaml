@@ -1,0 +1,16 @@
+version: '3'
+services:
+  mpesa-db:
+    image: postgres:12
+    ports:
+      - 5432:5432
+    environment:
+      - POSTGRES_USER=mpesa
+      - POSTGRES_DB=mpesa
+      - POSTGRES_PASSWORD=mpesa
+    restart: unless-stopped
+    volumes:
+      - pg-data:/var/lib/postgresql/data
+volumes:
+  pg-data:
+    driver: local
