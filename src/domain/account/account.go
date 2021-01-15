@@ -4,7 +4,6 @@ import (
 	"simple-mpesa/src/domain/value_objects"
 
 	"github.com/gofrs/uuid"
-	"gorm.io/gorm"
 )
 
 // Status (active,dormant,frozen,suspended)
@@ -38,8 +37,6 @@ type Account struct {
 	Status      Status
 	AccountType Type
 	UserID      uuid.UUID // a user can only have one account
-
-	gorm.Model
 }
 
 // Balance converts balance from cents

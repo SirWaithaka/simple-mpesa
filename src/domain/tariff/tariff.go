@@ -4,7 +4,6 @@ import (
 	"simple-mpesa/src/domain/value_objects"
 
 	"github.com/gofrs/uuid"
-	"gorm.io/gorm"
 )
 
 type Charge struct {
@@ -14,8 +13,6 @@ type Charge struct {
 	SourceUserType      value_objects.UserType
 	DestinationUserType value_objects.UserType
 	Fee                 value_objects.Cents
-
-	gorm.Model
 }
 
 // ValidTransaction defines a format to identify all allowable transactions between customers
