@@ -19,9 +19,9 @@ type AgentRepository struct {
 	db *storage.Database
 }
 
-func (r AgentRepository) searchBy(row agent.Agent) (agent.Agent, error) {
-	var a agent.Agent
-	result := r.db.Where(row).First(&a)
+func (r AgentRepository) searchBy(search schema.Agent) (agent.Agent, error) {
+	var row schema.Agent
+	result := r.db.Where(search).First(&row)
 	// check if no record found.
 	if errors.Is(result.Error, gorm.ErrRecordNotFound) {
 		return agent.Agent{}, errors.Error{Code: errors.ENOTFOUND}
@@ -30,14 +30,33 @@ func (r AgentRepository) searchBy(row agent.Agent) (agent.Agent, error) {
 		return agent.Agent{}, errors.Error{Err: err, Code: errors.EINTERNAL}
 	}
 
-	return a, nil
+	return agent.Agent{
+		ID:          row.ID,
+		Email:       row.Email,
+		FirstName:   row.FirstName,
+		LastName:    row.LastName,
+		PhoneNumber: row.PhoneNumber,
+		PassportNo:  row.PassportNo,
+		Password:    row.Password,
+		SuperAgent:  agent.SuperAgentStatus(row.SuperAgent),
+	}, nil
 }
 
 // Add an agent if not in db.
 func (r AgentRepository) Add(a agent.Agent) (agent.Agent, error) {
+	row := schema.Agent{
+		Email:       a.Email,
+		FirstName:   a.FirstName,
+		LastName:    a.LastName,
+		PhoneNumber: a.PhoneNumber,
+		PassportNo:  a.PassportNo,
+		Password:    a.Password,
+		SuperAgent:  string(a.SuperAgent),
+	}
+
 	// add new agent to agents table, if query return violation of unique key column,
 	// we know that the agent with given record exists and return that agent instead
-	result := r.db.Model(&schema.Agent{}).Create(&a)
+	result := r.db.Model(&schema.Agent{}).Create(&row)
 	if err := result.Error; err != nil {
 		// we check if the error is a postgres unique constraint violation
 		if pgerr, ok := err.(*pgconn.PgError); ok && pgerr.Code == "23505" {
@@ -46,12 +65,21 @@ func (r AgentRepository) Add(a agent.Agent) (agent.Agent, error) {
 		return agent.Agent{}, errors.Error{Err: result.Error, Code: errors.EINTERNAL}
 	}
 
-	return a, nil
+	return agent.Agent{
+		ID:          row.ID,
+		Email:       row.Email,
+		FirstName:   row.FirstName,
+		LastName:    row.LastName,
+		PhoneNumber: row.PhoneNumber,
+		PassportNo:  row.PassportNo,
+		Password:    row.Password,
+		SuperAgent:  agent.SuperAgentStatus(row.SuperAgent),
+	}, nil
 }
 
 // Delete a agent
 func (r AgentRepository) Delete(agent agent.Agent) error {
-	result := r.db.Delete(&agent)
+	result := r.db.Delete(&schema.Agent{ID: agent.ID})
 	if result.Error != nil {
 		return errors.Error{Err: result.Error, Code: errors.EINTERNAL}
 	}
@@ -60,8 +88,8 @@ func (r AgentRepository) Delete(agent agent.Agent) error {
 
 // FetchAll gets all agents in db
 func (r AgentRepository) FetchAll() ([]agent.Agent, error) {
-	var agents []agent.Agent
-	result := r.db.Find(&agents)
+	var rows []schema.Agent
+	result := r.db.Find(&rows)
 	if err := result.Error; err != nil {
 		return nil, errors.Error{Err: result.Error, Code: errors.EINTERNAL}
 	}
@@ -71,24 +99,48 @@ func (r AgentRepository) FetchAll() ([]agent.Agent, error) {
 		return nil, errors.Error{Code: errors.ENOTFOUND}
 	}
 
+	var agents []agent.Agent
+	for _, row := range rows {
+		agents = append(agents, agent.Agent{
+			ID:          row.ID,
+			Email:       row.Email,
+			FirstName:   row.FirstName,
+			LastName:    row.LastName,
+			PhoneNumber: row.PhoneNumber,
+			PassportNo:  row.PassportNo,
+			Password:    row.Password,
+			SuperAgent:  agent.SuperAgentStatus(row.SuperAgent),
+		})
+	}
+
 	return agents, nil
 }
 
 // FindByID searches agent by primary id
 func (r AgentRepository) FindByID(id uuid.UUID) (agent.Agent, error) {
-	a, err := r.searchBy(agent.Agent{ID: id})
+	a, err := r.searchBy(schema.Agent{ID: id})
 	return a, err
 }
 
 // FindByEmail searches agent by email
 func (r AgentRepository) FindByEmail(email string) (agent.Agent, error) {
-	a, err := r.searchBy(agent.Agent{Email: email})
+	a, err := r.searchBy(schema.Agent{Email: email})
 	return a, err
 }
 
 // Update
 func (r AgentRepository) Update(a agent.Agent) error {
-	result := r.db.Model(&agent.Agent{}).Where(agent.Agent{ID: a.ID}).Omit("id").Updates(a)
+	row := schema.Agent{
+		Email:       a.Email,
+		FirstName:   a.FirstName,
+		LastName:    a.LastName,
+		PhoneNumber: a.PhoneNumber,
+		PassportNo:  a.PassportNo,
+		Password:    a.Password,
+		SuperAgent:  string(a.SuperAgent),
+	}
+
+	result := r.db.Model(&schema.Agent{}).Where(schema.Agent{ID: a.ID}).Omit("id").Updates(row)
 	if err := result.Error; err != nil {
 		return errors.Error{Err: result.Error, Code: errors.EINTERNAL}
 	}
