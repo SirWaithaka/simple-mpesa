@@ -5,6 +5,8 @@ import (
 	"log"
 	"os"
 
+	"github.com/joho/godotenv"
+
 	"simple-mpesa/src"
 	"simple-mpesa/src/configs"
 	"simple-mpesa/src/domain"
@@ -16,10 +18,22 @@ import (
 func main() {
 	log.SetFlags(log.Lshortfile | log.LstdFlags)
 
-	// read yaml config file. Dont pass path to read
-	// from default path
-	yamlConfig := configs.ReadYaml("")
-	config := src.GetConfig(*yamlConfig)
+	// load .env file from current directory into env variables
+	err := godotenv.Load(".env")
+	if err != nil {
+		// we will just log the error and ignore then continue
+		log.Printf("error reading .env file: %v", err)
+	}
+
+	// load env vars into struct
+	envconfig, err := configs.GetEnvConfig()
+	if err != nil {
+		log.Fatal(err)
+		return
+	}
+
+	// transform envvar config into app config
+	config := src.GetAppConfig(envconfig)
 
 	database, err := postgres.NewDatabase(config)
 	if err != nil {
