@@ -17,16 +17,26 @@ func NewDatabase(config src.Config) (*storage.Database, error) {
 	// var db *storage.Database
 	db := new(storage.Database)
 
-	var conn *gorm.DB
-	dsn := fmt.Sprintf("user=%s password=%s dbname=%s host=%s port=%s",
-		config.DB.User, config.DB.Password, config.DB.DBName, config.DB.Host, config.DB.Port,
-	)
-	conn, err = gorm.Open(postgres.Open(dsn), &gorm.Config{})
-
+	gormDB, err := gorm.Open(postgres.New(postgres.Config{
+		// DriverName: config.Driver,
+		DSN: config.DSN,
+	}), &gorm.Config{})
 	if err != nil {
-		return nil, err
+		return nil, fmt.Errorf("gorm open error: %v", err)
 	}
-	db.DB = conn
+
+	// get native database/sql connection
+	sqlDB, err := gormDB.DB()
+	if err != nil {
+		return nil, fmt.Errorf("native sql fetch error: %v", err)
+	}
+
+	// test connection to db
+	if err = sqlDB.Ping(); err != nil {
+		return nil, fmt.Errorf("ping error: %v", err)
+	}
+
+	db.DB = gormDB
 
 	return db, nil
 }
