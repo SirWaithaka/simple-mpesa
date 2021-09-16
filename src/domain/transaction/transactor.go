@@ -49,11 +49,13 @@ func (tr transactor) deposit(source, destination TxnCustomer, amount value_objec
 	// get the charge applicable to this transaction
 	// usually depositing has no transaction cost
 
+	// debit source's account
 	srcNewBal, err := tr.accountant.DebitAccount(source.UserID, amount.ToCents(), value_objects.TxnOpDeposit)
 	if err != nil {
 		return err
 	}
 
+	// credit destination account
 	destNewBal, err := tr.accountant.CreditAccount(destination.UserID, amount.ToCents(), value_objects.TxnOpDeposit)
 	if err != nil {
 		return err

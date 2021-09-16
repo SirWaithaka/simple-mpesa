@@ -3,11 +3,11 @@ package postgres
 import (
 	"fmt"
 
-	"simple-mpesa/src"
-	"simple-mpesa/src/storage"
-
 	"gorm.io/driver/postgres"
 	"gorm.io/gorm"
+
+	"simple-mpesa/src"
+	"simple-mpesa/src/storage"
 )
 
 // NewDatabase creates a new Database object
