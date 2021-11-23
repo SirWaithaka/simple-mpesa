@@ -1,10 +1,10 @@
 package transaction
 
 import (
+	"github.com/gofrs/uuid"
+
 	"simple-mpesa/src/domain/customer"
 	"simple-mpesa/src/domain/value_objects"
-
-	"github.com/gofrs/uuid"
 )
 
 // Facade is not a good name. Its function is to expose an interface to the application layer that it

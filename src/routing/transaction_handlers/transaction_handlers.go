@@ -3,12 +3,12 @@ package transaction_handlers
 import (
 	"net/http"
 
+	"github.com/gofiber/fiber/v2"
+
 	"simple-mpesa/src/domain/auth"
 	"simple-mpesa/src/domain/transaction"
 	"simple-mpesa/src/errors"
 	"simple-mpesa/src/routing/responses"
-
-	"github.com/gofiber/fiber/v2"
 )
 
 // Deposit allows user to deposit or credit their account.
